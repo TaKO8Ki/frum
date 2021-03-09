@@ -8,3 +8,5 @@ description = "A Extremely fast Ruby version manager written in Rust"
 
 [dependencies]
 clap = "2.33.3"
+reqwest = { version = "0.11.1", features = ["blocking", "json", "rustls-tls", "brotli"], default-features = false }
+regex = "1"

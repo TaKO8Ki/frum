@@ -2,7 +2,7 @@
 
 # farm
 
-A Extremely fast Ruby version manager written in Rust
+A blazing fast Ruby version manager written in Rust
 
 [![github workflow status](https://img.shields.io/github/workflow/status/TaKO8Ki/farm/CI/main)](https://github.com/TaKO8Ki/farm/actions)
 
