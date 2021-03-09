@@ -1,4 +1,4 @@
-mod install_list;
+mod commands;
 
 use clap::{App, SubCommand};
 
@@ -11,15 +11,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .about("A blazing fast Ruby version manager written in Rust")
         .subcommand(
             SubCommand::with_name("install-list")
-                .about("Lists the Ruby versions available to install.")
-                // or "myapp help"
-                .version("0.1")
-                .author("Kevin K."),
+                .about("Lists the Ruby versions available to install."),
         )
         .get_matches();
 
     if matches.subcommand_matches("install-list").is_some() {
-        crate::install_list::install_list().unwrap()
+        commands::install_list::install_list().unwrap()
     }
     Ok(())
 }
