@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .get_matches();
 
     if matches.subcommand_matches("install-list").is_some() {
-        commands::install_list::install_list().unwrap()
+        commands::install_list::install_list()?
     }
     Ok(())
 }
