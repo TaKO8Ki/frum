@@ -12,6 +12,6 @@ A blazing fast Ruby version manager written in Rust
 
 ## Usage
 
-### `farm install-list`
+### Subcommands
 
-Lists the Ruby versions available to install.
+- install-list: Lists the Ruby versions available to install.
