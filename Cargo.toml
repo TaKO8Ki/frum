@@ -1,9 +1,10 @@
 [package]
-name = "erm"
+name = "farm"
 version = "0.1.0"
 authors = ["Takayuki Maeda <takoyaki0316@gmail.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+repository = "https://github.com/TaKO8Ki/farm"
+description = "A Extremely fast Ruby version manager written in Rust"
 
 [dependencies]
+clap = "2.33.3"
