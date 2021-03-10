@@ -7,8 +7,8 @@ pub struct IndexedRubyVersion {
 }
 
 pub fn install_list() -> Result<(), Box<dyn std::error::Error>> {
-    let index_json_url = format!("{}/index.txt", crate::RUBY_BUILD_DEFAULT_MIRROR);
-    let value = reqwest::blocking::get(&index_json_url)?.text()?;
+    let index_txt_url = format!("{}/index.txt", crate::RUBY_BUILD_DEFAULT_MIRROR);
+    let value = reqwest::blocking::get(&index_txt_url)?.text()?;
     let re = regex::Regex::new(r"(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)").unwrap();
     let versions = value
         .split('\n')

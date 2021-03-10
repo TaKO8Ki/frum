@@ -1,6 +1,7 @@
+mod archive;
 mod commands;
 
-use clap::{App, SubCommand};
+use clap::{App, Arg, SubCommand};
 
 const RUBY_BUILD_DEFAULT_MIRROR: &str = "https://cache.ruby-lang.org/pub/ruby";
 
@@ -10,6 +11,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .author("Takayuki Maeda <takoyaki0316@gmail.com>")
         .about("A blazing fast Ruby version manager written in Rust")
         .subcommand(
+            SubCommand::with_name("install")
+                .about("Installs `[VERSION]`.")
+                .arg(Arg::with_name("version").index(1).required(true)),
+        )
+        .subcommand(
             SubCommand::with_name("install-list")
                 .about("Lists the Ruby versions available to install."),
         )
@@ -17,6 +23,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if matches.subcommand_matches("install-list").is_some() {
         commands::install_list::install_list()?
+    }
+    if let Some(matches) = matches.subcommand_matches("install") {
+        commands::install::install(matches.value_of("version").unwrap().to_string())?;
+        println!("version: {}", matches.value_of("version").unwrap());
     }
     Ok(())
 }
