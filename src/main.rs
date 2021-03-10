@@ -25,8 +25,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         commands::install_list::install_list()?
     }
     if let Some(matches) = matches.subcommand_matches("install") {
-        commands::install::install(matches.value_of("version").unwrap().to_string())?;
-        println!("version: {}", matches.value_of("version").unwrap());
+        match commands::install::install(matches.value_of("version").unwrap().to_string()) {
+            Ok(_) => (),
+            Err(err) => {
+                eprintln!("farm: {}", err);
+                std::process::exit(1)
+            }
+        };
     }
     Ok(())
 }

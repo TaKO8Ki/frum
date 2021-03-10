@@ -12,8 +12,8 @@ pub enum FarmError {
     IoError(#[from] std::io::Error),
     #[error("Can't extract the file: {source:?}")]
     ExtractError { source: ExtractError },
-    #[error("Can't find version upstream")]
-    VersionNotFound,
+    #[error("Can't find version: {version}")]
+    VersionNotFound { version: String },
 }
 
 pub fn install(version: String) -> Result<(), FarmError> {
@@ -24,7 +24,7 @@ pub fn install(version: String) -> Result<(), FarmError> {
     );
     let response = reqwest::blocking::get(&package_url)?;
     if response.status() == 404 {
-        return Err(FarmError::VersionNotFound);
+        return Err(FarmError::VersionNotFound { version });
     }
     extract_archive_into(env::current_dir()?, response)?;
     Ok(())
