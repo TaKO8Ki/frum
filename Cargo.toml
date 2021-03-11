@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Takayuki Maeda <takoyaki0316@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/TaKO8Ki/farm"
-description = "A Extremely fast Ruby version manager written in Rust"
+description = "A blazing fast and simple Ruby version manager written in Rust"
 
 [dependencies]
 clap = "2.33.3"
