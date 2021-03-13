@@ -1,12 +1,14 @@
 mod archive;
+mod command;
 mod commands;
 mod config;
 
 use clap::{App, Arg, SubCommand};
+use command::Command;
 
 const RUBY_BUILD_DEFAULT_MIRROR: &str = "https://cache.ruby-lang.org/pub/ruby";
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() {
     env_logger::init();
     let matches = App::new("farm")
         .version("1.0")
@@ -23,18 +25,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .get_matches();
 
-    let config = config::FarmConfg::default();
-    if matches.subcommand_matches("install-list").is_some() {
-        commands::install_list::install_list()?
-    }
-    if let Some(matches) = matches.subcommand_matches("install") {
-        match commands::install::install(matches.value_of("version").unwrap().to_string(), config) {
-            Ok(_) => (),
-            Err(err) => {
-                eprintln!("farm: {}", err);
-                std::process::exit(1)
+    let config = config::FarmConfig::default();
+    match matches.subcommand() {
+        ("install-list", _) => commands::install_list::InstallList {}.call(config),
+        ("install", Some(matches)) => {
+            commands::install::Install {
+                version: matches
+                    .value_of("version")
+                    .expect("missing version")
+                    .to_string(),
             }
-        };
-    }
-    Ok(())
+            .call(config);
+        }
+        _ => (),
+    };
 }

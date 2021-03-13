@@ -1,17 +1,17 @@
-pub struct FarmConfg {
+pub struct FarmConfig {
     pub ruby_build_default_mirror: reqwest::Url,
 }
 
-impl Default for FarmConfg {
+impl Default for FarmConfig {
     fn default() -> Self {
         Self {
-            ruby_build_default_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby")
+            ruby_build_default_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby/")
                 .unwrap(),
         }
     }
 }
 
-impl FarmConfg {
+impl FarmConfig {
     pub fn base_dir(&self) -> std::path::PathBuf {
         // TODO: support base directory
         ensure_dir_exists(
