@@ -37,7 +37,7 @@ impl crate::command::Command for Install {
                 version: self.version.clone(),
             });
         }
-        let installations_dir = config.installation_dir();
+        let installations_dir = config.versions_dir();
         std::fs::create_dir_all(&installations_dir).map_err(FarmError::IoError)?;
         let installation_dir =
             std::path::PathBuf::from(&installations_dir).join(self.version.clone());
@@ -89,4 +89,23 @@ fn package_url(mirror_url: Url, version: String) -> Url {
     mirror_url
         .join(format!("ruby-{}.tar.xz", version.as_str()).as_str())
         .expect("invalid mirror url")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::command::Command;
+    use crate::config::FarmConfig;
+
+    #[test]
+    fn test_set_default_on_new_installation() {
+        let base_dir = tempfile::tempdir().unwrap();
+        let config = FarmConfig::default();
+
+        Install {
+            version: "2.6.4".to_string(),
+        }
+        .apply(&config)
+        .expect("Can't install");
+    }
 }

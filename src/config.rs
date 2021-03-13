@@ -21,7 +21,7 @@ impl FarmConfig {
         )
     }
 
-    pub fn installation_dir(&self) -> std::path::PathBuf {
+    pub fn versions_dir(&self) -> std::path::PathBuf {
         ensure_dir_exists(self.base_dir().join("versions"))
     }
 }
