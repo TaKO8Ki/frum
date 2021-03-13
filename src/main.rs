@@ -6,8 +6,6 @@ mod config;
 use clap::{App, Arg, SubCommand};
 use command::Command;
 
-const RUBY_BUILD_DEFAULT_MIRROR: &str = "https://cache.ruby-lang.org/pub/ruby";
-
 fn main() {
     env_logger::init();
     let matches = App::new("farm")
