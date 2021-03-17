@@ -1,9 +1,10 @@
 use crate::archive::tar_xz::{self, FarmError as ExtractError};
 use crate::config::FarmConfig;
+use crate::outln;
 use anyhow::Result;
 use log::debug;
 use reqwest::Url;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use thiserror::Error;
 pub struct Install {
@@ -28,6 +29,7 @@ impl crate::command::Command for Install {
     type Error = FarmError;
 
     fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
+        outln!(config#Info, "Installing Ruby {}", self.version);
         let response = reqwest::blocking::get(package_url(
             config.ruby_build_default_mirror.clone(),
             self.version.clone(),
@@ -53,23 +55,8 @@ impl crate::command::Command for Install {
             .map_err(FarmError::IoError)?;
         let installed_directory = installed_directory.path();
         debug!("./configure ruby-{}", self.version);
-        Command::new("sh")
-            .arg("configure")
-            .arg("--disable-install-doc")
-            .current_dir(&installed_directory)
-            .output()
-            .expect("./configure failed to start");
-        debug!("make -j 2");
-        Command::new("make")
-            .arg("-j")
-            .arg("5")
-            .current_dir(&installed_directory)
-            .output()
-            .expect("make failed to start");
-        let renamed_installation_dir = temp_dir.path().join("installation");
-        std::fs::rename(&installed_directory, &renamed_installation_dir)
-            .map_err(FarmError::IoError)?;
-        std::fs::rename(&temp_dir, &installation_dir)?;
+        build_package(&installed_directory);
+        std::fs::rename(&installed_directory, &installation_dir).map_err(FarmError::IoError)?;
         Ok(())
     }
 }
@@ -91,6 +78,26 @@ fn package_url(mirror_url: Url, version: String) -> Url {
         .expect("invalid mirror url")
 }
 
+fn build_package(current_dir: &PathBuf) {
+    Command::new("sh")
+        .arg("configure")
+        .arg("--disable-install-doc")
+        .arg(format!(
+            "--prefix={}",
+            current_dir.join("bin/").to_str().unwrap()
+        ))
+        .current_dir(&current_dir)
+        .output()
+        .expect("./configure failed to start");
+    debug!("make -j 2");
+    Command::new("make")
+        .arg("-j")
+        .arg("5")
+        .current_dir(&current_dir)
+        .output()
+        .expect("make failed to start");
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -98,6 +105,7 @@ mod tests {
     use crate::config::FarmConfig;
 
     #[test]
+    #[ignore]
     fn test_set_default_on_new_installation() {
         let base_dir = tempfile::tempdir().unwrap();
         let config = FarmConfig::default();

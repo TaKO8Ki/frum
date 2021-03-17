@@ -1,5 +1,8 @@
+use crate::log::LogLevel;
+
 pub struct FarmConfig {
     pub ruby_build_default_mirror: reqwest::Url,
+    pub log_level: LogLevel,
 }
 
 impl Default for FarmConfig {
@@ -7,6 +10,7 @@ impl Default for FarmConfig {
         Self {
             ruby_build_default_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby/")
                 .unwrap(),
+            log_level: LogLevel::Info,
         }
     }
 }

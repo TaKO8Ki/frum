@@ -3,6 +3,9 @@ mod command;
 mod commands;
 mod config;
 
+#[macro_use]
+mod log;
+
 use clap::{App, Arg, SubCommand};
 use command::Command;
 
