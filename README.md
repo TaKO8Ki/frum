@@ -15,3 +15,4 @@ A blazing fast and simple Ruby version manager written in Rust
 ### Subcommands
 
 - install-list: Lists the Ruby versions available to install.
+- install: Installs `[VERSION]`.

@@ -4,9 +4,16 @@ version = "0.1.0"
 authors = ["Takayuki Maeda <takoyaki0316@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/TaKO8Ki/farm"
-description = "A Extremely fast Ruby version manager written in Rust"
+description = "A blazing fast and simple Ruby version manager written in Rust"
 
 [dependencies]
 clap = "2.33.3"
-reqwest = { version = "0.11.1", features = ["blocking", "json", "rustls-tls", "brotli"], default-features = false }
+reqwest = { version = "0.11.1", features = ["blocking", "json"], default-features = false }
 regex = "1"
+thiserror = "1.0"
+anyhow = "1.0"
+tar = "0.4.33"
+xz2 = "0.1.6"
+tempfile = "3.2.0"
+log = "0.4.14"
+env_logger = "0.8.3"
