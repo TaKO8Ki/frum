@@ -5,7 +5,7 @@ pub trait Command {
 
     fn apply(&self, config: &FarmConfig) -> Result<(), Self::Error>;
 
-    fn handle_error(err: Self::Error, config: &FarmConfig) {
+    fn handle_error(err: Self::Error, _config: &FarmConfig) {
         eprintln!("farm: {}", err)
     }
 
