@@ -1,14 +1,14 @@
 use crate::log::LogLevel;
 
 pub struct FarmConfig {
-    pub ruby_build_default_mirror: reqwest::Url,
+    pub ruby_build_mirror: reqwest::Url,
     pub log_level: LogLevel,
 }
 
 impl Default for FarmConfig {
     fn default() -> Self {
         Self {
-            ruby_build_default_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby/")
+            ruby_build_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby/")
                 .unwrap(),
             log_level: LogLevel::Info,
         }
@@ -27,6 +27,14 @@ impl FarmConfig {
 
     pub fn versions_dir(&self) -> std::path::PathBuf {
         ensure_dir_exists(self.base_dir().join("versions"))
+    }
+
+    pub fn default_version_dir(&self) -> std::path::PathBuf {
+        self.aliases_dir().join("default")
+    }
+
+    pub fn aliases_dir(&self) -> std::path::PathBuf {
+        ensure_dir_exists(self.base_dir().join("aliases"))
     }
 }
 

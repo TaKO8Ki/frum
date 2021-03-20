@@ -1,7 +1,11 @@
+mod alias;
 mod archive;
 mod command;
 mod commands;
 mod config;
+mod shell;
+mod symlink;
+mod version;
 
 #[macro_use]
 mod log;
@@ -15,6 +19,12 @@ fn main() {
         .version("1.0")
         .author("Takayuki Maeda <takoyaki0316@gmail.com>")
         .about("A blazing fast Ruby version manager written in Rust")
+        .subcommand(SubCommand::with_name("init").about("Initialize aliases."))
+        .subcommand(
+            SubCommand::with_name("init")
+                .about("Initialize farm.")
+                .arg(Arg::with_name("version").index(1).required(true)),
+        )
         .subcommand(
             SubCommand::with_name("install")
                 .about("Installs `[VERSION]`.")
@@ -28,6 +38,7 @@ fn main() {
 
     let config = config::FarmConfig::default();
     match matches.subcommand() {
+        ("init", _) => commands::init::Init {}.call(config),
         ("install-list", _) => commands::install_list::InstallList {}.call(config),
         ("install", Some(matches)) => {
             commands::install::Install {

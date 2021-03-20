@@ -1,3 +1,4 @@
+use crate::alias::create_alias;
 use crate::archive::tar_xz::{self, FarmError as ExtractError};
 use crate::config::FarmConfig;
 use crate::outln;
@@ -29,9 +30,9 @@ impl crate::command::Command for Install {
     type Error = FarmError;
 
     fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
-        outln!(config#Info, "Installing Ruby {}", self.version);
+        outln!(config#Info, "Installing Ruby {}...", self.version);
         let response = reqwest::blocking::get(package_url(
-            config.ruby_build_default_mirror.clone(),
+            config.ruby_build_mirror.clone(),
             self.version.clone(),
         ))?;
         if response.status() == 404 {
@@ -55,8 +56,12 @@ impl crate::command::Command for Install {
             .map_err(FarmError::IoError)?;
         let installed_directory = installed_directory.path();
         debug!("./configure ruby-{}", self.version);
-        build_package(&installed_directory);
-        std::fs::rename(&installed_directory, &installation_dir).map_err(FarmError::IoError)?;
+        build_package(&installed_directory, &installation_dir);
+
+        if !config.default_version_dir().exists() {
+            debug!("Tagging {} as the default version", self.version);
+            create_alias(&config, "default", &version).map_err(FarmError::IoError)?;
+        }
         Ok(())
     }
 }
@@ -78,24 +83,26 @@ fn package_url(mirror_url: Url, version: String) -> Url {
         .expect("invalid mirror url")
 }
 
-fn build_package(current_dir: &PathBuf) {
+fn build_package(current_dir: &PathBuf, installed_dir: &PathBuf) {
     Command::new("sh")
         .arg("configure")
-        .arg("--disable-install-doc")
-        .arg(format!(
-            "--prefix={}",
-            current_dir.join("bin/").to_str().unwrap()
-        ))
+        .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))
         .current_dir(&current_dir)
         .output()
         .expect("./configure failed to start");
-    debug!("make -j 2");
+    debug!("make");
     Command::new("make")
         .arg("-j")
         .arg("5")
         .current_dir(&current_dir)
         .output()
         .expect("make failed to start");
+    debug!("make install");
+    Command::new("make")
+        .arg("install")
+        .current_dir(&current_dir)
+        .output()
+        .expect("make install failed to start");
 }
 
 #[cfg(test)]
