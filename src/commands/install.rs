@@ -1,7 +1,9 @@
 use crate::alias::create_alias;
 use crate::archive::tar_xz::{self, FarmError as ExtractError};
 use crate::config::FarmConfig;
+use crate::input_version::InputVersion;
 use crate::outln;
+use crate::version::Version;
 use anyhow::Result;
 use log::debug;
 use reqwest::Url;
@@ -9,7 +11,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use thiserror::Error;
 pub struct Install {
-    pub version: String,
+    pub version: InputVersion,
 }
 
 #[derive(Error, Debug)]
@@ -23,27 +25,31 @@ pub enum FarmError {
     #[error("The downloaded archive is empty")]
     TarIsEmpty,
     #[error("Can't find version: {version}")]
-    VersionNotFound { version: String },
+    VersionNotFound { version: Version },
 }
 
 impl crate::command::Command for Install {
     type Error = FarmError;
 
     fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
+        let current_version = self.version.clone();
+        let version = match current_version.clone() {
+            InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
+            _ => Version::parse("2.6.4").unwrap(),
+        };
+
         outln!(config#Info, "Installing Ruby {}...", self.version);
-        let response = reqwest::blocking::get(package_url(
-            config.ruby_build_mirror.clone(),
-            self.version.clone(),
-        ))?;
+        let response =
+            reqwest::blocking::get(package_url(config.ruby_build_mirror.clone(), &version))?;
         if response.status() == 404 {
             return Err(FarmError::VersionNotFound {
-                version: self.version.clone(),
+                version: version.clone(),
             });
         }
         let installations_dir = config.versions_dir();
         std::fs::create_dir_all(&installations_dir).map_err(FarmError::IoError)?;
         let installation_dir =
-            std::path::PathBuf::from(&installations_dir).join(self.version.clone());
+            std::path::PathBuf::from(&installations_dir).join(version.to_string());
         let temp_installations_dir = installations_dir.join(".downloads");
         std::fs::create_dir_all(&temp_installations_dir).map_err(FarmError::IoError)?;
         let temp_dir = tempfile::TempDir::new_in(&temp_installations_dir)
@@ -77,9 +83,9 @@ fn extract_archive_into<P: AsRef<Path>>(
     Ok(())
 }
 
-fn package_url(mirror_url: Url, version: String) -> Url {
+fn package_url(mirror_url: Url, version: &Version) -> Url {
     mirror_url
-        .join(format!("ruby-{}.tar.xz", version.as_str()).as_str())
+        .join(format!("ruby-{}.tar.xz", version).as_str())
         .expect("invalid mirror url")
 }
 
@@ -110,6 +116,7 @@ mod tests {
     use super::*;
     use crate::command::Command;
     use crate::config::FarmConfig;
+    use crate::version::Version;
 
     #[test]
     #[ignore]
@@ -118,7 +125,7 @@ mod tests {
         let config = FarmConfig::default();
 
         Install {
-            version: "2.6.4".to_string(),
+            version: InputVersion::Full(Version::Semver(semver::Version::parse("2.6.4").unwrap())),
         }
         .apply(&config)
         .expect("Can't install");

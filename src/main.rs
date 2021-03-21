@@ -3,6 +3,7 @@ mod archive;
 mod command;
 mod commands;
 mod config;
+mod input_version;
 mod shell;
 mod symlink;
 mod version;
@@ -12,6 +13,7 @@ mod log;
 
 use clap::{App, Arg, SubCommand};
 use command::Command;
+use std::str::FromStr;
 
 fn main() {
     env_logger::init();
@@ -42,10 +44,10 @@ fn main() {
         ("install-list", _) => commands::install_list::InstallList {}.call(config),
         ("install", Some(matches)) => {
             commands::install::Install {
-                version: matches
-                    .value_of("version")
-                    .expect("missing version")
-                    .to_string(),
+                version: input_version::InputVersion::from_str(
+                    matches.value_of("version").expect("missing version"),
+                )
+                .expect("invalid version"),
             }
             .call(config);
         }
