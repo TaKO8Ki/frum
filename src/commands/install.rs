@@ -65,7 +65,7 @@ impl crate::command::Command for Install {
         build_package(&installed_directory, &installation_dir);
 
         if !config.default_version_dir().exists() {
-            debug!("Tagging {} as the default version", self.version);
+            debug!("Use {} as the default version", self.version);
             create_alias(&config, "default", &version).map_err(FarmError::IoError)?;
         }
         Ok(())
