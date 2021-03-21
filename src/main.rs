@@ -22,7 +22,8 @@ fn main() {
         .author("Takayuki Maeda <takoyaki0316@gmail.com>")
         .about("A blazing fast Ruby version manager written in Rust")
         .subcommand(
-            SubCommand::with_name("init").about("Sets environment variable for initializing farm."),
+            SubCommand::with_name("init")
+                .about("Sets environment variables for initializing farm."),
         )
         .subcommand(
             SubCommand::with_name("install")
