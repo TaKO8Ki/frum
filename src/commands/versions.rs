@@ -10,12 +10,8 @@ pub enum FarmError {
     HttpError(#[from] reqwest::Error),
     #[error(transparent)]
     IoError(#[from] std::io::Error),
-    #[error("Can't find version: {version}")]
-    InvalidVersion { version: String },
     #[error(transparent)]
     SemverError(#[from] semver::SemVerError),
-    #[error("no versions found")]
-    VersionsNotFound,
 }
 
 pub struct Versions {}
@@ -43,15 +39,14 @@ impl crate::command::Command for Versions {
                 .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::NotFound))
                 .map_err(FarmError::IoError)?;
             let version = Version::parse(filename).map_err(FarmError::SemverError)?;
-            let current_version = current_version(&config).expect("versions not found");
+            let current_version = current_version(&config).ok().flatten();
             debug!("current version: {}", current_version.clone().unwrap());
             if let Some(current_version) = current_version {
                 if current_version == version {
                     outln!(config#Info, "* {}", version);
-                } else {
-                    outln!(config#Info, " {}", version);
                 }
             }
+            outln!(config#Info, "  {}", version);
         }
         Ok(())
     }
