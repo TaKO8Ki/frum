@@ -24,7 +24,7 @@ fn main() {
         .subcommand(SubCommand::with_name("init").about("Initialize aliases."))
         .subcommand(
             SubCommand::with_name("init")
-                .about("Initialize farm.")
+                .about("Sets environment variable for initializing farm.")
                 .arg(Arg::with_name("version").index(1).required(true)),
         )
         .subcommand(
@@ -36,11 +36,13 @@ fn main() {
             SubCommand::with_name("install-list")
                 .about("Lists the Ruby versions available to install."),
         )
+        .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions."))
         .get_matches();
 
     let config = config::FarmConfig::default();
     match matches.subcommand() {
         ("init", _) => commands::init::Init {}.call(config),
+        ("versions", _) => commands::versions::Versions {}.call(config),
         ("install-list", _) => commands::install_list::InstallList {}.call(config),
         ("install", Some(matches)) => {
             commands::install::Install {

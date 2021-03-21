@@ -3,6 +3,7 @@ use crate::log::LogLevel;
 pub struct FarmConfig {
     pub ruby_build_mirror: reqwest::Url,
     pub log_level: LogLevel,
+    pub farm_path: Option<String>,
 }
 
 impl Default for FarmConfig {
@@ -11,6 +12,9 @@ impl Default for FarmConfig {
             ruby_build_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby/")
                 .unwrap(),
             log_level: LogLevel::Info,
+            farm_path: Some(
+                std::env::var("FARM_MULTISHELL_PATH").expect("farm path doesn't exist"),
+            ),
         }
     }
 }

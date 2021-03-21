@@ -1,4 +1,7 @@
+use crate::config::FarmConfig;
+use log::debug;
 use std::str::FromStr;
+use thiserror::Error;
 
 #[derive(Debug, PartialEq, PartialOrd, Eq, Ord, Clone)]
 pub enum Version {
@@ -41,6 +44,32 @@ impl Version {
             v @ Self::Alias(_) => Some(config.aliases_dir().join(v.alias_name().unwrap())),
             v @ Self::Semver(_) => Some(config.versions_dir().join(v.to_string())),
         }
+    }
+}
+
+#[derive(Error, Debug)]
+pub enum Error {
+    #[error("farm path doesn't exist")]
+    EnvNotFound,
+    #[error(transparent)]
+    SemverError(#[from] semver::SemVerError),
+}
+
+pub fn current_version(config: &FarmConfig) -> Result<Option<Version>, Error> {
+    debug!("farm_path: {}", config.farm_path.clone().unwrap());
+    let multishell_path = config.farm_path.as_ref().ok_or(Error::EnvNotFound)?;
+
+    if let Ok(resolved_path) = std::fs::canonicalize(multishell_path) {
+        debug!("farm_path: {}", resolved_path.to_str().unwrap());
+        let file_name = resolved_path
+            .file_name()
+            .expect("Can't get filename")
+            .to_str()
+            .expect("Invalid OS string");
+        let version = Version::parse(file_name).map_err(Error::SemverError)?;
+        Ok(Some(version))
+    } else {
+        Ok(None)
     }
 }
 
