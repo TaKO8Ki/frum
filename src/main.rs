@@ -33,7 +33,7 @@ fn main() {
                         .long("list")
                         .help("Lists the Ruby versions available to install."),
                 )
-                .arg(Arg::with_name("version").index(1)),
+                .arg(Arg::with_name("version").index(1).required_unless("list")),
         )
         .subcommand(
             SubCommand::with_name("install-list")
@@ -53,7 +53,7 @@ fn main() {
             }
             commands::install::Install {
                 version: input_version::InputVersion::from_str(
-                    matches.value_of("version").expect("missing version"),
+                    matches.value_of("version").unwrap(),
                 )
                 .expect("invalid version"),
             }

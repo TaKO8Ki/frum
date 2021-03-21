@@ -33,7 +33,7 @@ impl crate::command::Command for Install {
 
     fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
         let current_version = self.version.clone();
-        let version = match current_version.clone() {
+        let version = match current_version {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
             _ => Version::parse("2.6.4").unwrap(),
         };
@@ -42,9 +42,7 @@ impl crate::command::Command for Install {
         let response =
             reqwest::blocking::get(package_url(config.ruby_build_mirror.clone(), &version))?;
         if response.status() == 404 {
-            return Err(FarmError::VersionNotFound {
-                version: version.clone(),
-            });
+            return Err(FarmError::VersionNotFound { version });
         }
         let installations_dir = config.versions_dir();
         std::fs::create_dir_all(&installations_dir).map_err(FarmError::IoError)?;
