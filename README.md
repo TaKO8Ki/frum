@@ -14,5 +14,7 @@ A blazing fast and simple Ruby version manager written in Rust
 
 ### Subcommands
 
+- init: Initialize farm.
 - install-list: Lists the Ruby versions available to install.
 - install: Installs `[VERSION]`.
+

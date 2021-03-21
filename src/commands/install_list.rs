@@ -24,7 +24,7 @@ impl crate::command::Command for InstallList {
     fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), FarmError> {
         let value = reqwest::blocking::get(
             config
-                .ruby_build_default_mirror
+                .ruby_build_mirror
                 .join("index.txt")
                 .expect("invalid index url"),
         )?

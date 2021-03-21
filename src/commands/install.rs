@@ -1,6 +1,9 @@
+use crate::alias::create_alias;
 use crate::archive::tar_xz::{self, FarmError as ExtractError};
 use crate::config::FarmConfig;
+use crate::input_version::InputVersion;
 use crate::outln;
+use crate::version::Version;
 use anyhow::Result;
 use log::debug;
 use reqwest::Url;
@@ -8,7 +11,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use thiserror::Error;
 pub struct Install {
-    pub version: String,
+    pub version: InputVersion,
 }
 
 #[derive(Error, Debug)]
@@ -22,27 +25,31 @@ pub enum FarmError {
     #[error("The downloaded archive is empty")]
     TarIsEmpty,
     #[error("Can't find version: {version}")]
-    VersionNotFound { version: String },
+    VersionNotFound { version: Version },
 }
 
 impl crate::command::Command for Install {
     type Error = FarmError;
 
     fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
-        outln!(config#Info, "Installing Ruby {}", self.version);
-        let response = reqwest::blocking::get(package_url(
-            config.ruby_build_default_mirror.clone(),
-            self.version.clone(),
-        ))?;
+        let current_version = self.version.clone();
+        let version = match current_version.clone() {
+            InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
+            _ => Version::parse("2.6.4").unwrap(),
+        };
+
+        outln!(config#Info, "Installing Ruby {}...", self.version);
+        let response =
+            reqwest::blocking::get(package_url(config.ruby_build_mirror.clone(), &version))?;
         if response.status() == 404 {
             return Err(FarmError::VersionNotFound {
-                version: self.version.clone(),
+                version: version.clone(),
             });
         }
         let installations_dir = config.versions_dir();
         std::fs::create_dir_all(&installations_dir).map_err(FarmError::IoError)?;
         let installation_dir =
-            std::path::PathBuf::from(&installations_dir).join(self.version.clone());
+            std::path::PathBuf::from(&installations_dir).join(version.to_string());
         let temp_installations_dir = installations_dir.join(".downloads");
         std::fs::create_dir_all(&temp_installations_dir).map_err(FarmError::IoError)?;
         let temp_dir = tempfile::TempDir::new_in(&temp_installations_dir)
@@ -55,8 +62,12 @@ impl crate::command::Command for Install {
             .map_err(FarmError::IoError)?;
         let installed_directory = installed_directory.path();
         debug!("./configure ruby-{}", self.version);
-        build_package(&installed_directory);
-        std::fs::rename(&installed_directory, &installation_dir).map_err(FarmError::IoError)?;
+        build_package(&installed_directory, &installation_dir);
+
+        if !config.default_version_dir().exists() {
+            debug!("Use {} as the default version", self.version);
+            create_alias(&config, "default", &version).map_err(FarmError::IoError)?;
+        }
         Ok(())
     }
 }
@@ -72,30 +83,32 @@ fn extract_archive_into<P: AsRef<Path>>(
     Ok(())
 }
 
-fn package_url(mirror_url: Url, version: String) -> Url {
+fn package_url(mirror_url: Url, version: &Version) -> Url {
     mirror_url
-        .join(format!("ruby-{}.tar.xz", version.as_str()).as_str())
+        .join(format!("ruby-{}.tar.xz", version).as_str())
         .expect("invalid mirror url")
 }
 
-fn build_package(current_dir: &PathBuf) {
+fn build_package(current_dir: &PathBuf, installed_dir: &PathBuf) {
     Command::new("sh")
         .arg("configure")
-        .arg("--disable-install-doc")
-        .arg(format!(
-            "--prefix={}",
-            current_dir.join("bin/").to_str().unwrap()
-        ))
+        .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))
         .current_dir(&current_dir)
         .output()
         .expect("./configure failed to start");
-    debug!("make -j 2");
+    debug!("make");
     Command::new("make")
         .arg("-j")
         .arg("5")
         .current_dir(&current_dir)
         .output()
         .expect("make failed to start");
+    debug!("make install");
+    Command::new("make")
+        .arg("install")
+        .current_dir(&current_dir)
+        .output()
+        .expect("make install failed to start");
 }
 
 #[cfg(test)]
@@ -103,6 +116,7 @@ mod tests {
     use super::*;
     use crate::command::Command;
     use crate::config::FarmConfig;
+    use crate::version::Version;
 
     #[test]
     #[ignore]
@@ -111,7 +125,7 @@ mod tests {
         let config = FarmConfig::default();
 
         Install {
-            version: "2.6.4".to_string(),
+            version: InputVersion::Full(Version::Semver(semver::Version::parse("2.6.4").unwrap())),
         }
         .apply(&config)
         .expect("Can't install");
