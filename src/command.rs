@@ -9,7 +9,7 @@ pub trait Command {
         eprintln!("farm: {}", err)
     }
 
-    fn call(&self, config: FarmConfig) {
+    fn call(&self, config: &FarmConfig) {
         match self.apply(&config) {
             Ok(()) => (),
             Err(err) => Self::handle_error(err, &config),
