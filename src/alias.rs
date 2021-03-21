@@ -1,7 +1,6 @@
 use crate::config::FarmConfig;
 use crate::symlink::{create_symlink_dir, remove_symlink_dir};
 use crate::version::Version;
-use std::convert::TryInto;
 use std::path::PathBuf;
 
 pub fn create_alias(
@@ -24,14 +23,6 @@ pub fn create_alias(
     create_symlink_dir(&version_dir, &alias_dir)?;
 
     Ok(())
-}
-
-pub fn list_aliases(config: &FarmConfig) -> std::io::Result<Vec<StoredAlias>> {
-    let vec: Vec<_> = std::fs::read_dir(&config.aliases_dir())?
-        .filter_map(|alias| alias.ok())
-        .filter_map(|x| TryInto::<StoredAlias>::try_into(x.path().as_path()).ok())
-        .collect();
-    Ok(vec)
 }
 
 #[derive(Debug)]

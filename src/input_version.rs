@@ -8,10 +8,6 @@ pub enum InputVersion {
     Full(Version),
 }
 
-impl InputVersion {
-    fn to_version() {}
-}
-
 impl std::fmt::Display for InputVersion {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
