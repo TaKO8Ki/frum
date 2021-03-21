@@ -50,7 +50,7 @@ impl Version {
     ) -> Option<std::path::PathBuf> {
         match self {
             v @ Self::Alias(_) => Some(config.aliases_dir().join(v.alias_name().unwrap())),
-            v @ Self::Semver(_) => Some(config.versions_dir().join(v.v_str()).join("installation")),
+            v @ Self::Semver(_) => Some(config.versions_dir().join(v.to_string())),
         }
     }
 
@@ -79,7 +79,7 @@ impl<'de> serde::Deserialize<'de> for Version {
 impl std::fmt::Display for Version {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Semver(semver) => write!(f, "v{}", semver),
+            Self::Semver(semver) => write!(f, "{}", semver),
             Self::Alias(alias) => write!(f, "{}", alias),
         }
     }
