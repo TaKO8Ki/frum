@@ -39,7 +39,7 @@ fn main() {
         .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions."))
         .subcommand(
             SubCommand::with_name("global")
-                .about("Set or show the global Ruby version.")
+                .about("Sets the global Ruby version.")
                 .arg(Arg::with_name("version").index(1).required(true)),
         )
         .get_matches();
