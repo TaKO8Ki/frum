@@ -14,7 +14,7 @@ A blazing fast and simple Ruby version manager written in Rust
 
 ### Subcommands
 
-- init: Sets environment variables for initializing farm..
+- init: Sets environment variables for initializing farm.
 - install: Installs `[VERSION]`.
     - -l, --list: Lists the Ruby versions available to install.
 - versions: Lists installed Ruby versions.
