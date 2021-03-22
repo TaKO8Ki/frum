@@ -36,25 +36,33 @@ fn main() {
                 )
                 .arg(Arg::with_name("version").index(1).required_unless("list")),
         )
-        .subcommand(
-            SubCommand::with_name("install-list")
-                .about("Lists the Ruby versions available to install."),
-        )
         .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions."))
+        .subcommand(
+            SubCommand::with_name("global")
+                .about("Set or show the global Ruby version.")
+                .arg(Arg::with_name("version").index(1).required(true)),
+        )
         .get_matches();
 
     let config = config::FarmConfig::default();
     match matches.subcommand() {
         ("init", _) => commands::init::Init {}.call(&config),
         ("versions", _) => commands::versions::Versions {}.call(&config),
-        ("install", Some(matches)) => {
-            if matches.is_present("list") {
+        ("global", Some(sub_matches)) => commands::global::Global {
+            version: input_version::InputVersion::from_str(
+                sub_matches.value_of("version").unwrap(),
+            )
+            .expect("invalid version"),
+        }
+        .call(&config),
+        ("install", Some(sub_matches)) => {
+            if sub_matches.is_present("list") {
                 commands::install_list::InstallList {}.call(&config);
                 return;
             }
             commands::install::Install {
                 version: input_version::InputVersion::from_str(
-                    matches.value_of("version").unwrap(),
+                    sub_matches.value_of("version").unwrap(),
                 )
                 .expect("invalid version"),
             }

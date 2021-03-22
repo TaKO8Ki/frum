@@ -35,7 +35,7 @@ impl crate::command::Command for Install {
         let current_version = self.version.clone();
         let version = match current_version {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
-            _ => Version::parse("2.6.4").unwrap(),
+            _ => return Ok(()),
         };
 
         outln!(config#Info, "Installing Ruby {}...", self.version);
