@@ -41,12 +41,16 @@ impl crate::command::Command for Versions {
             let version = Version::parse(filename).map_err(FarmError::SemverError)?;
             let current_version = current_version(&config).ok().flatten();
             debug!("current version: {}", current_version.clone().unwrap());
-            if let Some(current_version) = current_version {
+            let prefix = if let Some(current_version) = current_version {
                 if current_version == version {
-                    outln!(config#Info, "* {}", version);
+                    "*"
+                } else {
+                    " "
                 }
-            }
-            outln!(config#Info, "  {}", version);
+            } else {
+                " "
+            };
+            outln!(config#Info, "{} {}", prefix, version);
         }
         Ok(())
     }

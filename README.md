@@ -18,3 +18,4 @@ A blazing fast and simple Ruby version manager written in Rust
 - install: Installs `[VERSION]`.
     - -l, --list: Lists the Ruby versions available to install.
 - versions: Lists installed Ruby versions.
+- global: Sets the global Ruby version.

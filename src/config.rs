@@ -12,9 +12,7 @@ impl Default for FarmConfig {
             ruby_build_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby/")
                 .unwrap(),
             log_level: LogLevel::Info,
-            farm_path: Some(
-                std::env::var("FARM_MULTISHELL_PATH").expect("farm path doesn't exist"),
-            ),
+            farm_path: std::env::var("FARM_MULTISHELL_PATH").ok(),
         }
     }
 }
