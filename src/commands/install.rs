@@ -7,7 +7,9 @@ use crate::version::Version;
 use anyhow::Result;
 use log::debug;
 use reqwest::Url;
-use std::path::{Path, PathBuf};
+use std::io::prelude::*;
+use std::io::BufReader;
+use std::path::Path;
 use std::process::Command;
 use thiserror::Error;
 
@@ -21,6 +23,8 @@ pub enum FarmError {
     HttpError(#[from] reqwest::Error),
     #[error(transparent)]
     IoError(#[from] std::io::Error),
+    #[error("Can't find the number of cores")]
+    FromUtf8Error(#[from] std::string::FromUtf8Error),
     #[error("Can't extract the file: {source:?}")]
     ExtractError { source: ExtractError },
     #[error("The downloaded archive is empty")]
@@ -61,7 +65,7 @@ impl crate::command::Command for Install {
             .map_err(FarmError::IoError)?;
         let installed_directory = installed_directory.path();
         debug!("./configure ruby-{}", self.version);
-        build_package(&installed_directory, &installation_dir);
+        build_package(&installed_directory, &installation_dir)?;
 
         if !config.default_version_dir().exists() {
             debug!("Use {} as the default version", self.version);
@@ -88,26 +92,86 @@ fn package_url(mirror_url: Url, version: &Version) -> Url {
         .expect("invalid mirror url")
 }
 
-fn build_package(current_dir: &PathBuf, installed_dir: &PathBuf) {
+fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmError> {
     Command::new("sh")
         .arg("configure")
         .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))
         .current_dir(&current_dir)
         .output()
-        .expect("./configure failed to start");
-    debug!("make");
+        .map_err(FarmError::IoError)?;
+    debug!("make -j {}", number_of_cores().unwrap_or(2).to_string());
     Command::new("make")
         .arg("-j")
-        .arg("8")
+        .arg(number_of_cores().unwrap_or(2).to_string())
         .current_dir(&current_dir)
         .output()
-        .expect("make failed to start");
+        .map_err(FarmError::IoError)?;
     debug!("make install");
     Command::new("make")
         .arg("install")
         .current_dir(&current_dir)
         .output()
-        .expect("make install failed to start");
+        .map_err(FarmError::IoError)?;
+    Ok(())
+}
+
+fn number_of_cores() -> Result<u8, FarmError> {
+    let mut reader = BufReader::new(
+        Command::new("uname")
+            .arg("-s")
+            .stdout(std::process::Stdio::piped())
+            .spawn()
+            .map_err(FarmError::IoError)?
+            .stdout
+            .unwrap(),
+    );
+    let mut uname = String::new();
+    reader.read_line(&mut uname).map_err(FarmError::IoError)?;
+
+    let output = match uname.as_str().trim() {
+        "Darwin" => {
+            Command::new("sysctl")
+                .arg("-n")
+                .arg("hw.ncpu")
+                .output()
+                .map_err(FarmError::IoError)?
+                .stdout
+        }
+        "SunOS" => {
+            Command::new("getconf")
+                .arg("NPROCESSORS_ONLN")
+                .output()
+                .map_err(FarmError::IoError)?
+                .stdout
+        }
+        _ => {
+            let output = Command::new("getconf")
+                .arg("_NPROCESSORS_ONLN")
+                .output()
+                .map_err(FarmError::IoError)?
+                .stdout;
+            if String::from_utf8(output.clone())?
+                .trim()
+                .parse::<u8>()
+                .is_ok()
+            {
+                output
+            } else {
+                Command::new("grep")
+                    .arg("-c")
+                    .arg("^processor")
+                    .arg("/proc/cpuinfo")
+                    .output()
+                    .map_err(FarmError::IoError)?
+                    .stdout
+            }
+        }
+    };
+
+    Ok(String::from_utf8(output)?
+        .trim()
+        .parse()
+        .expect("can't convert cores to integer"))
 }
 
 #[cfg(test)]
@@ -120,7 +184,6 @@ mod tests {
     #[test]
     #[ignore]
     fn test_set_default_on_new_installation() {
-        let base_dir = tempfile::tempdir().unwrap();
         let config = FarmConfig::default();
 
         Install {
@@ -128,5 +191,10 @@ mod tests {
         }
         .apply(&config)
         .expect("Can't install");
+    }
+
+    #[test]
+    fn test_number_of_cores() {
+        number_of_cores().unwrap();
     }
 }

@@ -14,7 +14,7 @@ impl Default for FarmConfig {
                 .unwrap(),
             log_level: LogLevel::Info,
             farm_path: std::env::var("FARM_MULTISHELL_PATH")
-                .map(|path| std::path::PathBuf::from(path))
+                .map(std::path::PathBuf::from)
                 .ok(),
         }
     }

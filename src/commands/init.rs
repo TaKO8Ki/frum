@@ -1,4 +1,4 @@
-use crate::shell::shell::Shell;
+use crate::shell::Shell;
 use crate::symlink::create_symlink_dir;
 use thiserror::Error;
 
