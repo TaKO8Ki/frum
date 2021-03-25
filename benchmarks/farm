@@ -1,0 +1,6 @@
+#!/bin/bash
+chmod +x ~/.farm-latest/farm
+eval "$(~/.farm-latest/farm init)"
+~/.farm-latest/farm install 2.6.5
+~/.farm-latest/farm local 2.6.5
+ruby -v
