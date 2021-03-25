@@ -10,6 +10,7 @@ use reqwest::Url;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use thiserror::Error;
+
 pub struct Install {
     pub version: InputVersion,
 }
@@ -97,7 +98,7 @@ fn build_package(current_dir: &PathBuf, installed_dir: &PathBuf) {
     debug!("make");
     Command::new("make")
         .arg("-j")
-        .arg("5")
+        .arg("8")
         .current_dir(&current_dir)
         .output()
         .expect("make failed to start");
