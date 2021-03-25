@@ -144,7 +144,23 @@ fn number_of_cores() -> Result<u8, FarmError> {
                 .map_err(FarmError::IoError)?
                 .stdout
         }
-        _ => unimplemented!(),
+        _ => {
+            let output = Command::new("getconf")
+                .arg("NPROCESSORS_ONLN")
+                .output()
+                .map_err(FarmError::IoError);
+            if output.is_ok() {
+                output?.stdout
+            } else {
+                Command::new("grep")
+                    .arg("-c")
+                    .arg("^processor")
+                    .arg("/proc/cpuinfo")
+                    .output()
+                    .map_err(FarmError::IoError)?
+                    .stdout
+            }
+        }
     };
 
     Ok(String::from_utf8(output)?
