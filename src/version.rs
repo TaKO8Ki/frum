@@ -56,7 +56,10 @@ pub enum Error {
 }
 
 pub fn current_version(config: &FarmConfig) -> Result<Option<Version>, Error> {
-    debug!("farm_path: {}", config.farm_path.clone().unwrap());
+    debug!(
+        "farm_path: {}",
+        config.farm_path.clone().unwrap().to_str().unwrap()
+    );
     let multishell_path = config.farm_path.as_ref().ok_or(Error::EnvNotFound)?;
 
     if let Ok(resolved_path) = std::fs::canonicalize(multishell_path) {
