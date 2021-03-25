@@ -9,7 +9,7 @@ use log::debug;
 use reqwest::Url;
 use std::io::prelude::*;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 use thiserror::Error;
 
@@ -92,7 +92,7 @@ fn package_url(mirror_url: Url, version: &Version) -> Url {
         .expect("invalid mirror url")
 }
 
-fn build_package(current_dir: &PathBuf, installed_dir: &PathBuf) -> Result<(), FarmError> {
+fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmError> {
     Command::new("sh")
         .arg("configure")
         .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))

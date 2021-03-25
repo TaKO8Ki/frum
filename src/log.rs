@@ -14,12 +14,12 @@ impl LogLevel {
     }
 }
 
-impl Into<&'static str> for LogLevel {
-    fn into(self) -> &'static str {
-        match self {
-            Self::Quiet => "quiet",
-            Self::Info => "info",
-            Self::Error => "error",
+impl From<LogLevel> for &'static str {
+    fn from(log_level: LogLevel) -> &'static str {
+        match log_level {
+            LogLevel::Quiet => "quiet",
+            LogLevel::Info => "info",
+            LogLevel::Error => "error",
         }
     }
 }

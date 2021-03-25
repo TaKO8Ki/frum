@@ -1,4 +1,3 @@
-use crate::alias::create_alias;
 use crate::input_version::InputVersion;
 use crate::symlink::{create_symlink_dir, remove_symlink_dir};
 use crate::version::Version;
