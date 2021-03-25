@@ -70,6 +70,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Cache cargo registry
+        if: runner.os != macos-latest
         uses: actions/cache@v1
         with:
           path: ~/.cargo/registry

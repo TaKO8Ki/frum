@@ -99,7 +99,7 @@ fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmErr
         .current_dir(&current_dir)
         .output()
         .map_err(FarmError::IoError)?;
-    debug!("make");
+    debug!("make -j {}", number_of_cores().unwrap_or(2).to_string());
     Command::new("make")
         .arg("-j")
         .arg(number_of_cores().unwrap_or(2).to_string())
