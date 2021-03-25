@@ -70,7 +70,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Cache cargo registry
-        if: runner.os != macos-latest
+        if: runner.os != 'macOS'
         uses: actions/cache@v1
         with:
           path: ~/.cargo/registry
@@ -81,6 +81,7 @@ jobs:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
       - name: Cache cargo build
+        if: runner.os != 'macOS'
         uses: actions/cache@v1
         with:
           path: target
