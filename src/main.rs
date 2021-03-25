@@ -42,6 +42,11 @@ fn main() {
                 .about("Sets the global Ruby version.")
                 .arg(Arg::with_name("version").index(1).required(true)),
         )
+        .subcommand(
+            SubCommand::with_name("local")
+                .about("Sets the current Ruby version.")
+                .arg(Arg::with_name("version").index(1).required(true)),
+        )
         .get_matches();
 
     let config = config::FarmConfig::default();
@@ -49,6 +54,13 @@ fn main() {
         ("init", _) => commands::init::Init {}.call(&config),
         ("versions", _) => commands::versions::Versions {}.call(&config),
         ("global", Some(sub_matches)) => commands::global::Global {
+            version: input_version::InputVersion::from_str(
+                sub_matches.value_of("version").unwrap(),
+            )
+            .expect("invalid version"),
+        }
+        .call(&config),
+        ("local", Some(sub_matches)) => commands::local::Local {
             version: input_version::InputVersion::from_str(
                 sub_matches.value_of("version").unwrap(),
             )

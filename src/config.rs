@@ -1,9 +1,10 @@
 use crate::log::LogLevel;
+use std::path::PathBuf;
 
 pub struct FarmConfig {
     pub ruby_build_mirror: reqwest::Url,
     pub log_level: LogLevel,
-    pub farm_path: Option<String>,
+    pub farm_path: Option<PathBuf>,
 }
 
 impl Default for FarmConfig {
@@ -12,7 +13,9 @@ impl Default for FarmConfig {
             ruby_build_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby/")
                 .unwrap(),
             log_level: LogLevel::Info,
-            farm_path: std::env::var("FARM_MULTISHELL_PATH").ok(),
+            farm_path: std::env::var("FARM_MULTISHELL_PATH")
+                .map(|path| std::path::PathBuf::from(path))
+                .ok(),
         }
     }
 }
