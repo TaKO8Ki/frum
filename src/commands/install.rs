@@ -190,6 +190,6 @@ mod tests {
 
     #[test]
     fn test_number_of_cores() {
-        assert_eq!(number_of_cores().unwrap(), 8)
+        number_of_cores().unwrap();
     }
 }
