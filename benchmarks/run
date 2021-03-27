@@ -28,7 +28,7 @@ chmod +x ./rbenv
 
 hyperfine \
   --warmup=2 \
-  --min-runs=3 \
+  --min-runs=5 \
   --time-unit=millisecond \
   --export-json="./results/basic.json" \
   --export-markdown="./results/basic.md" \
