@@ -6,7 +6,7 @@ use thiserror::Error;
 #[derive(Debug, PartialEq, PartialOrd, Eq, Ord, Clone)]
 pub enum Version {
     Semver(semver::Version),
-    Alias(String),
+    System,
 }
 
 fn start_with_number(s: &str) -> bool {
@@ -16,24 +16,15 @@ fn start_with_number(s: &str) -> bool {
 impl Version {
     pub fn parse<S: AsRef<str>>(version_str: S) -> Result<Self, semver::SemVerError> {
         let lowercased = version_str.as_ref().to_lowercase();
-        if start_with_number(lowercased.trim_start_matches('v')) {
-            let version_plain = lowercased.trim_start_matches('v');
-            let sver = semver::Version::parse(&version_plain)?;
-            Ok(Self::Semver(sver))
+        let trimed_lowercased = lowercased.trim_start_matches("ruby-");
+        debug!("{}", trimed_lowercased);
+        if lowercased == "system" {
+            Ok(Self::System)
+        } else if start_with_number(trimed_lowercased) {
+            Ok(Self::Semver(semver::Version::parse(&trimed_lowercased)?))
         } else {
-            Ok(Self::Alias(lowercased))
+            unimplemented!()
         }
-    }
-
-    pub fn alias_name(&self) -> Option<String> {
-        match self {
-            l @ Self::Alias(_) => Some(l.v_str()),
-            _ => None,
-        }
-    }
-
-    pub fn v_str(&self) -> String {
-        format!("{}", self)
     }
 
     pub fn installation_path(
@@ -41,8 +32,8 @@ impl Version {
         config: &crate::config::FarmConfig,
     ) -> Option<std::path::PathBuf> {
         match self {
-            v @ Self::Alias(_) => Some(config.aliases_dir().join(v.alias_name().unwrap())),
             v @ Self::Semver(_) => Some(config.versions_dir().join(v.to_string())),
+            Self::System => None,
         }
     }
 }
@@ -90,7 +81,7 @@ impl std::fmt::Display for Version {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Semver(semver) => write!(f, "{}", semver),
-            Self::Alias(alias) => write!(f, "{}", alias),
+            Self::System => write!(f, "system"),
         }
     }
 }
@@ -106,7 +97,7 @@ impl PartialEq<semver::Version> for Version {
     fn eq(&self, other: &semver::Version) -> bool {
         match self {
             Self::Semver(v) => v == other,
-            Self::Alias(_) => false,
+            Self::System => false,
         }
     }
 }

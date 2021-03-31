@@ -12,7 +12,7 @@ pub enum FarmError {
     IoError(#[from] std::io::Error),
     #[error("We can't find the necessary environment variables to replace the Ruby version.")]
     FarmPathNotFound,
-    #[error("Requested version {version:?} is not currently installed")]
+    #[error("Requested version {version} is not currently installed")]
     VersionNotFound { version: InputVersion },
 }
 
@@ -25,20 +25,24 @@ impl crate::command::Command for Local {
 
     fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), FarmError> {
         debug!("Use {} as the current version", &self.version);
-        let farm_path = config
-            .farm_path
-            .clone()
-            .ok_or(FarmError::FarmPathNotFound)?;
         let version = match self.version.clone() {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
-            _ => {
-                return Err(FarmError::VersionNotFound {
-                    version: self.version.clone(),
-                })
-            }
+            _ => unimplemented!(),
         };
-        replace_symlink(&config.versions_dir().join(version.to_string()), &farm_path)
-            .map_err(FarmError::IoError)?;
+        let version_dir = &config.versions_dir().join(&self.version.to_string());
+        if !version_dir.exists() {
+            return Err(FarmError::VersionNotFound {
+                version: self.version.clone(),
+            });
+        }
+        replace_symlink(
+            &config.versions_dir().join(version.to_string()),
+            &config
+                .farm_path
+                .clone()
+                .ok_or(FarmError::FarmPathNotFound)?,
+        )
+        .map_err(FarmError::IoError)?;
         Ok(())
     }
 }
