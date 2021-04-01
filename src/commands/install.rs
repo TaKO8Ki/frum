@@ -10,12 +10,9 @@ use reqwest::Url;
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::path::Path;
+use std::path::PathBuf;
 use std::process::Command;
 use thiserror::Error;
-
-pub struct Install {
-    pub version: InputVersion,
-}
 
 #[derive(Error, Debug)]
 pub enum FarmError {
@@ -30,7 +27,15 @@ pub enum FarmError {
     #[error("The downloaded archive is empty")]
     TarIsEmpty,
     #[error("Can't find version: {version}")]
-    VersionNotFound { version: Version },
+    VersionNotFound { version: InputVersion },
+    #[error("Can't list the remote versions: {source:?}")]
+    CantListRemoteVersions { source: reqwest::Error },
+    #[error("Version already installed at {path:?}")]
+    VersionAlreadyInstalled { path: PathBuf },
+}
+
+pub struct Install {
+    pub version: InputVersion,
 }
 
 impl crate::command::Command for Install {
@@ -40,19 +45,44 @@ impl crate::command::Command for Install {
         let current_version = self.version.clone();
         let version = match current_version {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
-            _ => return Ok(()),
+            InputVersion::Full(Version::System) => {
+                return Err(FarmError::VersionNotFound {
+                    version: self.version.clone(),
+                })
+            }
+            current_version => {
+                let available_versions = crate::remote_ruby_index::list(&config.ruby_build_mirror)
+                    .map_err(|source| FarmError::CantListRemoteVersions { source })?
+                    .drain(..)
+                    .map(|x| x.version)
+                    .collect::<Vec<_>>();
+
+                current_version
+                    .to_version(&available_versions)
+                    .ok_or(FarmError::VersionNotFound {
+                        version: current_version,
+                    })?
+                    .clone()
+            }
         };
 
         outln!(config#Info, "Installing Ruby {}...", self.version);
         let response =
             reqwest::blocking::get(package_url(config.ruby_build_mirror.clone(), &version))?;
         if response.status() == 404 {
-            return Err(FarmError::VersionNotFound { version });
+            return Err(FarmError::VersionNotFound {
+                version: self.version.clone(),
+            });
         }
         let installations_dir = config.versions_dir();
-        std::fs::create_dir_all(&installations_dir).map_err(FarmError::IoError)?;
-        let installation_dir =
-            std::path::PathBuf::from(&installations_dir).join(version.to_string());
+        let installation_dir = PathBuf::from(&installations_dir).join(version.to_string());
+
+        if installation_dir.exists() {
+            return Err(FarmError::VersionAlreadyInstalled {
+                path: installation_dir,
+            });
+        }
+
         let temp_installations_dir = installations_dir.join(".downloads");
         std::fs::create_dir_all(&temp_installations_dir).map_err(FarmError::IoError)?;
         let temp_dir = tempfile::TempDir::new_in(&temp_installations_dir)
@@ -87,9 +117,17 @@ fn extract_archive_into<P: AsRef<Path>>(
 }
 
 fn package_url(mirror_url: Url, version: &Version) -> Url {
-    mirror_url
-        .join(format!("ruby-{}.tar.xz", version).as_str())
-        .expect("invalid mirror url")
+    debug!("pakage url");
+    Url::parse(&format!(
+        "{}/{}/ruby-{}.tar.xz",
+        mirror_url.as_str().trim_end_matches('/'),
+        match version {
+            Version::Semver(version) => format!("{}.{}", version.major, version.minor),
+            _ => unreachable!(),
+        },
+        version,
+    ))
+    .unwrap()
 }
 
 fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmError> {

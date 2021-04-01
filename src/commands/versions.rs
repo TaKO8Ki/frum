@@ -1,6 +1,7 @@
 use crate::config::FarmConfig;
 use crate::outln;
 use crate::version::{current_version, Version};
+use colored::Colorize;
 use log::debug;
 use thiserror::Error;
 
@@ -41,16 +42,15 @@ impl crate::command::Command for Versions {
             let version = Version::parse(filename).map_err(FarmError::SemverError)?;
             let current_version = current_version(&config).ok().flatten();
             debug!("current version: {}", current_version.clone().unwrap());
-            let prefix = if let Some(current_version) = current_version {
+            if let Some(current_version) = current_version {
                 if current_version == version {
-                    "*"
+                    outln!(config#Info, "{} {}", "*", version.to_string().cyan());
                 } else {
-                    " "
+                    outln!(config#Info, "{} {}", " ", version);
                 }
             } else {
-                " "
+                outln!(config#Info, "{} {}", " ", version);
             };
-            outln!(config#Info, "{} {}", prefix, version);
         }
         Ok(())
     }

@@ -2,6 +2,7 @@ use crate::log::LogLevel;
 use std::path::PathBuf;
 
 pub struct FarmConfig {
+    pub base_dir: Option<std::path::PathBuf>,
     pub ruby_build_mirror: reqwest::Url,
     pub log_level: LogLevel,
     pub farm_path: Option<PathBuf>,
@@ -10,8 +11,10 @@ pub struct FarmConfig {
 impl Default for FarmConfig {
     fn default() -> Self {
         Self {
-            ruby_build_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby/")
-                .unwrap(),
+            base_dir: std::env::var("FARM_PATH")
+                .map(std::path::PathBuf::from)
+                .ok(),
+            ruby_build_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby").unwrap(),
             log_level: LogLevel::Info,
             farm_path: std::env::var("FARM_MULTISHELL_PATH")
                 .map(std::path::PathBuf::from)
@@ -23,11 +26,11 @@ impl Default for FarmConfig {
 impl FarmConfig {
     pub fn base_dir(&self) -> std::path::PathBuf {
         // TODO: support base directory
-        ensure_dir_exists(
-            std::env::current_dir()
-                .expect("Can't get current directory")
-                .join(".farm"),
-        )
+        ensure_dir_exists((self.base_dir.clone()).unwrap_or_else(|| {
+            dirs::home_dir()
+                .expect("Can't get home directory")
+                .join(".farm")
+        }))
     }
 
     pub fn versions_dir(&self) -> std::path::PathBuf {

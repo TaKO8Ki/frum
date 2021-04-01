@@ -4,6 +4,7 @@ mod command;
 mod commands;
 mod config;
 mod input_version;
+mod remote_ruby_index;
 mod shell;
 mod symlink;
 mod version;
