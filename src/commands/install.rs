@@ -45,6 +45,11 @@ impl crate::command::Command for Install {
         let current_version = self.version.clone();
         let version = match current_version {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
+            InputVersion::Full(Version::System) => {
+                return Err(FarmError::VersionNotFound {
+                    version: self.version.clone(),
+                })
+            }
             current_version => {
                 let available_versions = crate::remote_ruby_index::list(&config.ruby_build_mirror)
                     .map_err(|source| FarmError::CantListRemoteVersions { source })?
@@ -114,8 +119,12 @@ fn extract_archive_into<P: AsRef<Path>>(
 fn package_url(mirror_url: Url, version: &Version) -> Url {
     debug!("pakage url");
     Url::parse(&format!(
-        "{}/ruby-{}.tar.xz",
+        "{}/{}/ruby-{}.tar.xz",
         mirror_url.as_str().trim_end_matches('/'),
+        match version {
+            Version::Semver(version) => format!("{}.{}", version.major, version.minor),
+            _ => unreachable!()
+        },
         version,
     ))
     .unwrap()

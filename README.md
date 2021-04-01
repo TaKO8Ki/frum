@@ -10,6 +10,13 @@ A blazing fast and simple Ruby version manager written in Rust
 
 </div>
 
+```sh
+$ eval "$(farm init)"
+$ farm install 2.6.5
+$ farm local 2.6.5
+$ ruby -v
+```
+
 ## Usage
 
 ### Subcommands

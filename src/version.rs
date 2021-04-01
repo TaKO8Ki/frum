@@ -23,7 +23,7 @@ impl Version {
         } else if start_with_number(trimed_lowercased) {
             Ok(Self::Semver(semver::Version::parse(&trimed_lowercased)?))
         } else {
-            unimplemented!()
+            unreachable!()
         }
     }
 
