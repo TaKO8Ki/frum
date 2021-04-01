@@ -1,10 +1,10 @@
-use super::Shell;
+use crate::shell::Shell;
 use std::path::Path;
 
 #[derive(Debug)]
-pub struct Zsh;
+pub struct Bash;
 
-impl Shell for Zsh {
+impl Shell for Bash {
     fn path(&self, path: &Path) -> String {
         format!("export PATH={:?}:$PATH", path.to_str().unwrap())
     }
@@ -16,15 +16,19 @@ impl Shell for Zsh {
     fn use_on_cd(&self, _config: &crate::config::FarmConfig) -> String {
         indoc::indoc!(
             r#"
-                autoload -U add-zsh-hook
-                _farm_autoload_hook () {
+                __farm_use_if_file_found() {
                     if [[ -f .ruby-version ]]; then
                         farm local
                     fi
                 }
 
-                add-zsh-hook chpwd _farm_autoload_hook \
-                    && _farm_autoload_hook
+                __farmcd() {
+                    \cd "$@" || return $?
+                    __farm_use_if_file_found
+                }
+
+                alias cd=__farmcd
+                __farm_use_if_file_found
             "#
         )
         .into()

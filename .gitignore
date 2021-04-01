@@ -1,3 +1,4 @@
 /target
 .farm
 *.rb
+.ruby-version
