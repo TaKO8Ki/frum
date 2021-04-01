@@ -1,6 +1,6 @@
 #![cfg(unix)]
 
-use super::super::{Bash, Shell, Zsh};
+use crate::shell::{Bash, Fish, Shell, Zsh};
 use log::debug;
 use std::io::{Error, ErrorKind};
 
@@ -28,6 +28,7 @@ pub fn infer_shell() -> Option<Box<dyn Shell>> {
         match binary {
             "sh" | "bash" => return Some(Box::from(Bash)),
             "zsh" => return Some(Box::from(Zsh)),
+            "fish" => return Some(Box::from(Fish)),
             cmd_name => debug!("binary is not a supported shell: {:?}", cmd_name),
         };
 

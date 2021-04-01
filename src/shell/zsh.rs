@@ -1,4 +1,4 @@
-use super::Shell;
+use crate::shell::Shell;
 use std::path::Path;
 
 #[derive(Debug)]
