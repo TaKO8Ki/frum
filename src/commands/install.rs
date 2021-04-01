@@ -123,7 +123,7 @@ fn package_url(mirror_url: Url, version: &Version) -> Url {
         mirror_url.as_str().trim_end_matches('/'),
         match version {
             Version::Semver(version) => format!("{}.{}", version.major, version.minor),
-            _ => unreachable!()
+            _ => unreachable!(),
         },
         version,
     ))
