@@ -1,6 +1,6 @@
 #![cfg(windows)]
 
-use super::super::{Bash, PowerShell, Shell, WindowsCmd};
+use crate::shell::{Bash, Shell, WindowsCommand};
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -22,13 +22,10 @@ pub fn infer_shell() -> Option<Box<dyn Shell>> {
         if let Some(exec_path) = process.executable_path {
             match exec_path.file_name().and_then(|x| x.to_str()) {
                 Some("cmd.exe") => {
-                    return Some(Box::from(WindowsCmd));
+                    return Some(Box::from(WindowsCommand));
                 }
                 Some("bash.exe") => {
                     return Some(Box::from(Bash));
-                }
-                Some("powershell.exe") | Some("pwsh.exe") => {
-                    return Some(Box::from(PowerShell));
                 }
                 _ => {}
             }
