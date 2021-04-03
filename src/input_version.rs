@@ -21,13 +21,7 @@ impl InputVersion {
 
     pub fn matches(&self, version: &Version) -> bool {
         match (self, version) {
-            (Self::Full(a), b) => {
-                if a == b {
-                    true
-                } else {
-                    false
-                }
-            }
+            (Self::Full(a), b) => a == b,
             (_, Version::System) => false,
             (Self::Major(major), Version::Semver(other)) => *major == other.major,
             (Self::MajorMinor(major, minor), Version::Semver(other)) => {

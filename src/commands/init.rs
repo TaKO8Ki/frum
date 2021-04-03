@@ -1,3 +1,4 @@
+use crate::shell::infer_shell;
 use crate::shell::Shell;
 use crate::symlink::create_symlink_dir;
 use thiserror::Error;
@@ -8,6 +9,8 @@ pub enum FarmError {
     HttpError(#[from] reqwest::Error),
     #[error(transparent)]
     IoError(#[from] std::io::Error),
+    #[error("Can't infer shell!")]
+    CantInferShell,
 }
 
 pub struct Init {}
@@ -16,7 +19,7 @@ impl crate::command::Command for Init {
     type Error = FarmError;
 
     fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), FarmError> {
-        let shell: Box<dyn Shell> = Box::new(crate::shell::zsh::Zsh {});
+        let shell: Box<dyn Shell> = infer_shell().ok_or(FarmError::CantInferShell)?;
         let farm_path = create_symlink(&config);
         let binary_path = if cfg!(windows) {
             farm_path.clone()
@@ -40,6 +43,7 @@ impl crate::command::Command for Init {
             "{}",
             shell.set_env_var("FARM_RUBY_BUILD_MIRROR", config.ruby_build_mirror.as_str())
         );
+        println!("{}", shell.use_on_cd(&config));
         Ok(())
     }
 }

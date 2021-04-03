@@ -42,8 +42,7 @@ impl crate::command::Command for Install {
     type Error = FarmError;
 
     fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
-        let current_version = self.version.clone();
-        let version = match current_version {
+        let version = match self.version.clone() {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
             InputVersion::Full(Version::System) => {
                 return Err(FarmError::VersionNotFound {
