@@ -63,8 +63,7 @@ fn replace_symlink(from: &std::path::Path, to: &std::path::Path) -> std::io::Res
 
 #[cfg(test)]
 mod tests {
-    use super::FarmError;
-    use super::Local;
+    use super::{FarmError, Local};
     use crate::command::Command;
     use crate::config::FarmConfig;
     use crate::input_version::InputVersion;
@@ -99,7 +98,11 @@ mod tests {
     #[test]
     fn test_not_found_version() {
         let mut config = FarmConfig::default();
-        config.farm_path = Some(std::env::temp_dir());
+        config.farm_path = Some(std::env::temp_dir().join(format!(
+            "farm_{}_{}",
+            std::process::id(),
+            chrono::Utc::now().timestamp_millis(),
+        )));
         let result = Local {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
