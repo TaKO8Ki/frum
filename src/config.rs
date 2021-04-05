@@ -2,7 +2,7 @@ use crate::log::LogLevel;
 use std::path::PathBuf;
 
 pub struct FarmConfig {
-    pub base_dir: Option<std::path::PathBuf>,
+    pub base_dir: Option<PathBuf>,
     pub ruby_build_mirror: reqwest::Url,
     pub log_level: LogLevel,
     pub farm_path: Option<PathBuf>,

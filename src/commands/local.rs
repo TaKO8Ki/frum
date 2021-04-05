@@ -63,9 +63,9 @@ fn replace_symlink(from: &std::path::Path, to: &std::path::Path) -> std::io::Res
 
 #[cfg(test)]
 mod tests {
+    use super::FarmError;
     use super::Local;
     use crate::command::Command;
-    use crate::commands::init::Init;
     use crate::config::FarmConfig;
     use crate::input_version::InputVersion;
     use crate::version::Version;
@@ -74,11 +74,13 @@ mod tests {
 
     #[test]
     fn test_use_specified_version() {
-        Init {}
-            .apply(&FarmConfig::default())
-            .expect("failed to init");
         let mut config = FarmConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
+        config.farm_path = Some(std::env::temp_dir().join(format!(
+            "farm_{}_{}",
+            std::process::id(),
+            chrono::Utc::now().timestamp_millis(),
+        )));
         let dir_path = config.versions_dir().join("2.6.4").join("bin");
         std::fs::create_dir_all(&dir_path).unwrap();
         File::create(dir_path.join("ruby")).unwrap();
@@ -96,13 +98,18 @@ mod tests {
 
     #[test]
     fn test_not_found_version() {
-        let config = FarmConfig::default();
-        assert!(Local {
+        let mut config = FarmConfig::default();
+        config.farm_path = Some(std::env::temp_dir());
+        let result = Local {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
         }
-        .apply(&config)
-        .is_err());
+        .apply(&config);
+        assert!(match result {
+            Ok(_) => false,
+            Err(FarmError::VersionNotFound { .. }) => true,
+            _ => false,
+        })
     }
 }
