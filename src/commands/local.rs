@@ -65,6 +65,7 @@ fn replace_symlink(from: &std::path::Path, to: &std::path::Path) -> std::io::Res
 mod tests {
     use super::Local;
     use crate::command::Command;
+    use crate::commands::init::Init;
     use crate::config::FarmConfig;
     use crate::input_version::InputVersion;
     use crate::version::Version;
@@ -73,6 +74,9 @@ mod tests {
 
     #[test]
     fn test_use_specified_version() {
+        Init {}
+            .apply(&FarmConfig::default())
+            .expect("failed to init");
         let mut config = FarmConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
         let dir_path = config.versions_dir().join("2.6.4").join("bin");
@@ -85,7 +89,7 @@ mod tests {
             ))),
         }
         .apply(&config)
-        .expect("Can't install");
+        .expect("failed to install");
 
         assert!(config.farm_path.unwrap().join("bin").join("ruby").exists());
     }
