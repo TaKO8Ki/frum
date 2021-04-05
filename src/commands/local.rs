@@ -60,3 +60,45 @@ fn replace_symlink(from: &std::path::Path, to: &std::path::Path) -> std::io::Res
         err @ Err(_) => symlink_deletion_result.and(err),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Local;
+    use crate::command::Command;
+    use crate::config::FarmConfig;
+    use crate::input_version::InputVersion;
+    use crate::version::Version;
+    use std::fs::File;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_use_specified_version() {
+        let mut config = FarmConfig::default();
+        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
+        let dir_path = config.versions_dir().join("2.6.4").join("bin");
+        std::fs::create_dir_all(&dir_path).unwrap();
+        File::create(dir_path.join("ruby")).unwrap();
+
+        Local {
+            version: Some(InputVersion::Full(Version::Semver(
+                semver::Version::parse("2.6.4").unwrap(),
+            ))),
+        }
+        .apply(&config)
+        .expect("Can't install");
+
+        assert!(config.farm_path.unwrap().join("bin").join("ruby").exists());
+    }
+
+    #[test]
+    fn test_not_found_version() {
+        let config = FarmConfig::default();
+        assert!(Local {
+            version: Some(InputVersion::Full(Version::Semver(
+                semver::Version::parse("2.6.4").unwrap(),
+            ))),
+        }
+        .apply(&config)
+        .is_err());
+    }
+}
