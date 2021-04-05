@@ -75,7 +75,7 @@ impl crate::command::Command for Install {
             }
         };
 
-        outln!(config#Info, "Installing Ruby {}...", current_version.clone());
+        outln!(config#Info, "Installing Ruby {}...", current_version);
         let response =
             reqwest::blocking::get(package_url(config.ruby_build_mirror.clone(), &version))?;
         if response.status() == 404 {
