@@ -8,6 +8,7 @@ mod remote_ruby_index;
 mod shell;
 mod symlink;
 mod version;
+mod version_file;
 
 #[macro_use]
 mod log;
@@ -35,7 +36,7 @@ fn main() {
                         .long("list")
                         .help("Lists the Ruby versions available to install."),
                 )
-                .arg(Arg::with_name("version").index(1).required_unless("list")),
+                .arg(Arg::with_name("version").index(1)),
         )
         .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions."))
         .subcommand(
@@ -46,7 +47,7 @@ fn main() {
         .subcommand(
             SubCommand::with_name("local")
                 .about("Sets the current Ruby version.")
-                .arg(Arg::with_name("version").index(1).required(true)),
+                .arg(Arg::with_name("version").index(1)),
         )
         .get_matches();
 
@@ -62,10 +63,12 @@ fn main() {
         }
         .call(&config),
         ("local", Some(sub_matches)) => commands::local::Local {
-            version: input_version::InputVersion::from_str(
-                sub_matches.value_of("version").unwrap(),
-            )
-            .expect("invalid version"),
+            version: match sub_matches.value_of("version") {
+                Some(version) => {
+                    Some(input_version::InputVersion::from_str(version).expect("invalid version"))
+                }
+                None => None,
+            },
         }
         .call(&config),
         ("install", Some(sub_matches)) => {
@@ -74,10 +77,12 @@ fn main() {
                 return;
             }
             commands::install::Install {
-                version: input_version::InputVersion::from_str(
-                    sub_matches.value_of("version").unwrap(),
-                )
-                .expect("invalid version"),
+                version: match sub_matches.value_of("version") {
+                    Some(version) => Some(
+                        input_version::InputVersion::from_str(version).expect("invalid version"),
+                    ),
+                    None => None,
+                },
             }
             .call(&config);
         }

@@ -4,6 +4,7 @@ use crate::config::FarmConfig;
 use crate::input_version::InputVersion;
 use crate::outln;
 use crate::version::Version;
+use crate::version_file::get_user_version_for_directory;
 use anyhow::Result;
 use log::debug;
 use reqwest::Url;
@@ -32,21 +33,30 @@ pub enum FarmError {
     CantListRemoteVersions { source: reqwest::Error },
     #[error("Version already installed at {path:?}")]
     VersionAlreadyInstalled { path: PathBuf },
+    #[error("Can't find version in dotfiles. Please provide a version manually to the command.")]
+    CantInferVersion,
+    #[error("The requested version is not installable: {version}")]
+    NotInstallableVersion { version: Version },
 }
 
 pub struct Install {
-    pub version: InputVersion,
+    pub version: Option<InputVersion>,
 }
 
 impl crate::command::Command for Install {
     type Error = FarmError;
 
     fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
-        let version = match self.version.clone() {
+        let current_version = self
+            .version
+            .clone()
+            .or_else(|| get_user_version_for_directory(std::env::current_dir().unwrap()))
+            .ok_or(FarmError::CantInferVersion)?;
+        let version = match current_version.clone() {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
             InputVersion::Full(Version::System) => {
-                return Err(FarmError::VersionNotFound {
-                    version: self.version.clone(),
+                return Err(FarmError::NotInstallableVersion {
+                    version: Version::System,
                 })
             }
             current_version => {
@@ -65,12 +75,12 @@ impl crate::command::Command for Install {
             }
         };
 
-        outln!(config#Info, "Installing Ruby {}...", self.version);
+        outln!(config#Info, "Installing Ruby {}...", current_version.clone());
         let response =
             reqwest::blocking::get(package_url(config.ruby_build_mirror.clone(), &version))?;
         if response.status() == 404 {
             return Err(FarmError::VersionNotFound {
-                version: self.version.clone(),
+                version: current_version,
             });
         }
         let installations_dir = config.versions_dir();
@@ -93,11 +103,11 @@ impl crate::command::Command for Install {
             .ok_or(FarmError::TarIsEmpty)?
             .map_err(FarmError::IoError)?;
         let installed_directory = installed_directory.path();
-        debug!("./configure ruby-{}", self.version);
+        debug!("./configure ruby-{}", current_version);
         build_package(&installed_directory, &installation_dir)?;
 
         if !config.default_version_dir().exists() {
-            debug!("Use {} as the default version", self.version);
+            debug!("Use {} as the default version", current_version);
             create_alias(&config, "default", &version).map_err(FarmError::IoError)?;
         }
         Ok(())
@@ -224,7 +234,9 @@ mod tests {
         let config = FarmConfig::default();
 
         Install {
-            version: InputVersion::Full(Version::Semver(semver::Version::parse("2.6.4").unwrap())),
+            version: Some(InputVersion::Full(Version::Semver(
+                semver::Version::parse("2.6.4").unwrap(),
+            ))),
         }
         .apply(&config)
         .expect("Can't install");
