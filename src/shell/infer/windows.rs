@@ -1,10 +1,10 @@
 #![cfg(windows)]
 
-use crate::shell::{Bash, Shell, WindowsCommand};
+use crate::shell::{Bash, PowerShell, Shell, WindowsCommand};
 use serde::Deserialize;
 use std::collections::HashMap;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, PartialEq)]
 pub struct ProcessInfo {
     #[serde(rename = "ExecutablePath")]
     executable_path: Option<std::path::PathBuf>,
@@ -21,13 +21,19 @@ pub fn infer_shell() -> Option<Box<dyn Shell>> {
     for process in process_tree {
         if let Some(exec_path) = process.executable_path {
             match exec_path.file_name().and_then(|x| x.to_str()) {
-                Some("cmd.exe") => {
+                Some("cmd.exe") | Some("cmd.EXE") => {
                     return Some(Box::from(WindowsCommand));
                 }
-                Some("bash.exe") => {
+                Some("bash.exe") | Some("bash.EXE") => {
                     return Some(Box::from(Bash));
                 }
-                _ => {}
+                Some("powershell.exe")
+                | Some("powershell.EXE")
+                | Some("pwsh.exe")
+                | Some("pwsh.EXE") => {
+                    return Some(Box::from(PowerShell));
+                }
+                _ => (),
             }
         }
     }

@@ -13,45 +13,45 @@ mod version_file;
 #[macro_use]
 mod log;
 
-use clap::{App, Arg, SubCommand};
+use clap::{App, AppSettings, Arg, SubCommand};
 use command::Command;
 use std::str::FromStr;
 
 fn main() {
     env_logger::init();
     let matches = App::new("farm")
+        .setting(AppSettings::ArgRequiredElseHelp)
         .version("1.0")
-        .author("Takayuki Maeda <takoyaki0316@gmail.com>")
         .about("A blazing fast Ruby version manager written in Rust")
         .subcommand(
-            SubCommand::with_name("init")
-                .about("Sets environment variables for initializing farm."),
+            SubCommand::with_name("init").about("Sets environment variables for initializing farm"),
         )
         .subcommand(
             SubCommand::with_name("install")
-                .about("Installs `[VERSION]`.")
+                .about("Installs the specified Ruby version")
                 .arg(
                     Arg::with_name("list")
                         .short("l")
                         .long("list")
-                        .help("Lists the Ruby versions available to install."),
+                        .help("Lists the Ruby versions available to install"),
                 )
                 .arg(Arg::with_name("version").index(1)),
         )
-        .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions."))
+        .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions"))
         .subcommand(
             SubCommand::with_name("global")
-                .about("Sets the global Ruby version.")
+                .about("Sets the global Ruby version")
                 .arg(Arg::with_name("version").index(1).required(true)),
         )
         .subcommand(
             SubCommand::with_name("local")
-                .about("Sets the current Ruby version.")
+                .about("Sets the current Ruby version")
                 .arg(Arg::with_name("version").index(1)),
         )
         .get_matches();
 
     let config = config::FarmConfig::default();
+    // println!("{:?}", config);
     match matches.subcommand() {
         ("init", _) => commands::init::Init {}.call(&config),
         ("versions", _) => commands::versions::Versions {}.call(&config),

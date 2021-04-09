@@ -1,5 +1,5 @@
 use crate::alias::create_alias;
-use crate::archive::tar_xz::{self, FarmError as ExtractError};
+use crate::archive::{self, extract::Error as ExtractError, extract::Extract};
 use crate::config::FarmConfig;
 use crate::input_version::InputVersion;
 use crate::outln;
@@ -38,6 +38,8 @@ pub enum FarmError {
     CantInferVersion,
     #[error("The requested version is not installable: {version}")]
     NotInstallableVersion { version: Version },
+    #[error("Can't build Ruby: {stderr}")]
+    CantBuildRuby { stderr: String },
 }
 
 pub struct Install {
@@ -119,13 +121,17 @@ fn extract_archive_into<P: AsRef<Path>>(
     path: P,
     response: reqwest::blocking::Response,
 ) -> Result<(), FarmError> {
-    let extractor = tar_xz::TarXz::new(response);
+    #[cfg(unix)]
+    let extractor = archive::tar_xz::TarXz::new(response);
+    #[cfg(windows)]
+    let extractor = archive::zip::Zip::new(response);
     extractor
         .extract_into(path)
         .map_err(|source| FarmError::ExtractError { source })?;
     Ok(())
 }
 
+#[cfg(unix)]
 fn package_url(mirror_url: Url, version: &Version) -> Url {
     debug!("pakage url");
     Url::parse(&format!(
@@ -140,26 +146,65 @@ fn package_url(mirror_url: Url, version: &Version) -> Url {
     .unwrap()
 }
 
+#[cfg(windows)]
+fn package_url(mirror_url: Url, version: &Version) -> Url {
+    debug!("pakage url");
+    Url::parse(&format!(
+        "{}/{}/ruby-{}.zip",
+        mirror_url.as_str().trim_end_matches('/'),
+        match version {
+            Version::Semver(version) => format!("{}.{}", version.major, version.minor),
+            _ => unreachable!(),
+        },
+        version,
+    ))
+    .unwrap()
+}
+
 fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmError> {
-    Command::new("sh")
+    let configure = Command::new("sh")
         .arg("configure")
         .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))
         .current_dir(&current_dir)
         .output()
         .map_err(FarmError::IoError)?;
+    if !configure.status.success() {
+        return Err(FarmError::CantBuildRuby {
+            stderr: format!(
+                "configure failed: {}",
+                String::from_utf8_lossy(&configure.stderr).to_string()
+            ),
+        });
+    };
     debug!("make -j {}", number_of_cores().unwrap_or(2).to_string());
-    Command::new("make")
+    let make = Command::new("make")
         .arg("-j")
         .arg(number_of_cores().unwrap_or(2).to_string())
         .current_dir(&current_dir)
         .output()
         .map_err(FarmError::IoError)?;
+    if !make.status.success() {
+        return Err(FarmError::CantBuildRuby {
+            stderr: format!(
+                "make failed: {}",
+                String::from_utf8_lossy(&make.stderr).to_string()
+            ),
+        });
+    };
     debug!("make install");
-    Command::new("make")
+    let make_install = Command::new("make")
         .arg("install")
         .current_dir(&current_dir)
         .output()
         .map_err(FarmError::IoError)?;
+    if !make_install.status.success() {
+        return Err(FarmError::CantBuildRuby {
+            stderr: format!(
+                "make install: {}",
+                String::from_utf8_lossy(&make_install.stderr).to_string()
+            ),
+        });
+    };
     Ok(())
 }
 

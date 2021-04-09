@@ -85,7 +85,7 @@ mod tests {
     use tempfile::tempdir;
 
     #[test]
-    fn test_use_specified_version() {
+    fn test_local_specified_version() {
         let mut config = FarmConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
         config.farm_path = Some(std::env::temp_dir().join(format!(
@@ -124,7 +124,7 @@ mod tests {
         )));
         let result = Local {
             version: Some(InputVersion::Full(Version::Semver(
-                semver::Version::parse("2.6.3").unwrap(),
+                semver::Version::parse("2.6.4").unwrap(),
             ))),
         }
         .apply(&config);

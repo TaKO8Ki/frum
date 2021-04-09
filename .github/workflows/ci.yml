@@ -10,28 +10,23 @@ on:
 jobs:
   format:
     name: Format
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
 
   check:
     name: Check
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+        run: cargo check
 
   lint:
     name: Lint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -55,12 +50,10 @@ jobs:
       - name: Add clippy
         run: rustup component add clippy
       - name: Run lint
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
+        run: cargo clippy
 
-  test:
-    name: Test
+  unit_tests:
+    name: Unit Tests
     strategy:
       fail-fast: false
       matrix:
@@ -86,14 +79,44 @@ jobs:
         with:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-      - name: Build
-        uses: actions-rs/cargo@v1
+      - name: Run Tests
+        run: cargo test -- --skip=command_tests --color always
+
+  e2e_tests:
+    name: E2E Tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    needs: check
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Fish and Zsh using brew
+        if: "startsWith(matrix.os, 'macOS')"
+        run: brew install fish zsh
+      - name: Install Fish and Zsh using apt
+        if: "startsWith(matrix.os, 'ubuntu')"
+        run: sudo apt-get install -y fish zsh
+      - uses: hecrj/setup-rust-action@v1
         with:
-          command: build
-      - name: Test
-        uses: actions-rs/cargo@v1
+          rust-version: stable
+      - name: Cache cargo registry
+        if: runner.os != 'macOS'
+        uses: actions/cache@v1
         with:
-          command: test
-          args: |
-            --no-fail-fast
-            --color always
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+      - name: Cache cargo build
+        if: runner.os != 'macOS'
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+      - name: Run tests
+        run: cargo test -- command_tests

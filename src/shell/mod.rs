@@ -1,6 +1,7 @@
 pub mod bash;
 pub mod fish;
 pub mod infer;
+pub mod powershell;
 pub mod windows_command;
 pub mod zsh;
 
@@ -9,6 +10,7 @@ use std::path::Path;
 
 pub use bash::Bash;
 pub use fish::Fish;
+pub use powershell::PowerShell;
 pub use windows_command::WindowsCommand;
 pub use zsh::Zsh;
 pub trait Shell: Debug {

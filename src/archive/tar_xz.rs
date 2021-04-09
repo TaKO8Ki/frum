@@ -1,14 +1,6 @@
+use crate::archive::extract::{Error, Extract};
 use reqwest::blocking::Response;
 use std::path::Path;
-use thiserror::Error;
-
-#[derive(Error, Debug)]
-pub enum FarmError {
-    #[error(transparent)]
-    IoError(#[from] std::io::Error),
-    #[error(transparent)]
-    HttpError(#[from] reqwest::Error),
-}
 
 pub struct TarXz {
     response: Response,
@@ -21,8 +13,8 @@ impl TarXz {
     }
 }
 
-impl TarXz {
-    pub fn extract_into<P: AsRef<Path>>(self, path: P) -> Result<(), FarmError> {
+impl Extract for TarXz {
+    fn extract_into<P: AsRef<Path>>(self, path: P) -> Result<(), Error> {
         let xz_stream = xz2::read::XzDecoder::new(self.response);
         let mut tar_archive = tar::Archive::new(xz_stream);
         tar_archive.unpack(&path)?;
