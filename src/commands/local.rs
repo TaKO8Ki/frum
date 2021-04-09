@@ -29,7 +29,22 @@ impl crate::command::Command for Local {
         let current_version = self
             .version
             .clone()
-            .or_else(|| get_user_version_for_directory(std::env::current_dir().unwrap()))
+            .or(
+                match get_user_version_for_directory(std::env::current_dir().unwrap()) {
+                    Some(version) => Some(version),
+                    None => {
+                        replace_symlink(
+                            &config.default_dir(),
+                            &config
+                                .farm_path
+                                .clone()
+                                .ok_or(FarmError::FarmPathNotFound)?,
+                        )
+                        .map_err(FarmError::IoError)?;
+                        return Ok(());
+                    }
+                },
+            )
             .ok_or(FarmError::CantInferVersion)?;
         debug!("Use {} as the current version", current_version);
         if !&config

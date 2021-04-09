@@ -19,9 +19,7 @@ impl Shell for Fish {
             r#"
                 function _farm_autoload_hook --on-variable PWD --description 'Change Ruby version on directory change'
                     status --is-command-substitution; and return
-                    if test -f .ruby-version
-                        farm local
-                    end
+                    farm local
                 end
             "#
         )

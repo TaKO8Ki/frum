@@ -16,19 +16,12 @@ impl Shell for Bash {
     fn use_on_cd(&self, _config: &crate::config::FarmConfig) -> String {
         indoc::indoc!(
             r#"
-                __farm_use_if_file_found() {
-                    if [[ -f .ruby-version ]]; then
-                        farm local
-                    fi
-                }
-
                 __farmcd() {
                     \cd "$@" || return $?
-                    __farm_use_if_file_found
+                    farm local
                 }
 
                 alias cd=__farmcd
-                __farm_use_if_file_found
             "#
         )
         .into()
