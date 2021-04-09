@@ -6,6 +6,7 @@ use crate::outln;
 use crate::version::Version;
 use crate::version_file::get_user_version_for_directory;
 use anyhow::Result;
+use colored::Colorize;
 use log::debug;
 use reqwest::Url;
 use std::io::prelude::*;
@@ -75,7 +76,7 @@ impl crate::command::Command for Install {
             }
         };
 
-        outln!(config#Info, "Installing Ruby {}...", current_version);
+        outln!(config#Info, "{} Installing {}", "==>".green(), format!("Ruby {}", current_version).green());
         let response =
             reqwest::blocking::get(package_url(config.ruby_build_mirror.clone(), &version))?;
         if response.status() == 404 {
