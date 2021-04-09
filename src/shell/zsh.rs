@@ -18,9 +18,7 @@ impl Shell for Zsh {
             r#"
                 autoload -U add-zsh-hook
                 _farm_autoload_hook () {
-                    if [[ -f .ruby-version ]]; then
-                        farm local
-                    fi
+                    farm local
                 }
 
                 add-zsh-hook chpwd _farm_autoload_hook \

@@ -44,7 +44,7 @@ impl crate::command::Command for Versions {
             debug!("current version: {}", current_version.clone().unwrap());
             if let Some(current_version) = current_version {
                 if current_version == version {
-                    outln!(config#Info, "{} {}", "*", version.to_string().cyan());
+                    outln!(config#Info, "{} {}", "*".green(), version.to_string().green());
                 } else {
                     outln!(config#Info, "{} {}", " ", version);
                 }
