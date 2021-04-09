@@ -26,26 +26,24 @@ impl crate::command::Command for Local {
     type Error = FarmError;
 
     fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), FarmError> {
-        let current_version = self
-            .version
-            .clone()
-            .or(
-                match get_user_version_for_directory(std::env::current_dir().unwrap()) {
-                    Some(version) => Some(version),
-                    None => {
-                        replace_symlink(
-                            &config.default_dir(),
-                            &config
-                                .farm_path
-                                .clone()
-                                .ok_or(FarmError::FarmPathNotFound)?,
-                        )
-                        .map_err(FarmError::IoError)?;
-                        return Ok(());
-                    }
-                },
-            )
-            .ok_or(FarmError::CantInferVersion)?;
+        let current_version = match self.version.clone().ok_or_else(|| {
+            match get_user_version_for_directory(std::env::current_dir().unwrap()) {
+                Some(version) => Ok(version),
+                None => {
+                    replace_symlink(
+                        &config.default_version_dir(),
+                        &config
+                            .farm_path
+                            .clone()
+                            .ok_or(FarmError::FarmPathNotFound)?,
+                    )?;
+                    Err(FarmError::CantInferVersion)
+                }
+            }
+        }) {
+            Ok(version) => version,
+            Err(result) => result?,
+        };
         debug!("Use {} as the current version", current_version);
         if !&config
             .versions_dir()
@@ -99,6 +97,12 @@ mod tests {
         std::fs::create_dir_all(&dir_path).unwrap();
         File::create(dir_path.join("ruby")).unwrap();
 
+        crate::commands::global::Global {
+            version: InputVersion::Full(Version::Semver(semver::Version::parse("2.6.4").unwrap())),
+        }
+        .apply(&config)
+        .unwrap();
+
         Local {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
@@ -120,14 +124,14 @@ mod tests {
         )));
         let result = Local {
             version: Some(InputVersion::Full(Version::Semver(
-                semver::Version::parse("2.6.4").unwrap(),
+                semver::Version::parse("2.6.3").unwrap(),
             ))),
         }
         .apply(&config);
-        assert!(match result {
-            Ok(_) => false,
-            Err(FarmError::VersionNotFound { .. }) => true,
-            _ => false,
-        })
+        match result {
+            Ok(_) => assert!(false),
+            Err(FarmError::VersionNotFound { .. }) => assert!(true),
+            _ => assert!(false),
+        }
     }
 }

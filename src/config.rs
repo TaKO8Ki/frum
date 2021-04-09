@@ -44,10 +44,6 @@ impl FarmConfig {
     pub fn aliases_dir(&self) -> std::path::PathBuf {
         ensure_dir_exists(self.base_dir().join("aliases"))
     }
-
-    pub fn default_dir(&self) -> std::path::PathBuf {
-        self.aliases_dir().join("default")
-    }
 }
 
 fn ensure_dir_exists<T: AsRef<std::path::Path>>(path: T) -> T {
