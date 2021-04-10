@@ -25,10 +25,11 @@ fi
 
 chmod +x ./farm
 chmod +x ./rbenv
+chmod +x ~/.farm-latest/farm
 
 hyperfine \
   --warmup=2 \
-  --min-runs=5 \
+  --min-runs=7 \
   --time-unit=millisecond \
   --export-json="./results/basic.json" \
   --export-markdown="./results/basic.md" \
