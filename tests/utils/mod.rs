@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 pub mod macros;
 
 use std::env;
@@ -97,13 +99,6 @@ impl Dir {
         self.try_create_bytes(path, contents.as_bytes())
     }
 
-    /// Create a new file with the given name and size.
-    pub fn create_size<P: AsRef<Path>>(&self, name: P, filesize: u64) {
-        let path = self.dir.join(name);
-        let file = nice_err(&path, File::create(&path));
-        nice_err(&path, file.set_len(filesize));
-    }
-
     /// Create a new file with the given name and contents in this directory,
     /// or panic on error.
     pub fn create_bytes<P: AsRef<Path>>(&self, name: P, contents: &[u8]) {
@@ -135,13 +130,6 @@ impl Dir {
 
     /// Creates a new command that is set to use the farm executable in
     /// this working directory.
-    ///
-    /// This also:
-    ///
-    /// * Unsets the `RIPGREP_CONFIG_PATH` environment variable.
-    /// * Sets the `--path-separator` to `/` so that paths have the same output
-    ///   on all systems. Tests that need to check `--path-separator` itself
-    ///   can simply pass it again to override it.
     pub fn command(&self) -> TestCommand {
         let mut cmd = self.bin();
         cmd.current_dir(&self.dir)
@@ -283,32 +271,6 @@ impl TestCommand {
         }
     }
 
-    /// Pipe `input` to a command, and collect the output.
-    pub fn pipe(&mut self, input: &[u8]) -> String {
-        self.cmd.stdin(process::Stdio::piped());
-        self.cmd.stdout(process::Stdio::piped());
-        self.cmd.stderr(process::Stdio::piped());
-
-        let mut child = self.cmd.spawn().unwrap();
-
-        // Pipe input to child process using a separate thread to avoid
-        // risk of deadlock between parent and child process.
-        let mut stdin = child.stdin.take().expect("expected standard input");
-        let input = input.to_owned();
-        let worker = thread::spawn(move || stdin.write_all(&input));
-
-        let output = self.expect_success(child.wait_with_output().unwrap());
-        worker.join().unwrap().unwrap();
-
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        match stdout.parse() {
-            Ok(t) => t,
-            Err(err) => {
-                panic!("could not convert from string: {:?}\n\n{}", err, stdout);
-            }
-        }
-    }
-
     /// Gets the output of a command. If the command failed, then this panics.
     pub fn output(&mut self) -> process::Output {
         let output = self.cmd.output().unwrap();
@@ -423,17 +385,6 @@ fn repeat<F: FnMut() -> io::Result<()>>(mut f: F) -> io::Result<()> {
         }
     }
     Err(last_err.unwrap())
-}
-
-/// Return a recursive listing of all files and directories in the given
-/// directory. This is useful for debugging transient and odd failures in
-/// integration tests.
-fn dir_list<P: AsRef<Path>>(dir: P) -> Vec<String> {
-    walkdir::WalkDir::new(dir)
-        .follow_links(true)
-        .into_iter()
-        .map(|result| result.unwrap().path().to_string_lossy().into_owned())
-        .collect()
 }
 
 /// When running tests with cross, we need to be a bit smarter about how we
