@@ -29,9 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: |
-          sudo apt-get install libssl-dev
       - name: Cache cargo registry
         uses: actions/cache@v1
         with:
@@ -92,6 +89,10 @@ jobs:
     needs: check
     steps:
       - uses: actions/checkout@v2
+      - name: Install dependencies
+        if: runner.os == 'ubuntu'
+        run: |
+          sudo apt-get install libssl-dev
       - name: Install Fish and Zsh using brew
         if: "startsWith(matrix.os, 'macOS')"
         run: brew install fish zsh
