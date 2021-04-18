@@ -17,6 +17,11 @@ $ farm local 2.6.5
 $ ruby -v
 ```
 
+## Features
+
+- Cross-platform support (macOS, Linux)
+- Works with .ruby-version files
+
 ## Usage
 
 ### Subcommands
