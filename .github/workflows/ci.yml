@@ -93,6 +93,10 @@ jobs:
         if: runner.os == 'ubuntu'
         run: |
           sudo apt install libssl-dev zlib1g-dev
+      - name: Install gcc
+        if: runner.os == 'windows'
+        run: |
+          sudo apt install gcc
       - name: Install Fish and Zsh using brew
         if: "startsWith(matrix.os, 'macOS')"
         run: brew install fish zsh
