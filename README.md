@@ -22,8 +22,9 @@ $ ruby -v
 ### Subcommands
 
 - init: Sets environment variables for initializing farm.
-- install: Installs `[VERSION]`.
+- install: Installs the specified Ruby version.
     - -l, --list: Lists the Ruby versions available to install.
+    - -w, --with-openssl-dir: Specify the openssl directory.
 - versions: Lists installed Ruby versions.
 - global: Sets the global Ruby version.
 - local: Sets the current Ruby version.
