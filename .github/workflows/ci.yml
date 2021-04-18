@@ -92,7 +92,7 @@ jobs:
       - name: Install dependencies
         if: runner.os == 'ubuntu'
         run: |
-          sudo apt-get install libssl-dev
+          sudo apt install libssl-dev zlib1g-dev
       - name: Install Fish and Zsh using brew
         if: "startsWith(matrix.os, 'macOS')"
         run: brew install fish zsh
