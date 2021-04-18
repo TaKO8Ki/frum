@@ -117,6 +117,7 @@ mod tests {
     #[test]
     fn test_not_found_version() {
         let mut config = FarmConfig::default();
+        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
         config.farm_path = Some(std::env::temp_dir().join(format!(
             "farm_{}_{}",
             std::process::id(),

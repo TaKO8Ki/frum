@@ -35,6 +35,12 @@ fn main() {
                         .long("list")
                         .help("Lists the Ruby versions available to install"),
                 )
+                .arg(
+                    Arg::with_name("with-openssl-dir")
+                        .short("w")
+                        .long("with-openssl-dir")
+                        .help("Specify the openssl directory"),
+                )
                 .arg(Arg::with_name("version").index(1)),
         )
         .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions"))

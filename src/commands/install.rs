@@ -106,7 +106,6 @@ impl crate::command::Command for Install {
             .ok_or(FarmError::TarIsEmpty)?
             .map_err(FarmError::IoError)?;
         let installed_directory = installed_directory.path();
-        debug!("./configure ruby-{}", current_version);
         build_package(&installed_directory, &installation_dir)?;
 
         if !config.default_version_dir().exists() {
@@ -162,9 +161,11 @@ fn package_url(mirror_url: Url, version: &Version) -> Url {
 }
 
 fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmError> {
+    debug!("./configure --with-openssl-dir={}", openssl_dir()?);
     let configure = Command::new("sh")
         .arg("configure")
         .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))
+        .arg(format!("--with-openssl-dir={}", openssl_dir()?))
         .current_dir(&current_dir)
         .output()
         .map_err(FarmError::IoError)?;
@@ -265,6 +266,22 @@ fn number_of_cores() -> Result<u8, FarmError> {
         .trim()
         .parse()
         .expect("can't convert cores to integer"))
+}
+
+fn openssl_dir() -> Result<String, FarmError> {
+    #[cfg(target_os = "macos")]
+    return Ok(String::from_utf8_lossy(
+        &Command::new("brew")
+            .arg("--prefix")
+            .arg("openssl")
+            .output()
+            .map_err(FarmError::IoError)?
+            .stdout,
+    )
+    .trim()
+    .to_string());
+    #[cfg(not(target_os = "macos"))]
+    return Ok("/usr/local".to_string());
 }
 
 #[cfg(test)]
