@@ -77,6 +77,14 @@ impl crate::command::Command for Install {
                     .clone()
             }
         };
+        let installations_dir = config.versions_dir();
+        let installation_dir = PathBuf::from(&installations_dir).join(version.to_string());
+
+        if installation_dir.exists() {
+            return Err(FarmError::VersionAlreadyInstalled {
+                path: installation_dir,
+            });
+        }
 
         outln!(config#Info, "{} Installing {}", "==>".green(), format!("Ruby {}", current_version).green());
         let response =
@@ -84,14 +92,6 @@ impl crate::command::Command for Install {
         if response.status() == 404 {
             return Err(FarmError::VersionNotFound {
                 version: current_version,
-            });
-        }
-        let installations_dir = config.versions_dir();
-        let installation_dir = PathBuf::from(&installations_dir).join(version.to_string());
-
-        if installation_dir.exists() {
-            return Err(FarmError::VersionAlreadyInstalled {
-                path: installation_dir,
             });
         }
 
