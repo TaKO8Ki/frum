@@ -89,6 +89,9 @@ jobs:
     needs: check
     steps:
       - uses: actions/checkout@v2
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: stable
       - name: Install dependencies
         if: runner.os == 'ubuntu'
         run: |
@@ -122,4 +125,9 @@ jobs:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
       - name: Run tests
+        if: runner.os == 'windows'
+        run: cargo test -- command_tests
+        shell: msys2 {0}
+      - name: Run tests
+        if: runner.os != 'windows'
         run: cargo test -- command_tests
