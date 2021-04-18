@@ -30,6 +30,7 @@ $ ruby -v
 - install: Installs the specified Ruby version.
     - -l, --list: Lists the Ruby versions available to install.
     - -w, --with-openssl-dir: Specify the openssl directory.
+- uninstall: Uninstall a specific Ruby version.
 - versions: Lists installed Ruby versions.
 - global: Sets the global Ruby version.
 - local: Sets the current Ruby version.
