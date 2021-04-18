@@ -1,6 +1,6 @@
 <div align="center">
 
-# farm
+![farm](./resources/logo.png)
 
 🏃‍♂️ A little bit fast and modern Ruby version manager written in Rust
 
