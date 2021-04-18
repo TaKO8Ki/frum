@@ -84,23 +84,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest, macOS-latest]
     runs-on: ${{ matrix.os }}
     needs: check
     steps:
       - uses: actions/checkout@v2
-      - uses: hecrj/setup-rust-action@v1
-        with:
-          rust-version: stable
       - name: Install dependencies
         if: runner.os == 'ubuntu'
         run: |
           sudo apt install libssl-dev zlib1g-dev
-      - uses: msys2/setup-msys2@v2
-        if: runner.os == 'windows'
-        with:
-          msystem: MSYS
-          install: gcc make
       - name: Install Fish and Zsh using brew
         if: "startsWith(matrix.os, 'macOS')"
         run: brew install fish zsh
@@ -125,9 +117,4 @@ jobs:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
       - name: Run tests
-        if: runner.os == 'windows'
-        run: cargo test -- command_tests
-        shell: msys2 {0}
-      - name: Run tests
-        if: runner.os != 'windows'
         run: cargo test -- command_tests
