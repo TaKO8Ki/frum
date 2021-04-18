@@ -281,7 +281,7 @@ fn openssl_dir() -> Result<String, FarmError> {
     .trim()
     .to_string());
     #[cfg(not(target_os = "macos"))]
-    return Ok("/usr/bin/openssl".to_string());
+    return Ok("/usr/local".to_string());
 }
 
 #[cfg(test)]
