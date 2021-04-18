@@ -1,6 +1,6 @@
 #![cfg(unix)]
 
-use crate::shell::{Bash, Fish, Shell, Zsh};
+use crate::shell::{Bash, Fish, PowerShell, Shell, Zsh};
 use log::debug;
 use std::io::{Error, ErrorKind};
 
@@ -29,6 +29,7 @@ pub fn infer_shell() -> Option<Box<dyn Shell>> {
             "sh" | "bash" => return Some(Box::from(Bash)),
             "zsh" => return Some(Box::from(Zsh)),
             "fish" => return Some(Box::from(Fish)),
+            "pwsh" => return Some(Box::from(PowerShell)),
             cmd_name => debug!("binary is not a supported shell: {:?}", cmd_name),
         };
 
