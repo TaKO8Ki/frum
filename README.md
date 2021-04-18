@@ -20,7 +20,7 @@ $ ruby -v
 ## Features
 
 - Cross-platform support (macOS, Linux)
-- Works with .ruby-version files
+- Works with `.ruby-version` files
 
 ## Usage
 
