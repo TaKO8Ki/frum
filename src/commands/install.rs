@@ -296,11 +296,6 @@ mod tests {
     fn test_install_second_version() {
         let mut config = FarmConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
-        config.farm_path = Some(std::env::temp_dir().join(format!(
-            "farm_{}_{}",
-            std::process::id(),
-            chrono::Utc::now().timestamp_millis(),
-        )));
         Install {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.7.0").unwrap(),
@@ -318,13 +313,6 @@ mod tests {
         .expect("Can't install 2.6.4");
 
         assert_eq!(
-            std::fs::read_link(&config.farm_path.clone().unwrap())
-                .unwrap()
-                .components()
-                .last(),
-            Some(std::path::Component::Normal(std::ffi::OsStr::new("2.6.4")))
-        );
-        assert_eq!(
             std::fs::read_link(&config.default_version_dir())
                 .unwrap()
                 .components()
@@ -337,11 +325,6 @@ mod tests {
     fn test_install_default_version() {
         let mut config = FarmConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
-        config.farm_path = Some(std::env::temp_dir().join(format!(
-            "farm_{}_{}",
-            std::process::id(),
-            chrono::Utc::now().timestamp_millis(),
-        )));
 
         Install {
             version: Some(InputVersion::Full(Version::Semver(
