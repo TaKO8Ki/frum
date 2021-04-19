@@ -290,11 +290,48 @@ mod tests {
     use crate::command::Command;
     use crate::config::FarmConfig;
     use crate::version::Version;
+    use tempfile::tempdir;
 
     #[test]
-    #[ignore]
-    fn test_set_default_on_new_installation() {
-        let config = FarmConfig::default();
+    fn test_install_second_version() {
+        let mut config = FarmConfig::default();
+        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
+        Install {
+            version: Some(InputVersion::Full(Version::Semver(
+                semver::Version::parse("2.7.0").unwrap(),
+            ))),
+        }
+        .apply(&config)
+        .expect("Can't install 2.7.0");
+
+        Install {
+            version: Some(InputVersion::Full(Version::Semver(
+                semver::Version::parse("2.6.4").unwrap(),
+            ))),
+        }
+        .apply(&config)
+        .expect("Can't install 2.6.4");
+
+        assert_eq!(
+            std::fs::read_link(&config.farm_path.clone().unwrap())
+                .unwrap()
+                .components()
+                .last(),
+            Some(std::path::Component::Normal(std::ffi::OsStr::new("2.6.4")))
+        );
+        assert_eq!(
+            std::fs::read_link(&config.default_version_dir())
+                .unwrap()
+                .components()
+                .last(),
+            Some(std::path::Component::Normal(std::ffi::OsStr::new("2.7.0")))
+        );
+    }
+
+    #[test]
+    fn test_install_default_version() {
+        let mut config = FarmConfig::default();
+        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
 
         Install {
             version: Some(InputVersion::Full(Version::Semver(
@@ -303,6 +340,15 @@ mod tests {
         }
         .apply(&config)
         .expect("Can't install");
+
+        assert!(config.versions_dir().join("2.6.4").exists());
+        assert!(config
+            .versions_dir()
+            .join("2.6.4")
+            .join("bin")
+            .join("ruby")
+            .exists());
+        assert!(config.default_version_dir().exists());
     }
 
     #[test]
