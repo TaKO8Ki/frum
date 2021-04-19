@@ -28,31 +28,36 @@ fn main() {
         )
         .subcommand(
             SubCommand::with_name("install")
-                .about("Installs the specified Ruby version")
+                .about("Installs a specific Ruby version")
                 .arg(
                     Arg::with_name("list")
                         .short("l")
                         .long("list")
-                        .help("Lists the Ruby versions available to install"),
+                        .help("Lists Ruby versions available to install"),
                 )
                 .arg(
                     Arg::with_name("with-openssl-dir")
                         .short("w")
                         .long("with-openssl-dir")
-                        .help("Specify the openssl directory"),
+                        .help("Specify a openssl directory"),
                 )
                 .arg(Arg::with_name("version").index(1)),
         )
-        .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions"))
         .subcommand(
-            SubCommand::with_name("global")
-                .about("Sets the global Ruby version")
+            SubCommand::with_name("uninstall")
+                .about("Uninstall a specific Ruby version")
                 .arg(Arg::with_name("version").index(1).required(true)),
         )
+        .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions"))
         .subcommand(
             SubCommand::with_name("local")
                 .about("Sets the current Ruby version")
                 .arg(Arg::with_name("version").index(1)),
+        )
+        .subcommand(
+            SubCommand::with_name("global")
+                .about("Sets the global Ruby version")
+                .arg(Arg::with_name("version").index(1).required(true)),
         )
         .get_matches();
 
@@ -89,6 +94,15 @@ fn main() {
                     ),
                     None => None,
                 },
+            }
+            .call(&config);
+        }
+        ("uninstall", Some(sub_matches)) => {
+            commands::uninstall::Uninstall {
+                version: input_version::InputVersion::from_str(
+                    sub_matches.value_of("version").unwrap(),
+                )
+                .expect("invalid version"),
             }
             .call(&config);
         }

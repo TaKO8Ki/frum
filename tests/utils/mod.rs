@@ -271,6 +271,19 @@ impl TestCommand {
         }
     }
 
+    /// Runs and captures the stderr of the given command.
+    pub fn stderr(&mut self) -> String {
+        let output = self.cmd.output().unwrap();
+        let o = self.expect_failure(output);
+        let stderr = String::from_utf8_lossy(&o.stderr);
+        match stderr.parse() {
+            Ok(t) => t,
+            Err(err) => {
+                panic!("could not convert from string: {:?}\n\n{}", err, stderr);
+            }
+        }
+    }
+
     /// Gets the output of a command. If the command failed, then this panics.
     pub fn output(&mut self) -> process::Output {
         let output = self.cmd.output().unwrap();
@@ -348,6 +361,35 @@ impl TestCommand {
             panic!(
                 "\n\n==========\n\
                     command failed but expected success!\
+                    {}\
+                    \n\ncommand: {:?}\
+                    \n\ncwd: {}\
+                    \n\nstatus: {}\
+                    \n\nstdout: {}\
+                    \n\nstderr: {}\
+                    \n\n==========\n",
+                suggest,
+                self.cmd,
+                self.dir.dir.display(),
+                o.status,
+                String::from_utf8_lossy(&o.stdout),
+                String::from_utf8_lossy(&o.stderr)
+            );
+        }
+        o
+    }
+
+    fn expect_failure(&self, o: process::Output) -> process::Output {
+        if o.status.success() {
+            let suggest = if o.stderr.is_empty() {
+                "\n\nDid your search end up with no results?".to_string()
+            } else {
+                "".to_string()
+            };
+
+            panic!(
+                "\n\n==========\n\
+                    command succeeded but expected failure!\
                     {}\
                     \n\ncommand: {:?}\
                     \n\ncwd: {}\
