@@ -46,7 +46,7 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-'::version:_files' \
+'::version:_values 'version' $(farm install -l)' \
 && ret=0
 ;;
 (uninstall)
@@ -55,7 +55,7 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-':version:_files' \
+':version:_values 'version' $(farm install -l)' \
 && ret=0
 ;;
 (versions)
@@ -72,7 +72,7 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-'::version:_values '2.7.0' '3.0.0' '2.6.4'' \
+'::version:_values 'version' $(ls /Users/tako8ki/.farm/versions)' \
 && ret=0
 ;;
 (global)
@@ -81,13 +81,13 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-':version:_files' \
+':version:_values 'version' $(ls /Users/tako8ki/.farm/versions)' \
 && ret=0
 ;;
 (completions)
 _arguments "${_arguments_options[@]}" \
-'-s[The shell syntax to use]' \
-'--shell[The shell syntax to use]' \
+'-s+[The shell syntax to use]' \
+'--shell=[The shell syntax to use]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
@@ -179,3 +179,4 @@ _farm__versions_commands() {
 }
 
 _farm "$@"
+

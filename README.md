@@ -21,6 +21,7 @@ $ ruby -v
 
 - Cross-platform support (macOS, Linux)
 - Works with `.ruby-version` files
+- Auto-Completion
 
 ## Usage
 

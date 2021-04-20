@@ -48,12 +48,20 @@ impl Command for Completions {
         build_cli().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut buffer);
         let bytes = buffer.into_inner().unwrap();
         let string = String::from_utf8(bytes).unwrap();
-        customize_completions(shell, string, config.versions_dir());
+        println!(
+            "{}",
+            customize_completions(shell, string, config.versions_dir())
+                .expect("invalid completions")
+        );
         Ok(())
     }
 }
 
-fn customize_completions(shell: Shell, string: String, version_dir: std::path::PathBuf) {
+fn customize_completions(
+    shell: Shell,
+    string: String,
+    version_dir: std::path::PathBuf,
+) -> Option<String> {
     let string_split = string.split('\n');
     let mut completions = String::new();
     let mut subcommand = FarmCommand::None;
@@ -115,7 +123,7 @@ fn customize_completions(shell: Shell, string: String, version_dir: std::path::P
                     .as_str(),
                 );
             }
-            println!("{}", completions);
+            Some(completions)
         }
         Shell::Bash => {
             for (index, line) in string_split.clone().enumerate() {
@@ -205,9 +213,9 @@ fn customize_completions(shell: Shell, string: String, version_dir: std::path::P
                     .as_str(),
                 );
             }
-            println!("{}", completions);
+            Some(completions)
         }
-        _ => (),
+        _ => None,
     }
 }
 
