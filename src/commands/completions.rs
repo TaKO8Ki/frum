@@ -39,29 +39,25 @@ impl Command for Completions {
     type Error = FarmError;
 
     fn apply(&self, config: &FarmConfig) -> Result<(), Self::Error> {
-        use std::io::BufWriter;
-        let mut buffer = BufWriter::new(Vec::new());
         let shell = self
             .shell
             .or_else(|| infer_shell().map(Into::into))
             .ok_or(FarmError::CantInferShell)?;
-        build_cli().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut buffer);
-        let bytes = buffer.into_inner().unwrap();
-        let string = String::from_utf8(bytes).unwrap();
+
         println!(
             "{}",
-            customize_completions(shell, string, config.versions_dir())
-                .expect("invalid completions")
+            customize_completions(shell, config.versions_dir()).expect("invalid completions")
         );
         Ok(())
     }
 }
 
-fn customize_completions(
-    shell: Shell,
-    string: String,
-    version_dir: std::path::PathBuf,
-) -> Option<String> {
+fn customize_completions(shell: Shell, version_dir: std::path::PathBuf) -> Option<String> {
+    use std::io::BufWriter;
+    let mut buffer = BufWriter::new(Vec::new());
+    build_cli().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut buffer);
+    let bytes = buffer.into_inner().unwrap();
+    let string = String::from_utf8(bytes).unwrap();
     let string_split = string.split('\n');
     let mut completions = String::new();
     let mut subcommand = FarmCommand::None;
@@ -225,4 +221,44 @@ fn shells_as_string() -> String {
         .map(|x| format!("* {}", x))
         .collect::<Vec<_>>()
         .join("\n")
+}
+
+#[cfg(test)]
+mod test {
+    use super::customize_completions;
+    use crate::config::FarmConfig;
+    use clap::Shell;
+    use difference::assert_diff;
+    use std::fs::File;
+    use std::io::prelude::*;
+    use std::io::BufReader;
+    use tempfile::tempdir;
+
+    #[test]
+    #[ignore]
+    fn test_zsh_completions() {
+        let mut config = FarmConfig::default();
+        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
+
+        let file = File::open("completions/farm.zsh").unwrap();
+        let mut buf_reader = BufReader::new(file);
+        let mut expected = String::new();
+        buf_reader.read_to_string(&mut expected).unwrap();
+        let actual = customize_completions(Shell::Zsh, config.versions_dir()).unwrap();
+        assert_diff!(actual.as_str(), expected.as_str(), "\n", 0);
+    }
+
+    #[test]
+    #[ignore]
+    fn test_bash_completions() {
+        let mut config = FarmConfig::default();
+        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
+
+        let file = File::open("completions/farm.bash").unwrap();
+        let mut buf_reader = BufReader::new(file);
+        let mut expected = String::new();
+        buf_reader.read_to_string(&mut expected).unwrap();
+        let actual = customize_completions(Shell::Bash, config.versions_dir()).unwrap();
+        assert_diff!(actual.as_str(), expected.as_str(), "\n", 0);
+    }
 }

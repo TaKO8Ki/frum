@@ -37,3 +37,4 @@ embed-resource = "1.6.1"
 [dev-dependencies]
 walkdir = "2"
 regex = "1"
+difference = "2.0.0"
