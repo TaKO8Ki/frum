@@ -25,6 +25,10 @@ impl Shell for WindowsCommand {
             path.to_str().expect("Can't read path to cd.cmd")
         )
     }
+
+    fn into_clap_shell(&self) -> clap::Shell {
+        panic!("Shell completion is not supported for Windows Command Prompt. Maybe try using PowerShell for a better experience?");
+    }
 }
 
 fn create_cd_file_at(path: &std::path::Path) -> std::io::Result<()> {

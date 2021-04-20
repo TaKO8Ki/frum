@@ -49,7 +49,7 @@ pub struct Install {
 impl crate::command::Command for Install {
     type Error = FarmError;
 
-    fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
+    fn apply(&self, config: &FarmConfig) -> Result<(), Self::Error> {
         let current_version = self
             .version
             .clone()

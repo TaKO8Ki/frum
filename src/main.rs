@@ -1,5 +1,6 @@
 mod alias;
 mod archive;
+mod cli;
 mod command;
 mod commands;
 mod config;
@@ -13,53 +14,12 @@ mod version_file;
 #[macro_use]
 mod log;
 
-use clap::{App, AppSettings, Arg, SubCommand};
 use command::Command;
 use std::str::FromStr;
 
 fn main() {
     env_logger::init();
-    let matches = App::new("farm")
-        .setting(AppSettings::ArgRequiredElseHelp)
-        .version("1.0")
-        .about("A blazing fast Ruby version manager written in Rust")
-        .subcommand(
-            SubCommand::with_name("init").about("Sets environment variables for initializing farm"),
-        )
-        .subcommand(
-            SubCommand::with_name("install")
-                .about("Installs a specific Ruby version")
-                .arg(
-                    Arg::with_name("list")
-                        .short("l")
-                        .long("list")
-                        .help("Lists Ruby versions available to install"),
-                )
-                .arg(
-                    Arg::with_name("with-openssl-dir")
-                        .short("w")
-                        .long("with-openssl-dir")
-                        .help("Specify a openssl directory"),
-                )
-                .arg(Arg::with_name("version").index(1)),
-        )
-        .subcommand(
-            SubCommand::with_name("uninstall")
-                .about("Uninstall a specific Ruby version")
-                .arg(Arg::with_name("version").index(1).required(true)),
-        )
-        .subcommand(SubCommand::with_name("versions").about("Lists installed Ruby versions"))
-        .subcommand(
-            SubCommand::with_name("local")
-                .about("Sets the current Ruby version")
-                .arg(Arg::with_name("version").index(1)),
-        )
-        .subcommand(
-            SubCommand::with_name("global")
-                .about("Sets the global Ruby version")
-                .arg(Arg::with_name("version").index(1).required(true)),
-        )
-        .get_matches();
+    let matches = cli::build_cli().get_matches();
 
     let config = config::FarmConfig::default();
     // println!("{:?}", config);
@@ -103,6 +63,15 @@ fn main() {
                     sub_matches.value_of("version").unwrap(),
                 )
                 .expect("invalid version"),
+            }
+            .call(&config);
+        }
+        ("completions", Some(sub_matches)) => {
+            commands::completions::Completions {
+                shell: match sub_matches.value_of("shell") {
+                    Some(shell) => Some(clap::Shell::from_str(shell).expect("invalid shell")),
+                    None => None,
+                },
             }
             .call(&config);
         }
