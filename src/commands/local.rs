@@ -25,7 +25,7 @@ pub struct Local {
 impl crate::command::Command for Local {
     type Error = FarmError;
 
-    fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), FarmError> {
+    fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), Self::Error> {
         let current_version = match self.version.clone().ok_or_else(|| {
             match get_user_version_for_directory(std::env::current_dir().unwrap()) {
                 Some(version) => Ok(version),

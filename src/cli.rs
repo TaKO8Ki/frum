@@ -48,7 +48,8 @@ pub fn build_cli() -> App<'static, 'static> {
                     Arg::with_name("shell")
                         .short("s")
                         .long("shell")
-                        .help("The shell syntax to use"),
+                        .help("The shell syntax to use")
+                        .takes_value(true),
                 ),
         )
 }

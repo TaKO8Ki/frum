@@ -36,8 +36,8 @@ pub fn infer_shell() -> Option<Box<dyn Shell>> {
     infer::unix::infer_shell()
 }
 
-impl Into<clap::Shell> for Box<dyn Shell> {
-    fn into(self) -> clap::Shell {
-        self.into_clap_shell()
+impl From<Box<dyn Shell>> for clap::Shell {
+    fn from(shell: Box<dyn Shell>) -> clap::Shell {
+        shell.into_clap_shell()
     }
 }

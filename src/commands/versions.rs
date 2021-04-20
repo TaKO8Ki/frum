@@ -20,7 +20,7 @@ pub struct Versions {}
 impl crate::command::Command for Versions {
     type Error = FarmError;
 
-    fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
+    fn apply(&self, config: &FarmConfig) -> Result<(), Self::Error> {
         for entry in config
             .versions_dir()
             .read_dir()
