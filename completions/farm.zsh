@@ -72,7 +72,7 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-'::version:_values 'version' $(ls /Users/tako8ki/.farm/versions)' \
+'::version:_values 'version' $(farm completions --list)' \
 && ret=0
 ;;
 (global)
@@ -81,13 +81,14 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-':version:_values 'version' $(ls /Users/tako8ki/.farm/versions)' \
+':version:_values 'version' $(farm completions --list)' \
 && ret=0
 ;;
 (completions)
 _arguments "${_arguments_options[@]}" \
 '-s+[The shell syntax to use]' \
 '--shell=[The shell syntax to use]' \
+'--list[]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
@@ -177,6 +178,4 @@ _farm__versions_commands() {
     )
     _describe -t commands 'farm versions commands' commands "$@"
 }
-
-_farm "$@"
 

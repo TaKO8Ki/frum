@@ -60,7 +60,7 @@ _farm() {
             ;;
         
         farm__completions)
-            opts=" -h -V -s  --help --version --shell  "
+            opts=" -h -V -s  --list --help --version --shell  "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -83,7 +83,7 @@ _farm() {
             return 0
             ;;
         farm__global)
-            opts=" -h -V  --help --version  $(ls /Users/tako8ki/.farm/versions) "
+            opts=" -h -V  --help --version  $(farm completions --list) "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -143,7 +143,7 @@ _farm() {
             return 0
             ;;
         farm__local)
-            opts=" -h -V  --help --version  $(ls /Users/tako8ki/.farm/versions) "
+            opts=" -h -V  --help --version  $(farm completions --list) "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -191,5 +191,3 @@ _farm() {
 }
 
 complete -F _farm -o bashdefault -o default farm
-
-

@@ -1,8 +1,12 @@
 use crate::cli::build_cli;
 use crate::command::Command;
 use crate::config::FarmConfig;
+use crate::outln;
 use crate::shell::{infer_shell, AVAILABLE_SHELLS};
+use crate::version::{current_version, is_dotfile, Version};
 use clap::Shell;
+use colored::Colorize;
+use log::debug;
 use thiserror::Error;
 
 const USE_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
@@ -29,30 +33,70 @@ pub enum FarmError {
         shells_as_string()
     )]
     CantInferShell,
+    #[error(transparent)]
+    IoError(#[from] std::io::Error),
+    #[error(transparent)]
+    SemverError(#[from] semver::SemVerError),
 }
 
 pub struct Completions {
     pub shell: Option<Shell>,
+    pub list: bool,
 }
 
 impl Command for Completions {
     type Error = FarmError;
 
     fn apply(&self, config: &FarmConfig) -> Result<(), Self::Error> {
+        if self.list {
+            for entry in config
+                .versions_dir()
+                .read_dir()
+                .map_err(FarmError::IoError)?
+            {
+                let entry = entry.map_err(FarmError::IoError)?;
+                if is_dotfile(&entry) {
+                    continue;
+                }
+
+                let path = entry.path();
+                let filename = path
+                    .file_name()
+                    .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::NotFound))
+                    .map_err(FarmError::IoError)?
+                    .to_str()
+                    .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::NotFound))
+                    .map_err(FarmError::IoError)?;
+                let version = Version::parse(filename).map_err(FarmError::SemverError)?;
+                let current_version = current_version(&config).ok().flatten();
+                debug!("current version: {}", current_version.clone().unwrap());
+                if let Some(current_version) = current_version {
+                    if current_version == version {
+                        outln!(config#Info, "{} {}", "*".green(), version.to_string().green());
+                    } else {
+                        outln!(config#Info, "{} {}", " ", version);
+                    }
+                } else {
+                    outln!(config#Info, "{} {}", " ", version);
+                };
+            }
+            return Ok(());
+        }
+
         let shell = self
             .shell
             .or_else(|| infer_shell().map(Into::into))
             .ok_or(FarmError::CantInferShell)?;
 
-        println!(
+        print!(
             "{}",
-            customize_completions(shell, config.versions_dir()).expect("invalid completions")
+            customize_completions(shell).expect("invalid completions")
         );
         Ok(())
     }
 }
 
-fn customize_completions(shell: Shell, version_dir: std::path::PathBuf) -> Option<String> {
+fn customize_completions(shell: Shell) -> Option<String> {
     use std::io::BufWriter;
     let mut buffer = BufWriter::new(Vec::new());
     build_cli().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut buffer);
@@ -73,8 +117,8 @@ fn customize_completions(shell: Shell, version_dir: std::path::PathBuf) -> Optio
     match shell {
         Shell::Zsh => {
             for (index, line) in string_split.clone().enumerate() {
-                if index == string_split.clone().count() {
-                    continue;
+                if index == string_split.clone().count() - 1 {
+                    break;
                 }
                 subcommand = match line {
                     "(local)" => FarmCommand::Local,
@@ -88,17 +132,15 @@ fn customize_completions(shell: Shell, version_dir: std::path::PathBuf) -> Optio
                         "{}\n",
                         match subcommand {
                             FarmCommand::Local => match line {
-                                r#"'::version:_files' \"# => format!(
-                                    r#"'::version:_values 'version' $(ls {})' \"#,
-                                    version_dir.to_str().unwrap()
-                                ),
+                                r#"'::version:_files' \"# =>
+                                    r#"'::version:_values 'version' $(farm completions --list)' \"#
+                                        .to_string(),
                                 _ => line.to_string(),
                             },
                             FarmCommand::Global => match line {
-                                r#"':version:_files' \"# => format!(
-                                    r#"':version:_values 'version' $(ls {})' \"#,
-                                    version_dir.to_str().unwrap()
-                                ),
+                                r#"':version:_files' \"# =>
+                                    r#"':version:_values 'version' $(farm completions --list)' \"#
+                                        .to_string(),
                                 _ => line.to_string(),
                             },
                             FarmCommand::Install => match line {
@@ -123,8 +165,8 @@ fn customize_completions(shell: Shell, version_dir: std::path::PathBuf) -> Optio
         }
         Shell::Bash => {
             for (index, line) in string_split.clone().enumerate() {
-                if index == string_split.clone().count() {
-                    continue;
+                if index == string_split.clone().count() - 1 {
+                    break;
                 }
                 subcommand = if line.ends_with("farm__local)") {
                     FarmCommand::Local
@@ -144,15 +186,14 @@ fn customize_completions(shell: Shell, version_dir: std::path::PathBuf) -> Optio
                             FarmCommand::Local =>
                                 if use_command_regex.is_match(line) {
                                     format!(
-                                        r#"{}{}$(ls {}) ""#,
+                                        r#"{}{}$(farm completions --list) ""#,
                                         use_command_regex
                                             .captures(line)
                                             .unwrap()
                                             .get(1)
                                             .unwrap()
                                             .as_str(),
-                                        USE_COMMAND_REGEX,
-                                        version_dir.to_str().unwrap()
+                                        USE_COMMAND_REGEX
                                     )
                                 } else {
                                     line.to_string()
@@ -160,15 +201,14 @@ fn customize_completions(shell: Shell, version_dir: std::path::PathBuf) -> Optio
                             FarmCommand::Global =>
                                 if use_command_regex.is_match(line) {
                                     format!(
-                                        r#"{}{}$(ls {}) ""#,
+                                        r#"{}{}$(farm completions --list) ""#,
                                         use_command_regex
                                             .captures(line)
                                             .unwrap()
                                             .get(1)
                                             .unwrap()
                                             .as_str(),
-                                        USE_COMMAND_REGEX,
-                                        version_dir.to_str().unwrap()
+                                        USE_COMMAND_REGEX
                                     )
                                 } else {
                                     line.to_string()
@@ -235,7 +275,6 @@ mod test {
     use tempfile::tempdir;
 
     #[test]
-    #[ignore]
     fn test_zsh_completions() {
         let mut config = FarmConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
@@ -244,12 +283,11 @@ mod test {
         let mut buf_reader = BufReader::new(file);
         let mut expected = String::new();
         buf_reader.read_to_string(&mut expected).unwrap();
-        let actual = customize_completions(Shell::Zsh, config.versions_dir()).unwrap();
+        let actual = customize_completions(Shell::Zsh).unwrap();
         assert_diff!(actual.as_str(), expected.as_str(), "\n", 0);
     }
 
     #[test]
-    #[ignore]
     fn test_bash_completions() {
         let mut config = FarmConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
@@ -258,7 +296,7 @@ mod test {
         let mut buf_reader = BufReader::new(file);
         let mut expected = String::new();
         buf_reader.read_to_string(&mut expected).unwrap();
-        let actual = customize_completions(Shell::Bash, config.versions_dir()).unwrap();
+        let actual = customize_completions(Shell::Bash).unwrap();
         assert_diff!(actual.as_str(), expected.as_str(), "\n", 0);
     }
 }

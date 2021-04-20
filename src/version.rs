@@ -13,6 +13,13 @@ fn start_with_number(s: &str) -> bool {
     s.chars().next().map(|x| x.is_digit(10)).unwrap_or(false)
 }
 
+pub fn is_dotfile(dir: &std::fs::DirEntry) -> bool {
+    dir.file_name()
+        .to_str()
+        .map(|s| s.starts_with('.'))
+        .unwrap_or(false)
+}
+
 impl Version {
     pub fn parse<S: AsRef<str>>(version_str: S) -> Result<Self, semver::SemVerError> {
         let lowercased = version_str.as_ref().to_lowercase();

@@ -72,6 +72,7 @@ fn main() {
                     Some(shell) => Some(clap::Shell::from_str(shell).expect("invalid shell")),
                     None => None,
                 },
+                list: sub_matches.is_present("list"),
             }
             .call(&config);
         }

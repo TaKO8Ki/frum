@@ -50,6 +50,7 @@ pub fn build_cli() -> App<'static, 'static> {
                         .long("shell")
                         .help("The shell syntax to use")
                         .takes_value(true),
-                ),
+                )
+                .arg(Arg::with_name("list").long("list").hidden(true)),
         )
 }

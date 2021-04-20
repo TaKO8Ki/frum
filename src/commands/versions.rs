@@ -27,7 +27,7 @@ impl crate::command::Command for Versions {
             .map_err(FarmError::IoError)?
         {
             let entry = entry.map_err(FarmError::IoError)?;
-            if is_dotfile(&entry) {
+            if crate::version::is_dotfile(&entry) {
                 continue;
             }
 
@@ -54,11 +54,4 @@ impl crate::command::Command for Versions {
         }
         Ok(())
     }
-}
-
-fn is_dotfile(dir: &std::fs::DirEntry) -> bool {
-    dir.file_name()
-        .to_str()
-        .map(|s| s.starts_with('.'))
-        .unwrap_or(false)
 }
