@@ -26,4 +26,8 @@ impl Shell for PowerShell {
             New-Alias cd Set-LocationWithFarm
         "#).into()
     }
+
+    fn into_clap_shell(&self) -> clap::Shell {
+        clap::Shell::PowerShell
+    }
 }

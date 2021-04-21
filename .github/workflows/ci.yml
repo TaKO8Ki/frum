@@ -77,7 +77,7 @@ jobs:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
       - name: Run Tests
-        run: cargo test -- --skip=command_tests --color always
+        run: cargo test -- --skip=e2e --color always
 
   e2e_tests:
     name: E2E Tests
@@ -117,4 +117,4 @@ jobs:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
       - name: Run tests
-        run: cargo test -- command_tests
+        run: cargo test -- e2e

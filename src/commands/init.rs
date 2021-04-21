@@ -18,7 +18,7 @@ pub struct Init {}
 impl crate::command::Command for Init {
     type Error = FarmError;
 
-    fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), FarmError> {
+    fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), Self::Error> {
         let shell: Box<dyn Shell> = infer_shell().ok_or(FarmError::CantInferShell)?;
         let farm_path = create_symlink(&config);
         let binary_path = if cfg!(windows) {

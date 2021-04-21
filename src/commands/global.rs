@@ -19,7 +19,7 @@ pub struct Global {
 impl crate::command::Command for Global {
     type Error = FarmError;
 
-    fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), FarmError> {
+    fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), Self::Error> {
         debug!("Use {} as the default version", &self.version);
         let version = match self.version.clone() {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),

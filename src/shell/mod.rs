@@ -17,7 +17,14 @@ pub trait Shell: Debug {
     fn path(&self, path: &Path) -> String;
     fn set_env_var(&self, name: &str, value: &str) -> String;
     fn use_on_cd(&self, config: &crate::config::FarmConfig) -> String;
+    fn into_clap_shell(&self) -> clap::Shell;
 }
+
+#[cfg(windows)]
+pub const AVAILABLE_SHELLS: &[&str; 5] = &["cmd", "powershell", "bash", "zsh", "fish"];
+
+#[cfg(unix)]
+pub const AVAILABLE_SHELLS: &[&str; 4] = &["bash", "zsh", "fish", "powershell"];
 
 #[cfg(windows)]
 pub fn infer_shell() -> Option<Box<dyn Shell>> {
@@ -27,4 +34,10 @@ pub fn infer_shell() -> Option<Box<dyn Shell>> {
 #[cfg(unix)]
 pub fn infer_shell() -> Option<Box<dyn Shell>> {
     infer::unix::infer_shell()
+}
+
+impl From<Box<dyn Shell>> for clap::Shell {
+    fn from(shell: Box<dyn Shell>) -> clap::Shell {
+        shell.into_clap_shell()
+    }
 }

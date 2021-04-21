@@ -35,7 +35,7 @@ pub struct Uninstall {
 impl crate::command::Command for Uninstall {
     type Error = FarmError;
 
-    fn apply(&self, config: &FarmConfig) -> Result<(), FarmError> {
+    fn apply(&self, config: &FarmConfig) -> Result<(), Self::Error> {
         let current_version = self.version.clone();
         let version = match current_version.clone() {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
