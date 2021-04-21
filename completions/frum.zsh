@@ -1,8 +1,8 @@
-#compdef farm
+#compdef frum
 
 autoload -U is-at-least
 
-_farm() {
+_frum() {
     typeset -A opt_args
     typeset -a _arguments_options
     local ret=1
@@ -19,14 +19,14 @@ _farm() {
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-":: :_farm_commands" \
-"*::: :->farm" \
+":: :_frum_commands" \
+"*::: :->frum" \
 && ret=0
     case $state in
-    (farm)
+    (frum)
         words=($line[1] "${words[@]}")
         (( CURRENT += 1 ))
-        curcontext="${curcontext%:*:*}:farm-command-$line[1]:"
+        curcontext="${curcontext%:*:*}:frum-command-$line[1]:"
         case $line[1] in
             (init)
 _arguments "${_arguments_options[@]}" \
@@ -46,7 +46,7 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-'::version:_values 'version' $(farm install -l)' \
+'::version:_values 'version' $(frum install -l)' \
 && ret=0
 ;;
 (uninstall)
@@ -55,7 +55,7 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-':version:_values 'version' $(farm install -l)' \
+':version:_values 'version' $(frum install -l)' \
 && ret=0
 ;;
 (versions)
@@ -72,7 +72,7 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-'::version:_values 'version' $(farm completions --list)' \
+'::version:_values 'version' $(frum completions --list)' \
 && ret=0
 ;;
 (global)
@@ -81,7 +81,7 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-':version:_values 'version' $(farm completions --list)' \
+':version:_values 'version' $(frum completions --list)' \
 && ret=0
 ;;
 (completions)
@@ -109,10 +109,10 @@ _arguments "${_arguments_options[@]}" \
 esac
 }
 
-(( $+functions[_farm_commands] )) ||
-_farm_commands() {
+(( $+functions[_frum_commands] )) ||
+_frum_commands() {
     local commands; commands=(
-        "init:Sets environment variables for initializing farm" \
+        "init:Sets environment variables for initializing frum" \
 "install:Installs a specific Ruby version" \
 "uninstall:Uninstall a specific Ruby version" \
 "versions:Lists installed Ruby versions" \
@@ -121,62 +121,62 @@ _farm_commands() {
 "completions:Print shell completions to stdout" \
 "help:Prints this message or the help of the given subcommand(s)" \
     )
-    _describe -t commands 'farm commands' commands "$@"
+    _describe -t commands 'frum commands' commands "$@"
 }
-(( $+functions[_farm__completions_commands] )) ||
-_farm__completions_commands() {
+(( $+functions[_frum__completions_commands] )) ||
+_frum__completions_commands() {
     local commands; commands=(
         
     )
-    _describe -t commands 'farm completions commands' commands "$@"
+    _describe -t commands 'frum completions commands' commands "$@"
 }
-(( $+functions[_farm__global_commands] )) ||
-_farm__global_commands() {
+(( $+functions[_frum__global_commands] )) ||
+_frum__global_commands() {
     local commands; commands=(
         
     )
-    _describe -t commands 'farm global commands' commands "$@"
+    _describe -t commands 'frum global commands' commands "$@"
 }
-(( $+functions[_farm__help_commands] )) ||
-_farm__help_commands() {
+(( $+functions[_frum__help_commands] )) ||
+_frum__help_commands() {
     local commands; commands=(
         
     )
-    _describe -t commands 'farm help commands' commands "$@"
+    _describe -t commands 'frum help commands' commands "$@"
 }
-(( $+functions[_farm__init_commands] )) ||
-_farm__init_commands() {
+(( $+functions[_frum__init_commands] )) ||
+_frum__init_commands() {
     local commands; commands=(
         
     )
-    _describe -t commands 'farm init commands' commands "$@"
+    _describe -t commands 'frum init commands' commands "$@"
 }
-(( $+functions[_farm__install_commands] )) ||
-_farm__install_commands() {
+(( $+functions[_frum__install_commands] )) ||
+_frum__install_commands() {
     local commands; commands=(
         
     )
-    _describe -t commands 'farm install commands' commands "$@"
+    _describe -t commands 'frum install commands' commands "$@"
 }
-(( $+functions[_farm__local_commands] )) ||
-_farm__local_commands() {
+(( $+functions[_frum__local_commands] )) ||
+_frum__local_commands() {
     local commands; commands=(
         
     )
-    _describe -t commands 'farm local commands' commands "$@"
+    _describe -t commands 'frum local commands' commands "$@"
 }
-(( $+functions[_farm__uninstall_commands] )) ||
-_farm__uninstall_commands() {
+(( $+functions[_frum__uninstall_commands] )) ||
+_frum__uninstall_commands() {
     local commands; commands=(
         
     )
-    _describe -t commands 'farm uninstall commands' commands "$@"
+    _describe -t commands 'frum uninstall commands' commands "$@"
 }
-(( $+functions[_farm__versions_commands] )) ||
-_farm__versions_commands() {
+(( $+functions[_frum__versions_commands] )) ||
+_frum__versions_commands() {
     local commands; commands=(
         
     )
-    _describe -t commands 'farm versions commands' commands "$@"
+    _describe -t commands 'frum versions commands' commands "$@"
 }
 

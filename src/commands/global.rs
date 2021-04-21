@@ -5,7 +5,7 @@ use log::debug;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum FarmError {
+pub enum FrumError {
     #[error(transparent)]
     HttpError(#[from] reqwest::Error),
     #[error(transparent)]
@@ -17,15 +17,15 @@ pub struct Global {
 }
 
 impl crate::command::Command for Global {
-    type Error = FarmError;
+    type Error = FrumError;
 
-    fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), Self::Error> {
+    fn apply(&self, config: &crate::config::FrumConfig) -> Result<(), Self::Error> {
         debug!("Use {} as the default version", &self.version);
         let version = match self.version.clone() {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
             _ => return Ok(()),
         };
-        create_alias(&config, "default", &version).map_err(FarmError::IoError)?;
+        create_alias(&config, "default", &version).map_err(FrumError::IoError)?;
         Ok(())
     }
 }
@@ -34,7 +34,7 @@ impl crate::command::Command for Global {
 mod tests {
     use super::Global;
     use crate::command::Command;
-    use crate::config::FarmConfig;
+    use crate::config::FrumConfig;
     use crate::input_version::InputVersion;
     use crate::version::Version;
     use std::fs::File;
@@ -42,10 +42,10 @@ mod tests {
 
     #[test]
     fn test_global_specified_version() {
-        let mut config = FarmConfig::default();
+        let mut config = FrumConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
-        config.farm_path = Some(std::env::temp_dir().join(format!(
-            "farm_{}_{}",
+        config.frum_path = Some(std::env::temp_dir().join(format!(
+            "frum_{}_{}",
             std::process::id(),
             chrono::Utc::now().timestamp_millis(),
         )));

@@ -17,7 +17,7 @@ impl Shell for WindowsCommand {
         format!("SET {}={}", name, value)
     }
 
-    fn use_on_cd(&self, config: &crate::config::FarmConfig) -> String {
+    fn use_on_cd(&self, config: &crate::config::FrumConfig) -> String {
         let path = config.base_dir().join("cd.cmd");
         create_cd_file_at(&path).expect("Can't create cd.cmd file for use-on-cd");
         format!(

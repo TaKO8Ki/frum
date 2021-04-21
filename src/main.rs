@@ -21,7 +21,7 @@ fn main() {
     env_logger::init();
     let matches = cli::build_cli().get_matches();
 
-    let config = config::FarmConfig::default();
+    let config = config::FrumConfig::default();
     // println!("{:?}", config);
     match matches.subcommand() {
         ("init", _) => commands::init::Init {}.call(&config),

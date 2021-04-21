@@ -1,4 +1,4 @@
-use crate::config::FarmConfig;
+use crate::config::FrumConfig;
 use crate::outln;
 use crate::version::{current_version, Version};
 use colored::Colorize;
@@ -6,7 +6,7 @@ use log::debug;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum FarmError {
+pub enum FrumError {
     #[error(transparent)]
     HttpError(#[from] reqwest::Error),
     #[error(transparent)]
@@ -18,15 +18,15 @@ pub enum FarmError {
 pub struct Versions {}
 
 impl crate::command::Command for Versions {
-    type Error = FarmError;
+    type Error = FrumError;
 
-    fn apply(&self, config: &FarmConfig) -> Result<(), Self::Error> {
+    fn apply(&self, config: &FrumConfig) -> Result<(), Self::Error> {
         for entry in config
             .versions_dir()
             .read_dir()
-            .map_err(FarmError::IoError)?
+            .map_err(FrumError::IoError)?
         {
-            let entry = entry.map_err(FarmError::IoError)?;
+            let entry = entry.map_err(FrumError::IoError)?;
             if crate::version::is_dotfile(&entry) {
                 continue;
             }
@@ -35,11 +35,11 @@ impl crate::command::Command for Versions {
             let filename = path
                 .file_name()
                 .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::NotFound))
-                .map_err(FarmError::IoError)?
+                .map_err(FrumError::IoError)?
                 .to_str()
                 .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::NotFound))
-                .map_err(FarmError::IoError)?;
-            let version = Version::parse(filename).map_err(FarmError::SemverError)?;
+                .map_err(FrumError::IoError)?;
+            let version = Version::parse(filename).map_err(FrumError::SemverError)?;
             let current_version = current_version(&config).ok().flatten();
             debug!("current version: {}", current_version.clone().unwrap());
             if let Some(current_version) = current_version {

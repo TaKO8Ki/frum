@@ -1,6 +1,6 @@
 use crate::cli::build_cli;
 use crate::command::Command;
-use crate::config::FarmConfig;
+use crate::config::FrumConfig;
 use crate::outln;
 use crate::shell::{infer_shell, AVAILABLE_SHELLS};
 use crate::version::{is_dotfile, Version};
@@ -13,7 +13,7 @@ const INSTALL_COMMAND_REGEX: &str =
 const UNINSTALL_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
 
 #[derive(Debug)]
-enum FarmCommand {
+enum FrumCommand {
     Install,
     Uninstall,
     Local,
@@ -22,11 +22,11 @@ enum FarmCommand {
 }
 
 #[derive(Error, Debug)]
-pub enum FarmError {
+pub enum FrumError {
     #[error(
         "{}\n{}\n{}\n{}",
         "Can't infer shell!",
-        "farm can't infer your shell based on the process tree.",
+        "frum can't infer your shell based on the process tree.",
         "Maybe it is unsupported? we support the following shells:",
         shells_as_string()
     )]
@@ -43,16 +43,16 @@ pub struct Completions {
 }
 
 impl Command for Completions {
-    type Error = FarmError;
+    type Error = FrumError;
 
-    fn apply(&self, config: &FarmConfig) -> Result<(), Self::Error> {
+    fn apply(&self, config: &FrumConfig) -> Result<(), Self::Error> {
         if self.list {
             for entry in config
                 .versions_dir()
                 .read_dir()
-                .map_err(FarmError::IoError)?
+                .map_err(FrumError::IoError)?
             {
-                let entry = entry.map_err(FarmError::IoError)?;
+                let entry = entry.map_err(FrumError::IoError)?;
                 if is_dotfile(&entry) {
                     continue;
                 }
@@ -61,11 +61,11 @@ impl Command for Completions {
                 let filename = path
                     .file_name()
                     .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::NotFound))
-                    .map_err(FarmError::IoError)?
+                    .map_err(FrumError::IoError)?
                     .to_str()
                     .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::NotFound))
-                    .map_err(FarmError::IoError)?;
-                let version = Version::parse(filename).map_err(FarmError::SemverError)?;
+                    .map_err(FrumError::IoError)?;
+                let version = Version::parse(filename).map_err(FrumError::SemverError)?;
                 outln!(config#Info, "{} {}", " ", version);
             }
             return Ok(());
@@ -74,7 +74,7 @@ impl Command for Completions {
         let shell = self
             .shell
             .or_else(|| infer_shell().map(Into::into))
-            .ok_or(FarmError::CantInferShell)?;
+            .ok_or(FrumError::CantInferShell)?;
 
         print!(
             "{}",
@@ -92,7 +92,7 @@ fn customize_completions(shell: Shell) -> Option<String> {
     let string = String::from_utf8(bytes).unwrap();
     let string_split = string.split('\n');
     let mut completions = String::new();
-    let mut subcommand = FarmCommand::None;
+    let mut subcommand = FrumCommand::None;
     let use_command_regex =
         regex::Regex::new(format!(r#"(\s+){}{} "#, USE_COMMAND_REGEX, "<version>").as_str())
             .unwrap();
@@ -109,41 +109,41 @@ fn customize_completions(shell: Shell) -> Option<String> {
                     break;
                 }
                 subcommand = match line {
-                    "(local)" => FarmCommand::Local,
-                    "(global)" => FarmCommand::Global,
-                    "(install)" => FarmCommand::Install,
-                    "(uninstall)" => FarmCommand::Uninstall,
+                    "(local)" => FrumCommand::Local,
+                    "(global)" => FrumCommand::Global,
+                    "(install)" => FrumCommand::Install,
+                    "(uninstall)" => FrumCommand::Uninstall,
                     _ => subcommand,
                 };
                 completions.push_str(
                     format!(
                         "{}\n",
                         match subcommand {
-                            FarmCommand::Local => match line {
+                            FrumCommand::Local => match line {
                                 r#"'::version:_files' \"# =>
-                                    r#"'::version:_values 'version' $(farm completions --list)' \"#
+                                    r#"'::version:_values 'version' $(frum completions --list)' \"#
                                         .to_string(),
                                 _ => line.to_string(),
                             },
-                            FarmCommand::Global => match line {
+                            FrumCommand::Global => match line {
                                 r#"':version:_files' \"# =>
-                                    r#"':version:_values 'version' $(farm completions --list)' \"#
+                                    r#"':version:_values 'version' $(frum completions --list)' \"#
                                         .to_string(),
                                 _ => line.to_string(),
                             },
-                            FarmCommand::Install => match line {
+                            FrumCommand::Install => match line {
                                 r#"'::version:_files' \"# =>
-                                    r#"'::version:_values 'version' $(farm install -l)' \"#
+                                    r#"'::version:_values 'version' $(frum install -l)' \"#
                                         .to_string(),
                                 _ => line.to_string(),
                             },
-                            FarmCommand::Uninstall => match line {
+                            FrumCommand::Uninstall => match line {
                                 r#"':version:_files' \"# =>
-                                    r#"':version:_values 'version' $(farm install -l)' \"#
+                                    r#"':version:_values 'version' $(frum install -l)' \"#
                                         .to_string(),
                                 _ => line.to_string(),
                             },
-                            FarmCommand::None => line.to_string(),
+                            FrumCommand::None => line.to_string(),
                         }
                     )
                     .as_str(),
@@ -156,14 +156,14 @@ fn customize_completions(shell: Shell) -> Option<String> {
                 if index == string_split.clone().count() - 1 {
                     break;
                 }
-                subcommand = if line.ends_with("farm__local)") {
-                    FarmCommand::Local
-                } else if line.ends_with("farm__global)") {
-                    FarmCommand::Global
-                } else if line.ends_with("farm__install)") {
-                    FarmCommand::Install
-                } else if line.ends_with("farm__uninstall)") {
-                    FarmCommand::Uninstall
+                subcommand = if line.ends_with("frum__local)") {
+                    FrumCommand::Local
+                } else if line.ends_with("frum__global)") {
+                    FrumCommand::Global
+                } else if line.ends_with("frum__install)") {
+                    FrumCommand::Install
+                } else if line.ends_with("frum__uninstall)") {
+                    FrumCommand::Uninstall
                 } else {
                     subcommand
                 };
@@ -171,10 +171,10 @@ fn customize_completions(shell: Shell) -> Option<String> {
                     format!(
                         "{}\n",
                         match subcommand {
-                            FarmCommand::Local =>
+                            FrumCommand::Local =>
                                 if use_command_regex.is_match(line) {
                                     format!(
-                                        r#"{}{}$(farm completions --list) ""#,
+                                        r#"{}{}$(frum completions --list) ""#,
                                         use_command_regex
                                             .captures(line)
                                             .unwrap()
@@ -186,10 +186,10 @@ fn customize_completions(shell: Shell) -> Option<String> {
                                 } else {
                                     line.to_string()
                                 },
-                            FarmCommand::Global =>
+                            FrumCommand::Global =>
                                 if use_command_regex.is_match(line) {
                                     format!(
-                                        r#"{}{}$(farm completions --list) ""#,
+                                        r#"{}{}$(frum completions --list) ""#,
                                         use_command_regex
                                             .captures(line)
                                             .unwrap()
@@ -201,10 +201,10 @@ fn customize_completions(shell: Shell) -> Option<String> {
                                 } else {
                                     line.to_string()
                                 },
-                            FarmCommand::Install =>
+                            FrumCommand::Install =>
                                 if install_command_regex.is_match(line) {
                                     format!(
-                                        r#"{}{}$(farm install -l) ""#,
+                                        r#"{}{}$(frum install -l) ""#,
                                         install_command_regex
                                             .captures(line)
                                             .unwrap()
@@ -216,10 +216,10 @@ fn customize_completions(shell: Shell) -> Option<String> {
                                 } else {
                                     line.to_string()
                                 },
-                            FarmCommand::Uninstall =>
+                            FrumCommand::Uninstall =>
                                 if uninstall_command_regex.is_match(line) {
                                     format!(
-                                        r#"{}{}$(farm install -l) ""#,
+                                        r#"{}{}$(frum install -l) ""#,
                                         uninstall_command_regex
                                             .captures(line)
                                             .unwrap()
@@ -231,7 +231,7 @@ fn customize_completions(shell: Shell) -> Option<String> {
                                 } else {
                                     line.to_string()
                                 },
-                            FarmCommand::None => line.to_string(),
+                            FrumCommand::None => line.to_string(),
                         }
                     )
                     .as_str(),
@@ -262,7 +262,7 @@ fn shells_as_string() -> String {
 #[cfg(test)]
 mod test {
     use super::customize_completions;
-    use crate::config::FarmConfig;
+    use crate::config::FrumConfig;
     use clap::Shell;
     use difference::assert_diff;
     use std::fs::File;
@@ -272,10 +272,10 @@ mod test {
 
     #[test]
     fn test_zsh_completions() {
-        let mut config = FarmConfig::default();
+        let mut config = FrumConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
 
-        let file = File::open("completions/farm.zsh").unwrap();
+        let file = File::open("completions/frum.zsh").unwrap();
         let mut buf_reader = BufReader::new(file);
         let mut expected = String::new();
         buf_reader.read_to_string(&mut expected).unwrap();
@@ -285,10 +285,10 @@ mod test {
 
     #[test]
     fn test_bash_completions() {
-        let mut config = FarmConfig::default();
+        let mut config = FrumConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
 
-        let file = File::open("completions/farm.bash").unwrap();
+        let file = File::open("completions/frum.bash").unwrap();
         let mut buf_reader = BufReader::new(file);
         let mut expected = String::new();
         buf_reader.read_to_string(&mut expected).unwrap();

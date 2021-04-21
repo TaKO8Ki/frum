@@ -13,16 +13,16 @@ impl Shell for Zsh {
         format!("export {}={:?}", name, value)
     }
 
-    fn use_on_cd(&self, _config: &crate::config::FarmConfig) -> String {
+    fn use_on_cd(&self, _config: &crate::config::FrumConfig) -> String {
         indoc::indoc!(
             r#"
                 autoload -U add-zsh-hook
-                _farm_autoload_hook () {
-                    farm local
+                _frum_autoload_hook () {
+                    frum local
                 }
 
-                add-zsh-hook chpwd _farm_autoload_hook \
-                    && _farm_autoload_hook
+                add-zsh-hook chpwd _frum_autoload_hook \
+                    && _frum_autoload_hook
             "#
         )
         .into()

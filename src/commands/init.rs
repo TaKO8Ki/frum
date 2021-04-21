@@ -4,7 +4,7 @@ use crate::symlink::create_symlink_dir;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum FarmError {
+pub enum FrumError {
     #[error(transparent)]
     HttpError(#[from] reqwest::Error),
     #[error(transparent)]
@@ -16,39 +16,39 @@ pub enum FarmError {
 pub struct Init {}
 
 impl crate::command::Command for Init {
-    type Error = FarmError;
+    type Error = FrumError;
 
-    fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), Self::Error> {
-        let shell: Box<dyn Shell> = infer_shell().ok_or(FarmError::CantInferShell)?;
-        let farm_path = create_symlink(&config);
+    fn apply(&self, config: &crate::config::FrumConfig) -> Result<(), Self::Error> {
+        let shell: Box<dyn Shell> = infer_shell().ok_or(FrumError::CantInferShell)?;
+        let frum_path = create_symlink(&config);
         let binary_path = if cfg!(windows) {
-            farm_path.clone()
+            frum_path.clone()
         } else {
-            farm_path.join("bin")
+            frum_path.join("bin")
         };
         println!("{}", shell.path(&binary_path));
         println!(
             "{}",
-            shell.set_env_var("FARM_MULTISHELL_PATH", farm_path.to_str().unwrap())
+            shell.set_env_var("FRUM_MULTISHELL_PATH", frum_path.to_str().unwrap())
         );
         println!(
             "{}",
-            shell.set_env_var("FARM_DIR", config.base_dir().to_str().unwrap())
+            shell.set_env_var("FRUM_DIR", config.base_dir().to_str().unwrap())
         );
         println!(
             "{}",
-            shell.set_env_var("FARM_LOGLEVEL", config.log_level.clone().into())
+            shell.set_env_var("FRUM_LOGLEVEL", config.log_level.clone().into())
         );
         println!(
             "{}",
-            shell.set_env_var("FARM_RUBY_BUILD_MIRROR", config.ruby_build_mirror.as_str())
+            shell.set_env_var("FRUM_RUBY_BUILD_MIRROR", config.ruby_build_mirror.as_str())
         );
         println!("{}", shell.use_on_cd(&config));
         Ok(())
     }
 }
 
-fn create_symlink(config: &crate::config::FarmConfig) -> std::path::PathBuf {
+fn create_symlink(config: &crate::config::FrumConfig) -> std::path::PathBuf {
     let system_temp_dir = std::env::temp_dir();
     let mut temp_dir = generate_symlink_path(&system_temp_dir);
 
@@ -62,7 +62,7 @@ fn create_symlink(config: &crate::config::FarmConfig) -> std::path::PathBuf {
 
 fn generate_symlink_path(root: &std::path::Path) -> std::path::PathBuf {
     let temp_dir_name = format!(
-        "farm_{}_{}",
+        "frum_{}_{}",
         std::process::id(),
         chrono::Utc::now().timestamp_millis(),
     );
