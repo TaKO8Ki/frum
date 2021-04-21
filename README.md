@@ -35,3 +35,13 @@ $ ruby -v
 - versions: Lists installed Ruby versions.
 - global: Sets the global Ruby version.
 - local: Sets the current Ruby version.
+
+## Installation
+
+### Cargo
+
+If you already have a Rust environment set up, you can use the `cargo install` command:
+
+```
+$ cargo install frum
+```
