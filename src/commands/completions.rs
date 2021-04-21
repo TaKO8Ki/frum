@@ -3,10 +3,8 @@ use crate::command::Command;
 use crate::config::FarmConfig;
 use crate::outln;
 use crate::shell::{infer_shell, AVAILABLE_SHELLS};
-use crate::version::{current_version, is_dotfile, Version};
+use crate::version::{is_dotfile, Version};
 use clap::Shell;
-use colored::Colorize;
-use log::debug;
 use thiserror::Error;
 
 const USE_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
@@ -241,7 +239,15 @@ fn customize_completions(shell: Shell) -> Option<String> {
             }
             Some(completions)
         }
-        _ => None,
+        _ => {
+            for (index, line) in string_split.clone().enumerate() {
+                if index == string_split.clone().count() - 1 {
+                    break;
+                }
+                completions.push_str(format!("{}\n", line).as_str())
+            }
+            Some(completions)
+        }
     }
 }
 
