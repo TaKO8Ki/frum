@@ -60,7 +60,7 @@ _farm() {
             ;;
         
         farm__completions)
-            opts=" -h -V -s  --list --help --version --shell  "
+            opts=" -l -h -V -s  --list --help --version --shell  "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

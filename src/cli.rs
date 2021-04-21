@@ -53,7 +53,7 @@ pub fn build_cli() -> App<'static, 'static> {
                 )
                 .arg(
                     Arg::with_name("list")
-                        .short("s")
+                        .short("l")
                         .long("list")
                         .help("Lists installed Ruby versions")
                         .hidden(true),
