@@ -88,7 +88,7 @@ _arguments "${_arguments_options[@]}" \
 _arguments "${_arguments_options[@]}" \
 '-s+[The shell syntax to use]' \
 '--shell=[The shell syntax to use]' \
-'--list[]' \
+'--list[Lists installed Ruby versions]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
