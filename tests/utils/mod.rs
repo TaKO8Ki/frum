@@ -13,10 +13,10 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::thread;
 use std::time::Duration;
 
-static TEST_DIR: &'static str = "farm-tests";
+static TEST_DIR: &'static str = "frum-tests";
 static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
 
-/// Setup an empty work directory and return a command pointing to the farm
+/// Setup an empty work directory and return a command pointing to the frum
 /// executable whose CWD is set to the work directory.
 ///
 /// The name given will be used to create the directory. Generally, it should
@@ -28,7 +28,7 @@ pub fn setup(test_name: &str) -> (Dir, TestCommand) {
 }
 
 /// Break the given string into lines, sort them and then join them back
-/// together. This is useful for testing output from farm that may not
+/// together. This is useful for testing output from frum that may not
 /// always be in the same order.
 pub fn sort_lines(lines: &str) -> String {
     let mut lines: Vec<&str> = lines.trim().lines().collect();
@@ -53,7 +53,7 @@ pub struct Dir {
     /// files, they should go in here. This directory is also used as the CWD
     /// for any processes created by the test.
     dir: PathBuf,
-    farm_path: PathBuf,
+    frum_path: PathBuf,
     ruby_bin_path: PathBuf,
 }
 
@@ -76,11 +76,11 @@ impl Dir {
             nice_err(&dir, fs::remove_dir_all(&dir));
         }
         nice_err(&dir, repeat(|| fs::create_dir_all(&dir)));
-        let (farm_path, path) = set_farm_path_env(&root, &dir);
+        let (frum_path, path) = set_frum_path_env(&root, &dir);
         Dir {
             root: root,
             dir,
-            farm_path,
+            frum_path,
             ruby_bin_path: path,
         }
     }
@@ -128,13 +128,13 @@ impl Dir {
         nice_err(&path, repeat(|| fs::create_dir_all(&path)));
     }
 
-    /// Creates a new command that is set to use the farm executable in
+    /// Creates a new command that is set to use the frum executable in
     /// this working directory.
     pub fn command(&self) -> TestCommand {
         let mut cmd = self.bin();
         cmd.current_dir(&self.dir)
-            .env("FARM_MULTISHELL_PATH", self.farm_path.to_str().unwrap())
-            .env("FARM_DIR", self.dir.to_str().unwrap());
+            .env("FRUM_MULTISHELL_PATH", self.frum_path.to_str().unwrap())
+            .env("FRUM_DIR", self.dir.to_str().unwrap());
         TestCommand {
             dir: self.clone(),
             cmd: cmd,
@@ -156,16 +156,16 @@ impl Dir {
         }
     }
 
-    /// Returns the path to the farm executable.
+    /// Returns the path to the frum executable.
     pub fn bin(&self) -> process::Command {
-        let farm = self
+        let frum = self
             .root
-            .join(format!("../farm{}", env::consts::EXE_SUFFIX));
+            .join(format!("../frum{}", env::consts::EXE_SUFFIX));
         match cross_runner() {
-            None => process::Command::new(farm),
+            None => process::Command::new(frum),
             Some(runner) => {
                 let mut cmd = process::Command::new(runner);
-                cmd.arg(farm);
+                cmd.arg(frum);
                 cmd
             }
         }
@@ -452,11 +452,11 @@ fn cross_runner() -> Option<String> {
     None
 }
 
-fn set_farm_path_env(root: &Path, dir: &Path) -> (PathBuf, PathBuf) {
+fn set_frum_path_env(root: &Path, dir: &Path) -> (PathBuf, PathBuf) {
     let env_cmd: String = match String::from_utf8_lossy(
-        &Command::new(root.join(format!("../farm{}", env::consts::EXE_SUFFIX)))
+        &Command::new(root.join(format!("../frum{}", env::consts::EXE_SUFFIX)))
             .arg("init")
-            .env("FARM_PATH", &dir)
+            .env("FRUM_PATH", &dir)
             .output()
             .unwrap()
             .stdout,
@@ -469,17 +469,17 @@ fn set_farm_path_env(root: &Path, dir: &Path) -> (PathBuf, PathBuf) {
         }
     };
     #[cfg(unix)]
-    let farm_multishell_path = regex::Regex::new(r#"export FARM_MULTISHELL_PATH="(.+)""#).unwrap();
+    let frum_multishell_path = regex::Regex::new(r#"export FRUM_MULTISHELL_PATH="(.+)""#).unwrap();
     #[cfg(unix)]
     let path = regex::Regex::new(r#"export PATH="(.+)""#).unwrap();
 
     #[cfg(windows)]
-    let farm_multishell_path = regex::Regex::new(r#"[^_]FARM_MULTISHELL_PATH = "(.+)""#).unwrap();
+    let frum_multishell_path = regex::Regex::new(r#"[^_]FRUM_MULTISHELL_PATH = "(.+)""#).unwrap();
     #[cfg(windows)]
     let path = regex::Regex::new(r#"[^_]PATH = "(.+)""#).unwrap();
 
     return (
-        farm_multishell_path
+        frum_multishell_path
             .captures(env_cmd.as_str())
             .unwrap()
             .get(1)

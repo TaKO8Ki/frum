@@ -1,6 +1,6 @@
 use crate::alias::create_alias;
 use crate::archive::{self, extract::Error as ExtractError, extract::Extract};
-use crate::config::FarmConfig;
+use crate::config::FrumConfig;
 use crate::input_version::InputVersion;
 use crate::outln;
 use crate::version::Version;
@@ -17,7 +17,7 @@ use std::process::Command;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum FarmError {
+pub enum FrumError {
     #[error(transparent)]
     HttpError(#[from] reqwest::Error),
     #[error(transparent)]
@@ -47,31 +47,31 @@ pub struct Install {
 }
 
 impl crate::command::Command for Install {
-    type Error = FarmError;
+    type Error = FrumError;
 
-    fn apply(&self, config: &FarmConfig) -> Result<(), Self::Error> {
+    fn apply(&self, config: &FrumConfig) -> Result<(), Self::Error> {
         let current_version = self
             .version
             .clone()
             .or_else(|| get_user_version_for_directory(std::env::current_dir().unwrap()))
-            .ok_or(FarmError::CantInferVersion)?;
+            .ok_or(FrumError::CantInferVersion)?;
         let version = match current_version.clone() {
             InputVersion::Full(Version::Semver(v)) => Version::Semver(v),
             InputVersion::Full(Version::System) => {
-                return Err(FarmError::NotInstallableVersion {
+                return Err(FrumError::NotInstallableVersion {
                     version: Version::System,
                 })
             }
             current_version => {
                 let available_versions = crate::remote_ruby_index::list(&config.ruby_build_mirror)
-                    .map_err(|source| FarmError::CantListRemoteVersions { source })?
+                    .map_err(|source| FrumError::CantListRemoteVersions { source })?
                     .drain(..)
                     .map(|x| x.version)
                     .collect::<Vec<_>>();
 
                 current_version
                     .to_version(&available_versions)
-                    .ok_or(FarmError::VersionNotFound {
+                    .ok_or(FrumError::VersionNotFound {
                         version: current_version,
                     })?
                     .clone()
@@ -81,7 +81,7 @@ impl crate::command::Command for Install {
         let installation_dir = PathBuf::from(&installations_dir).join(version.to_string());
 
         if installation_dir.exists() {
-            return Err(FarmError::VersionAlreadyInstalled {
+            return Err(FrumError::VersionAlreadyInstalled {
                 path: installation_dir,
             });
         }
@@ -90,27 +90,27 @@ impl crate::command::Command for Install {
         let response =
             reqwest::blocking::get(package_url(config.ruby_build_mirror.clone(), &version))?;
         if response.status() == 404 {
-            return Err(FarmError::VersionNotFound {
+            return Err(FrumError::VersionNotFound {
                 version: current_version,
             });
         }
 
         let temp_installations_dir = installations_dir.join(".downloads");
-        std::fs::create_dir_all(&temp_installations_dir).map_err(FarmError::IoError)?;
+        std::fs::create_dir_all(&temp_installations_dir).map_err(FrumError::IoError)?;
         let temp_dir = tempfile::TempDir::new_in(&temp_installations_dir)
             .expect("Can't generate a temp directory");
         extract_archive_into(&temp_dir, response)?;
         let installed_directory = std::fs::read_dir(&temp_dir)
-            .map_err(FarmError::IoError)?
+            .map_err(FrumError::IoError)?
             .next()
-            .ok_or(FarmError::TarIsEmpty)?
-            .map_err(FarmError::IoError)?;
+            .ok_or(FrumError::TarIsEmpty)?
+            .map_err(FrumError::IoError)?;
         let installed_directory = installed_directory.path();
         build_package(&installed_directory, &installation_dir)?;
 
         if !config.default_version_dir().exists() {
             debug!("Use {} as the default version", current_version);
-            create_alias(&config, "default", &version).map_err(FarmError::IoError)?;
+            create_alias(&config, "default", &version).map_err(FrumError::IoError)?;
         }
         Ok(())
     }
@@ -119,14 +119,14 @@ impl crate::command::Command for Install {
 fn extract_archive_into<P: AsRef<Path>>(
     path: P,
     response: reqwest::blocking::Response,
-) -> Result<(), FarmError> {
+) -> Result<(), FrumError> {
     #[cfg(unix)]
     let extractor = archive::tar_xz::TarXz::new(response);
     #[cfg(windows)]
     let extractor = archive::zip::Zip::new(response);
     extractor
         .extract_into(path)
-        .map_err(|source| FarmError::ExtractError { source })?;
+        .map_err(|source| FrumError::ExtractError { source })?;
     Ok(())
 }
 
@@ -160,7 +160,7 @@ fn package_url(mirror_url: Url, version: &Version) -> Url {
     .unwrap()
 }
 
-fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmError> {
+fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FrumError> {
     debug!("./configure --with-openssl-dir={}", openssl_dir()?);
     let configure = Command::new("sh")
         .arg("configure")
@@ -168,9 +168,9 @@ fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmErr
         .arg(format!("--with-openssl-dir={}", openssl_dir()?))
         .current_dir(&current_dir)
         .output()
-        .map_err(FarmError::IoError)?;
+        .map_err(FrumError::IoError)?;
     if !configure.status.success() {
-        return Err(FarmError::CantBuildRuby {
+        return Err(FrumError::CantBuildRuby {
             stderr: format!(
                 "configure failed: {}",
                 String::from_utf8_lossy(&configure.stderr).to_string()
@@ -183,9 +183,9 @@ fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmErr
         .arg(number_of_cores().unwrap_or(2).to_string())
         .current_dir(&current_dir)
         .output()
-        .map_err(FarmError::IoError)?;
+        .map_err(FrumError::IoError)?;
     if !make.status.success() {
-        return Err(FarmError::CantBuildRuby {
+        return Err(FrumError::CantBuildRuby {
             stderr: format!(
                 "make failed: {}",
                 String::from_utf8_lossy(&make.stderr).to_string()
@@ -197,9 +197,9 @@ fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmErr
         .arg("install")
         .current_dir(&current_dir)
         .output()
-        .map_err(FarmError::IoError)?;
+        .map_err(FrumError::IoError)?;
     if !make_install.status.success() {
-        return Err(FarmError::CantBuildRuby {
+        return Err(FrumError::CantBuildRuby {
             stderr: format!(
                 "make install: {}",
                 String::from_utf8_lossy(&make_install.stderr).to_string()
@@ -209,18 +209,18 @@ fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FarmErr
     Ok(())
 }
 
-fn number_of_cores() -> Result<u8, FarmError> {
+fn number_of_cores() -> Result<u8, FrumError> {
     let mut reader = BufReader::new(
         Command::new("uname")
             .arg("-s")
             .stdout(std::process::Stdio::piped())
             .spawn()
-            .map_err(FarmError::IoError)?
+            .map_err(FrumError::IoError)?
             .stdout
             .unwrap(),
     );
     let mut uname = String::new();
-    reader.read_line(&mut uname).map_err(FarmError::IoError)?;
+    reader.read_line(&mut uname).map_err(FrumError::IoError)?;
 
     let output = match uname.as_str().trim() {
         "Darwin" => {
@@ -228,21 +228,21 @@ fn number_of_cores() -> Result<u8, FarmError> {
                 .arg("-n")
                 .arg("hw.ncpu")
                 .output()
-                .map_err(FarmError::IoError)?
+                .map_err(FrumError::IoError)?
                 .stdout
         }
         "SunOS" => {
             Command::new("getconf")
                 .arg("NPROCESSORS_ONLN")
                 .output()
-                .map_err(FarmError::IoError)?
+                .map_err(FrumError::IoError)?
                 .stdout
         }
         _ => {
             let output = Command::new("getconf")
                 .arg("_NPROCESSORS_ONLN")
                 .output()
-                .map_err(FarmError::IoError)?
+                .map_err(FrumError::IoError)?
                 .stdout;
             if String::from_utf8(output.clone())?
                 .trim()
@@ -256,7 +256,7 @@ fn number_of_cores() -> Result<u8, FarmError> {
                     .arg("^processor")
                     .arg("/proc/cpuinfo")
                     .output()
-                    .map_err(FarmError::IoError)?
+                    .map_err(FrumError::IoError)?
                     .stdout
             }
         }
@@ -268,14 +268,14 @@ fn number_of_cores() -> Result<u8, FarmError> {
         .expect("can't convert cores to integer"))
 }
 
-fn openssl_dir() -> Result<String, FarmError> {
+fn openssl_dir() -> Result<String, FrumError> {
     #[cfg(target_os = "macos")]
     return Ok(String::from_utf8_lossy(
         &Command::new("brew")
             .arg("--prefix")
             .arg("openssl")
             .output()
-            .map_err(FarmError::IoError)?
+            .map_err(FrumError::IoError)?
             .stdout,
     )
     .trim()
@@ -288,13 +288,13 @@ fn openssl_dir() -> Result<String, FarmError> {
 mod tests {
     use super::*;
     use crate::command::Command;
-    use crate::config::FarmConfig;
+    use crate::config::FrumConfig;
     use crate::version::Version;
     use tempfile::tempdir;
 
     #[test]
     fn test_install_second_version() {
-        let mut config = FarmConfig::default();
+        let mut config = FrumConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
         Install {
             version: Some(InputVersion::Full(Version::Semver(
@@ -323,7 +323,7 @@ mod tests {
 
     #[test]
     fn test_install_default_version() {
-        let mut config = FarmConfig::default();
+        let mut config = FrumConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
 
         Install {

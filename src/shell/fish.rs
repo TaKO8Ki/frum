@@ -14,12 +14,12 @@ impl Shell for Fish {
         format!("set -gx {name} {value:?};", name = name, value = value)
     }
 
-    fn use_on_cd(&self, _config: &crate::config::FarmConfig) -> String {
+    fn use_on_cd(&self, _config: &crate::config::FrumConfig) -> String {
         indoc!(
             r#"
-                function _farm_autoload_hook --on-variable PWD --description 'Change Ruby version on directory change'
+                function _frum_autoload_hook --on-variable PWD --description 'Change Ruby version on directory change'
                     status --is-command-substitution; and return
-                    farm local
+                    frum local
                 end
             "#
         )

@@ -5,13 +5,13 @@ use log::debug;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum FarmError {
+pub enum FrumError {
     #[error(transparent)]
     HttpError(#[from] reqwest::Error),
     #[error(transparent)]
     IoError(#[from] std::io::Error),
     #[error("We can't find the necessary environment variables to replace the Ruby version.")]
-    FarmPathNotFound,
+    FrumPathNotFound,
     #[error("Requested version {version} is not currently installed")]
     VersionNotFound { version: InputVersion },
     #[error("Can't find version in dotfiles. Please provide a version manually to the command.")]
@@ -23,9 +23,9 @@ pub struct Local {
 }
 
 impl crate::command::Command for Local {
-    type Error = FarmError;
+    type Error = FrumError;
 
-    fn apply(&self, config: &crate::config::FarmConfig) -> Result<(), Self::Error> {
+    fn apply(&self, config: &crate::config::FrumConfig) -> Result<(), Self::Error> {
         let current_version = match self.version.clone().ok_or_else(|| {
             match get_user_version_for_directory(std::env::current_dir().unwrap()) {
                 Some(version) => Ok(version),
@@ -33,11 +33,11 @@ impl crate::command::Command for Local {
                     replace_symlink(
                         &config.default_version_dir(),
                         &config
-                            .farm_path
+                            .frum_path
                             .clone()
-                            .ok_or(FarmError::FarmPathNotFound)?,
+                            .ok_or(FrumError::FrumPathNotFound)?,
                     )?;
-                    Err(FarmError::CantInferVersion)
+                    Err(FrumError::CantInferVersion)
                 }
             }
         }) {
@@ -50,18 +50,18 @@ impl crate::command::Command for Local {
             .join(current_version.to_string())
             .exists()
         {
-            return Err(FarmError::VersionNotFound {
+            return Err(FrumError::VersionNotFound {
                 version: current_version,
             });
         }
         replace_symlink(
             &config.versions_dir().join(current_version.to_string()),
             &config
-                .farm_path
+                .frum_path
                 .clone()
-                .ok_or(FarmError::FarmPathNotFound)?,
+                .ok_or(FrumError::FrumPathNotFound)?,
         )
-        .map_err(FarmError::IoError)?;
+        .map_err(FrumError::IoError)?;
         Ok(())
     }
 }
@@ -76,9 +76,9 @@ fn replace_symlink(from: &std::path::Path, to: &std::path::Path) -> std::io::Res
 
 #[cfg(test)]
 mod tests {
-    use super::{FarmError, Local};
+    use super::{FrumError, Local};
     use crate::command::Command;
-    use crate::config::FarmConfig;
+    use crate::config::FrumConfig;
     use crate::input_version::InputVersion;
     use crate::version::Version;
     use std::fs::File;
@@ -86,10 +86,10 @@ mod tests {
 
     #[test]
     fn test_local_specified_version() {
-        let mut config = FarmConfig::default();
+        let mut config = FrumConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
-        config.farm_path = Some(std::env::temp_dir().join(format!(
-            "farm_{}_{}",
+        config.frum_path = Some(std::env::temp_dir().join(format!(
+            "frum_{}_{}",
             std::process::id(),
             chrono::Utc::now().timestamp_millis(),
         )));
@@ -111,15 +111,15 @@ mod tests {
         .apply(&config)
         .expect("failed to install");
 
-        assert!(config.farm_path.unwrap().join("bin").join("ruby").exists());
+        assert!(config.frum_path.unwrap().join("bin").join("ruby").exists());
     }
 
     #[test]
     fn test_not_found_version() {
-        let mut config = FarmConfig::default();
+        let mut config = FrumConfig::default();
         config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
-        config.farm_path = Some(std::env::temp_dir().join(format!(
-            "farm_{}_{}",
+        config.frum_path = Some(std::env::temp_dir().join(format!(
+            "frum_{}_{}",
             std::process::id(),
             chrono::Utc::now().timestamp_millis(),
         )));
@@ -131,7 +131,7 @@ mod tests {
         .apply(&config);
         match result {
             Ok(_) => assert!(false),
-            Err(FarmError::VersionNotFound { .. }) => assert!(true),
+            Err(FrumError::VersionNotFound { .. }) => assert!(true),
             _ => assert!(false),
         }
     }

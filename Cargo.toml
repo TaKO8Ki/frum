@@ -1,10 +1,10 @@
 [package]
-name = "farm"
+name = "frum"
 version = "0.1.0"
 authors = ["Takayuki Maeda <takoyaki0316@gmail.com>"]
 edition = "2018"
 build = "build.rs"
-repository = "https://github.com/TaKO8Ki/farm"
+repository = "https://github.com/TaKO8Ki/frum"
 description = "A blazing fast and simple Ruby version manager written in Rust"
 
 [dependencies]

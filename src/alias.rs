@@ -1,10 +1,10 @@
-use crate::config::FarmConfig;
+use crate::config::FrumConfig;
 use crate::symlink::{create_symlink_dir, remove_symlink_dir};
 use crate::version::Version;
 use std::path::PathBuf;
 
 pub fn create_alias(
-    config: &FarmConfig,
+    config: &FrumConfig,
     common_name: &str,
     version: &Version,
 ) -> std::io::Result<()> {

@@ -1,4 +1,4 @@
-_farm() {
+_frum() {
     local i cur prev opts cmds
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -9,8 +9,8 @@ _farm() {
     for i in ${COMP_WORDS[@]}
     do
         case "${i}" in
-            farm)
-                cmd="farm"
+            frum)
+                cmd="frum"
                 ;;
             
             completions)
@@ -43,7 +43,7 @@ _farm() {
     done
 
     case "${cmd}" in
-        farm)
+        frum)
             opts=" -h -V  --help --version   init install uninstall versions local global completions help"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
@@ -59,7 +59,7 @@ _farm() {
             return 0
             ;;
         
-        farm__completions)
+        frum__completions)
             opts=" -l -h -V -s  --list --help --version --shell  "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
@@ -82,8 +82,8 @@ _farm() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
-        farm__global)
-            opts=" -h -V  --help --version  $(farm completions --list) "
+        frum__global)
+            opts=" -h -V  --help --version  $(frum completions --list) "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -97,7 +97,7 @@ _farm() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
-        farm__help)
+        frum__help)
             opts=" -h -V  --help --version  "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
@@ -112,7 +112,7 @@ _farm() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
-        farm__init)
+        frum__init)
             opts=" -h -V  --help --version  "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
@@ -127,8 +127,8 @@ _farm() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
-        farm__install)
-            opts=" -l -w -h -V  --list --with-openssl-dir --help --version  $(farm install -l) "
+        frum__install)
+            opts=" -l -w -h -V  --list --with-openssl-dir --help --version  $(frum install -l) "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -142,8 +142,8 @@ _farm() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
-        farm__local)
-            opts=" -h -V  --help --version  $(farm completions --list) "
+        frum__local)
+            opts=" -h -V  --help --version  $(frum completions --list) "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -157,8 +157,8 @@ _farm() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
-        farm__uninstall)
-            opts=" -h -V  --help --version  $(farm install -l) "
+        frum__uninstall)
+            opts=" -h -V  --help --version  $(frum install -l) "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -172,7 +172,7 @@ _farm() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
-        farm__versions)
+        frum__versions)
             opts=" -h -V  --help --version  "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
@@ -190,4 +190,4 @@ _farm() {
     esac
 }
 
-complete -F _farm -o bashdefault -o default farm
+complete -F _frum -o bashdefault -o default frum

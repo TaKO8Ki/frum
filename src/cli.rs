@@ -1,12 +1,12 @@
 use clap::{App, AppSettings, Arg, SubCommand};
 
 pub fn build_cli() -> App<'static, 'static> {
-    App::new("farm")
+    App::new("frum")
         .setting(AppSettings::ArgRequiredElseHelp)
         .version("1.0")
         .about("A blazing fast Ruby version manager written in Rust")
         .subcommand(
-            SubCommand::with_name("init").about("Sets environment variables for initializing farm"),
+            SubCommand::with_name("init").about("Sets environment variables for initializing frum"),
         )
         .subcommand(
             SubCommand::with_name("install")

@@ -301,35 +301,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "farm"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chrono",
- "clap",
- "colored",
- "csv",
- "difference",
- "dirs",
- "embed-resource",
- "encoding_rs_io",
- "env_logger",
- "indoc",
- "log",
- "regex",
- "reqwest",
- "semver",
- "serde",
- "serde_json",
- "tar",
- "tempfile",
- "thiserror",
- "walkdir",
- "xz2",
- "zip",
-]
-
-[[package]]
 name = "filetime"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -367,6 +338,35 @@ checksum = "5fc25a87fa4fd2094bffb06925852034d90a17f0d1e05197d4956d3555752191"
 dependencies = [
  "matches",
  "percent-encoding",
+]
+
+[[package]]
+name = "frum"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "clap",
+ "colored",
+ "csv",
+ "difference",
+ "dirs",
+ "embed-resource",
+ "encoding_rs_io",
+ "env_logger",
+ "indoc",
+ "log",
+ "regex",
+ "reqwest",
+ "semver",
+ "serde",
+ "serde_json",
+ "tar",
+ "tempfile",
+ "thiserror",
+ "walkdir",
+ "xz2",
+ "zip",
 ]
 
 [[package]]

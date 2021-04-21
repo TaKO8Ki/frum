@@ -2,32 +2,32 @@ use crate::log::LogLevel;
 use std::path::PathBuf;
 
 #[derive(Debug)]
-pub struct FarmConfig {
+pub struct FrumConfig {
     pub base_dir: Option<PathBuf>,
     pub ruby_build_mirror: reqwest::Url,
     pub log_level: LogLevel,
-    pub farm_path: Option<PathBuf>,
+    pub frum_path: Option<PathBuf>,
 }
 
-impl Default for FarmConfig {
+impl Default for FrumConfig {
     fn default() -> Self {
         Self {
-            base_dir: std::env::var("FARM_DIR").map(std::path::PathBuf::from).ok(),
+            base_dir: std::env::var("FRUM_DIR").map(std::path::PathBuf::from).ok(),
             ruby_build_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby").unwrap(),
             log_level: LogLevel::Info,
-            farm_path: std::env::var("FARM_MULTISHELL_PATH")
+            frum_path: std::env::var("FRUM_MULTISHELL_PATH")
                 .map(std::path::PathBuf::from)
                 .ok(),
         }
     }
 }
 
-impl FarmConfig {
+impl FrumConfig {
     pub fn base_dir(&self) -> std::path::PathBuf {
         ensure_dir_exists((self.base_dir.clone()).unwrap_or_else(|| {
             dirs::home_dir()
                 .expect("Can't get home directory")
-                .join(".farm")
+                .join(".frum")
         }))
     }
 

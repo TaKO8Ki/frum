@@ -16,7 +16,7 @@ pub use zsh::Zsh;
 pub trait Shell: Debug {
     fn path(&self, path: &Path) -> String;
     fn set_env_var(&self, name: &str, value: &str) -> String;
-    fn use_on_cd(&self, config: &crate::config::FarmConfig) -> String;
+    fn use_on_cd(&self, config: &crate::config::FrumConfig) -> String;
     fn into_clap_shell(&self) -> clap::Shell;
 }
 

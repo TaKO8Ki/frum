@@ -13,15 +13,15 @@ impl Shell for Bash {
         format!("export {}={:?}", name, value)
     }
 
-    fn use_on_cd(&self, _config: &crate::config::FarmConfig) -> String {
+    fn use_on_cd(&self, _config: &crate::config::FrumConfig) -> String {
         indoc::indoc!(
             r#"
-                __farmcd() {
+                __frumcd() {
                     \cd "$@" || return $?
-                    farm local
+                    frum local
                 }
 
-                alias cd=__farmcd
+                alias cd=__frumcd
             "#
         )
         .into()

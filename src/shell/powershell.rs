@@ -18,12 +18,12 @@ impl Shell for PowerShell {
         format!(r#"$env:{} = "{}""#, name, value)
     }
 
-    fn use_on_cd(&self, _config: &crate::config::FarmConfig) -> String {
+    fn use_on_cd(&self, _config: &crate::config::FrumConfig) -> String {
         indoc!(r#"
-            function Set-LocationWithFarm { param($path); Set-Location $path; If (Test-Path .ruby-version) { & farm local } }
-            Set-Alias cd_with_farm Set-LocationWithFarm -Force
+            function Set-LocationWithFrum { param($path); Set-Location $path; If (Test-Path .ruby-version) { & frum local } }
+            Set-Alias cd_with_frum Set-LocationWithFrum -Force
             Remove-Item alias:\cd
-            New-Alias cd Set-LocationWithFarm
+            New-Alias cd Set-LocationWithFrum
         "#).into()
     }
 
