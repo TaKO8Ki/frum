@@ -68,17 +68,7 @@ impl Command for Completions {
                     .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::NotFound))
                     .map_err(FarmError::IoError)?;
                 let version = Version::parse(filename).map_err(FarmError::SemverError)?;
-                let current_version = current_version(&config).ok().flatten();
-                debug!("current version: {}", current_version.clone().unwrap());
-                if let Some(current_version) = current_version {
-                    if current_version == version {
-                        outln!(config#Info, "{} {}", "*".green(), version.to_string().green());
-                    } else {
-                        outln!(config#Info, "{} {}", " ", version);
-                    }
-                } else {
-                    outln!(config#Info, "{} {}", " ", version);
-                };
+                outln!(config#Info, "{} {}", " ", version);
             }
             return Ok(());
         }
