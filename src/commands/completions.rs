@@ -26,7 +26,7 @@ pub enum FarmError {
     #[error(
         "{}\n{}\n{}\n{}",
         "Can't infer shell!",
-        "fnm can't infer your shell based on the process tree.",
+        "farm can't infer your shell based on the process tree.",
         "Maybe it is unsupported? we support the following shells:",
         shells_as_string()
     )]

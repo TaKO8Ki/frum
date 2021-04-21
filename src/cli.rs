@@ -51,6 +51,11 @@ pub fn build_cli() -> App<'static, 'static> {
                         .help("The shell syntax to use")
                         .takes_value(true),
                 )
-                .arg(Arg::with_name("list").long("list").hidden(true)),
+                .arg(
+                    Arg::with_name("list")
+                        .long("list")
+                        .help("Lists installed Ruby versions")
+                        .hidden(true),
+                ),
         )
 }
