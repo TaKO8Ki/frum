@@ -1,10 +1,13 @@
 [package]
 name = "frum"
-version = "0.1.0"
+version = "0.1.0-alpha.0"
 authors = ["Takayuki Maeda <takoyaki0316@gmail.com>"]
 edition = "2018"
-build = "build.rs"
+license = "MIT"
+homepage = "https://github.com/TaKO8Ki/frum"
 repository = "https://github.com/TaKO8Ki/frum"
+build = "build.rs"
+readme = "README.md"
 description = "A blazing fast and simple Ruby version manager written in Rust"
 
 [dependencies]
