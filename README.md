@@ -4,7 +4,7 @@
 
 🏃‍♂️ A little bit fast and modern Ruby version manager written in Rust
 
-[![github workflow status](https://img.shields.io/github/workflow/status/TaKO8Ki/frum/CI/main)](https://github.com/TaKO8Ki/frum/actions)
+[![github workflow status](https://img.shields.io/github/workflow/status/TaKO8Ki/frum/CI/main)](https://github.com/TaKO8Ki/frum/actions) [![crates](https://img.shields.io/crates/v/frum.svg?logo=rust)](https://crates.io/crates/frum)
 
 [Usage](##Usage) | [Docs](#)
 
@@ -35,3 +35,13 @@ $ ruby -v
 - versions: Lists installed Ruby versions.
 - global: Sets the global Ruby version.
 - local: Sets the current Ruby version.
+
+## Installation
+
+### Cargo
+
+If you already have a Rust environment set up, you can use the `cargo install` command:
+
+```
+$ cargo install --version 0.1.0-alpha.0 frum
+```
