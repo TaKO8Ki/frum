@@ -18,7 +18,7 @@ impl Shell for Zsh {
             r#"
                 autoload -U add-zsh-hook
                 _frum_autoload_hook () {
-                    frum local
+                    frum local --quiet
                 }
 
                 add-zsh-hook chpwd _frum_autoload_hook \

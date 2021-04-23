@@ -20,7 +20,11 @@ impl Shell for PowerShell {
 
     fn use_on_cd(&self, _config: &crate::config::FrumConfig) -> String {
         indoc!(r#"
-            function Set-LocationWithFrum { param($path); Set-Location $path; If (Test-Path .ruby-version) { & frum local } }
+            function Set-LocationWithFrum {
+                param($path)
+                Set-Location $path
+                If (Test-Path .ruby-version) { & frum local --quiet }
+            }
             Set-Alias cd_with_frum Set-LocationWithFrum -Force
             Remove-Item alias:\cd
             New-Alias cd Set-LocationWithFrum
