@@ -25,6 +25,12 @@ $ ruby -v
 - Works with `.ruby-version` files
 - Auto-Completion
 
+## Goals
+
+- **Blazing-Fast Installation** - built with speed in mind
+- **Cross-Platform** - works on macOS, Linux and (Windows)
+
+
 ## Usage
 
 ### Subcommands
