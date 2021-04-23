@@ -11,6 +11,7 @@ const USE_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
 const INSTALL_COMMAND_REGEX: &str =
     r#"opts=" -l -w -h -V  --list --with-openssl-dir --help --version  "#;
 const UNINSTALL_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
+const LOCAL_COMMAND_REGEX: &str = r#"opts=" -q -h -V  --quiet --help --version  "#;
 
 #[derive(Debug)]
 enum FrumCommand {
@@ -102,6 +103,9 @@ fn customize_completions(shell: Shell) -> Option<String> {
     let uninstall_command_regex =
         regex::Regex::new(format!(r#"(\s+){}{} "#, UNINSTALL_COMMAND_REGEX, "<version>").as_str())
             .unwrap();
+    let local_command_regex =
+        regex::Regex::new(format!(r#"(\s+){}{} "#, LOCAL_COMMAND_REGEX, "<version>").as_str())
+            .unwrap();
     match shell {
         Shell::Zsh => {
             for (index, line) in string_split.clone().enumerate() {
@@ -172,16 +176,16 @@ fn customize_completions(shell: Shell) -> Option<String> {
                         "{}\n",
                         match subcommand {
                             FrumCommand::Local =>
-                                if use_command_regex.is_match(line) {
+                                if local_command_regex.is_match(line) {
                                     format!(
                                         r#"{}{}$(frum completions --list) ""#,
-                                        use_command_regex
+                                        local_command_regex
                                             .captures(line)
                                             .unwrap()
                                             .get(1)
                                             .unwrap()
                                             .as_str(),
-                                        USE_COMMAND_REGEX
+                                        LOCAL_COMMAND_REGEX
                                     )
                                 } else {
                                     line.to_string()
