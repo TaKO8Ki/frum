@@ -19,7 +19,8 @@ impl Shell for PowerShell {
     }
 
     fn use_on_cd(&self, _config: &crate::config::FrumConfig) -> String {
-        indoc!(r#"
+        indoc!(
+            r#"
             function Set-LocationWithFrum {
                 param($path)
                 Set-Location $path
@@ -28,7 +29,9 @@ impl Shell for PowerShell {
             Set-Alias cd_with_frum Set-LocationWithFrum -Force
             Remove-Item alias:\cd
             New-Alias cd Set-LocationWithFrum
-        "#).into()
+        "#
+        )
+        .into()
     }
 
     fn into_clap_shell(&self) -> clap::Shell {

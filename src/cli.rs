@@ -40,7 +40,7 @@ pub fn build_cli() -> App<'static, 'static> {
                         .short("q")
                         .long("quiet")
                         .takes_value(false)
-                        .help("Supress messages for missing .ruby-version files")
+                        .help("Supress messages for missing .ruby-version files"),
                 ),
         )
         .subcommand(
