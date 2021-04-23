@@ -68,6 +68,8 @@ _arguments "${_arguments_options[@]}" \
 ;;
 (local)
 _arguments "${_arguments_options[@]}" \
+'-q[Supress messages for missing .ruby-version files]' \
+'--quiet[Supress messages for missing .ruby-version files]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \

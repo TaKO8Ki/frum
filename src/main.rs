@@ -40,6 +40,7 @@ fn main() {
                 }
                 None => None,
             },
+            quiet: sub_matches.is_present("quiet"),
         }
         .call(&config),
         ("install", Some(sub_matches)) => {

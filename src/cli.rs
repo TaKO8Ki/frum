@@ -34,7 +34,14 @@ pub fn build_cli() -> App<'static, 'static> {
         .subcommand(
             SubCommand::with_name("local")
                 .about("Sets the current Ruby version")
-                .arg(Arg::with_name("version").index(1)),
+                .arg(Arg::with_name("version").index(1))
+                .arg(
+                    Arg::with_name("quiet")
+                        .short("q")
+                        .long("quiet")
+                        .takes_value(false)
+                        .help("Supress messages for missing .ruby-version files"),
+                ),
         )
         .subcommand(
             SubCommand::with_name("global")

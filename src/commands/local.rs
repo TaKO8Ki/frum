@@ -20,6 +20,7 @@ pub enum FrumError {
 
 pub struct Local {
     pub version: Option<InputVersion>,
+    pub quiet: bool,
 }
 
 impl crate::command::Command for Local {
@@ -37,12 +38,18 @@ impl crate::command::Command for Local {
                             .clone()
                             .ok_or(FrumError::FrumPathNotFound)?,
                     )?;
+
                     Err(FrumError::CantInferVersion)
                 }
             }
         }) {
             Ok(version) => version,
-            Err(result) => result?,
+            Err(result) => {
+                if self.quiet {
+                    return Ok(());
+                }
+                result?
+            }
         };
         debug!("Use {} as the current version", current_version);
         if !&config
@@ -107,6 +114,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
+            quiet: false,
         }
         .apply(&config)
         .expect("failed to install");
@@ -127,11 +135,53 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
+            quiet: false,
         }
         .apply(&config);
         match result {
             Ok(_) => assert!(false),
             Err(FrumError::VersionNotFound { .. }) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn test_not_found_version_file() {
+        let mut config = FrumConfig::default();
+        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
+        config.frum_path = Some(std::env::temp_dir().join(format!(
+            "frum_{}_{}",
+            std::process::id(),
+            chrono::Utc::now().timestamp_millis(),
+        )));
+        let result = Local {
+            version: None,
+            quiet: false,
+        }
+        .apply(&config);
+        match result {
+            Ok(_) => assert!(false),
+            Err(FrumError::CantInferVersion { .. }) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn test_not_found_version_file_with_quiet() {
+        let mut config = FrumConfig::default();
+        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
+        config.frum_path = Some(std::env::temp_dir().join(format!(
+            "frum_{}_{}",
+            std::process::id(),
+            chrono::Utc::now().timestamp_millis(),
+        )));
+        let result = Local {
+            version: None,
+            quiet: true,
+        }
+        .apply(&config);
+        match result {
+            Ok(()) => assert!(true),
             _ => assert!(false),
         }
     }

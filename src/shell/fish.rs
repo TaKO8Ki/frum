@@ -19,7 +19,7 @@ impl Shell for Fish {
             r#"
                 function _frum_autoload_hook --on-variable PWD --description 'Change Ruby version on directory change'
                     status --is-command-substitution; and return
-                    frum local
+                    frum local --quiet
                 end
             "#
         )
