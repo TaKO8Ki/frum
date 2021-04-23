@@ -12,7 +12,7 @@ _frum() {
             frum)
                 cmd="frum"
                 ;;
-
+            
             completions)
                 cmd+="__completions"
                 ;;
@@ -50,7 +50,7 @@ _frum() {
                 return 0
             fi
             case "${prev}" in
-
+                
                 *)
                     COMPREPLY=()
                     ;;
@@ -58,7 +58,7 @@ _frum() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
-
+        
         frum__completions)
             opts=" -l -h -V -s  --list --help --version --shell  "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
@@ -66,7 +66,7 @@ _frum() {
                 return 0
             fi
             case "${prev}" in
-
+                
                 --shell)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
@@ -89,7 +89,7 @@ _frum() {
                 return 0
             fi
             case "${prev}" in
-
+                
                 *)
                     COMPREPLY=()
                     ;;
@@ -104,7 +104,7 @@ _frum() {
                 return 0
             fi
             case "${prev}" in
-
+                
                 *)
                     COMPREPLY=()
                     ;;
@@ -119,7 +119,7 @@ _frum() {
                 return 0
             fi
             case "${prev}" in
-
+                
                 *)
                     COMPREPLY=()
                     ;;
@@ -134,7 +134,7 @@ _frum() {
                 return 0
             fi
             case "${prev}" in
-
+                
                 *)
                     COMPREPLY=()
                     ;;
@@ -149,7 +149,7 @@ _frum() {
                 return 0
             fi
             case "${prev}" in
-
+                
                 *)
                     COMPREPLY=()
                     ;;
@@ -164,7 +164,7 @@ _frum() {
                 return 0
             fi
             case "${prev}" in
-
+                
                 *)
                     COMPREPLY=()
                     ;;
@@ -179,7 +179,7 @@ _frum() {
                 return 0
             fi
             case "${prev}" in
-
+                
                 *)
                     COMPREPLY=()
                     ;;

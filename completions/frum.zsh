@@ -128,56 +128,56 @@ _frum_commands() {
 (( $+functions[_frum__completions_commands] )) ||
 _frum__completions_commands() {
     local commands; commands=(
-
+        
     )
     _describe -t commands 'frum completions commands' commands "$@"
 }
 (( $+functions[_frum__global_commands] )) ||
 _frum__global_commands() {
     local commands; commands=(
-
+        
     )
     _describe -t commands 'frum global commands' commands "$@"
 }
 (( $+functions[_frum__help_commands] )) ||
 _frum__help_commands() {
     local commands; commands=(
-
+        
     )
     _describe -t commands 'frum help commands' commands "$@"
 }
 (( $+functions[_frum__init_commands] )) ||
 _frum__init_commands() {
     local commands; commands=(
-
+        
     )
     _describe -t commands 'frum init commands' commands "$@"
 }
 (( $+functions[_frum__install_commands] )) ||
 _frum__install_commands() {
     local commands; commands=(
-
+        
     )
     _describe -t commands 'frum install commands' commands "$@"
 }
 (( $+functions[_frum__local_commands] )) ||
 _frum__local_commands() {
     local commands; commands=(
-
+        
     )
     _describe -t commands 'frum local commands' commands "$@"
 }
 (( $+functions[_frum__uninstall_commands] )) ||
 _frum__uninstall_commands() {
     local commands; commands=(
-
+        
     )
     _describe -t commands 'frum uninstall commands' commands "$@"
 }
 (( $+functions[_frum__versions_commands] )) ||
 _frum__versions_commands() {
     local commands; commands=(
-
+        
     )
     _describe -t commands 'frum versions commands' commands "$@"
 }
