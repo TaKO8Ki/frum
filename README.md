@@ -27,7 +27,7 @@ $ ruby -v
 
 ## Goals
 
-- **Blazing-Fast Installation** - built with speed in mind
+- **Blazing-Fast Ruby Installation** - built with speed in mind
 - **Cross-Platform** - works on macOS, Linux and (Windows)
 
 
