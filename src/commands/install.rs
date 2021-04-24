@@ -86,20 +86,23 @@ impl crate::command::Command for Install {
             });
         }
 
-        outln!(config#Info, "{} Installing {}", "==>".green(), format!("Ruby {}", current_version).green());
-        let response =
-            reqwest::blocking::get(package_url(config.ruby_build_mirror.clone(), &version))?;
+        let url = package_url(config.ruby_build_mirror.clone(), &version);
+        outln!(config#Info, "{} Downloading {}", "==>".green(), format!("{}", url).green());
+        let response = reqwest::blocking::get(url)?;
         if response.status() == 404 {
             return Err(FrumError::VersionNotFound {
                 version: current_version,
             });
         }
 
+        outln!(config#Info, "{} Extracting {}", "==>".green(), format!("{}", archive(&version)).green());
         let temp_installations_dir = installations_dir.join(".downloads");
         std::fs::create_dir_all(&temp_installations_dir).map_err(FrumError::IoError)?;
         let temp_dir = tempfile::TempDir::new_in(&temp_installations_dir)
             .expect("Can't generate a temp directory");
         extract_archive_into(&temp_dir, response)?;
+
+        outln!(config#Info, "{} Building {}", "==>".green(), format!("Ruby {}", current_version).green());
         let installed_directory = std::fs::read_dir(&temp_dir)
             .map_err(FrumError::IoError)?
             .next()
@@ -130,34 +133,28 @@ fn extract_archive_into<P: AsRef<Path>>(
     Ok(())
 }
 
-#[cfg(unix)]
 fn package_url(mirror_url: Url, version: &Version) -> Url {
     debug!("pakage url");
     Url::parse(&format!(
-        "{}/{}/ruby-{}.tar.xz",
+        "{}/{}/{}",
         mirror_url.as_str().trim_end_matches('/'),
         match version {
             Version::Semver(version) => format!("{}.{}", version.major, version.minor),
             _ => unreachable!(),
         },
-        version,
+        archive(version),
     ))
     .unwrap()
 }
 
+#[cfg(unix)]
+fn archive(version: &Version) -> String {
+    format!("ruby-{}.tar.xz", version)
+}
+
 #[cfg(windows)]
-fn package_url(mirror_url: Url, version: &Version) -> Url {
-    debug!("pakage url");
-    Url::parse(&format!(
-        "{}/{}/ruby-{}.zip",
-        mirror_url.as_str().trim_end_matches('/'),
-        match version {
-            Version::Semver(version) => format!("{}.{}", version.major, version.minor),
-            _ => unreachable!(),
-        },
-        version,
-    ))
-    .unwrap()
+fn archive(version: &Version) -> String {
+    format!("ruby-{}.zip", version)
 }
 
 fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FrumError> {
