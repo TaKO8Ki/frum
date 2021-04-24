@@ -154,6 +154,7 @@ mod tests {
             std::process::id(),
             chrono::Utc::now().timestamp_millis(),
         )));
+        std::env::set_current_dir(std::env::temp_dir()).unwrap();
         let result = Local {
             version: None,
             quiet: false,
