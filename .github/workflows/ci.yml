@@ -6,6 +6,9 @@ on:
       - main
     tags-ignore:
       - v*
+    paths-ignore:
+      - 'LICENSE'
+      - '**.md'
   pull_request:
     paths-ignore:
       - 'LICENSE'
