@@ -29,3 +29,11 @@ e2e_test!(uninstall_not_installed_version, |dir| {
         dir.command().arg("uninstall").arg("2.6.5").stderr()
     );
 });
+
+e2e_test!(use_version_specified_in_ruby_version_file, |dir| {
+    eq!(
+        "error: Can't find version in dotfiles. Please provide a version manually to the command.\n",
+        dir.command().arg("local").stderr()
+    );
+    dir.command().arg("local").arg("--quiet").output();
+});
