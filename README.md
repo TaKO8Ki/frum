@@ -58,3 +58,7 @@ $ cargo install --version 0.1.0-alpha.0 frum
 ## Contribution
 
 Contributions, issues and pull requests are welcome!
+
+## Reference
+
+- [Schniz/fnm](https://github.com/Schniz/fnm)
