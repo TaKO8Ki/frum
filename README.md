@@ -47,6 +47,14 @@ $ ruby -v
 
 ## Installation
 
+### Homebrew
+
+If you’re using Homebrew on macOS, install the `frum` formula.
+
+```
+$ brew install tako8ki/tap/frum
+```
+
 ### Cargo
 
 If you already have a Rust environment set up, you can use the `cargo install` command:
