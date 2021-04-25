@@ -7,7 +7,7 @@ on:
 
 jobs:
   create_release:
-    name: create_release
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Create artifacts directory
@@ -43,8 +43,20 @@ jobs:
           name: artifacts
           path: artifacts
 
+  cargo_publish:
+    name: Cargo Publish
+    needs: create_release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cargo login
+        run: cargo login ${CRATES_IO_TOKEN}
+        env:
+          CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+      - run: cargo publish
+
   build_release:
-    name: build_release
+    name: Build Release
     needs: create_release
     runs-on: ${{ matrix.os }}
     env:
@@ -123,12 +135,6 @@ jobs:
 
       - name: Build release binary
         run: ${{ env.CARGO }} build ${{ env.TARGET_FLAGS }} --verbose --release
-
-      - name: Cargo login
-        run: cargo login ${CRATES_IO_TOKEN}
-        env:
-          CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
-      - run: cargo publish
 
       - name: Strip release binary (linux and macos)
         if: matrix.build == 'linux' || matrix.build == 'macos'
