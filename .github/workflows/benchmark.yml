@@ -53,8 +53,7 @@ jobs:
           echo $URL
           curl -L $URL -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' > /tmp/frum-latest.tar.gz
           mkdir ~/.frum-latest
-          tar -zxvf /tmp/frum-latest.tar.gz
-          mv frum-latest ~/.frum-latest/
+          tar -zxvf /tmp/frum-latest.tar.gz -C ~/.frum-latest --strip-components=1
           ls -lah ~/.frum-latest
       - uses: actions/checkout@v2
       - name: Install hyperfine
