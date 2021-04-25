@@ -41,16 +41,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: octokit/request-action@v2.x
-        id: get_latest_artifacts
+        id: get_latest_release
         with:
-          route: GET /repos/:repository/actions/runs/:workflow_id/artifacts
-          repository: ${{ github.repository }}
-          workflow_id: 689152766
+          route: GET /repos/{owner}/{repo}/releases/latest
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Take the output
         run: |
-          URL=$(echo '${{ steps.get_latest_artifacts.outputs.data }}' | jq -r '.artifacts | map(select(.name == "frum-linux")) | .[0].archive_download_url')
+          URL=$(echo '${{ steps.get_latest_release.outputs.data }}' | jq -r '.assets | map(select(.name | endswith("x86_64-unknown-linux-musl.tar.gz"))) | .[0].browser_download_url')
           curl -L $URL -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' > /tmp/frum-latest.zip
           mkdir ~/.frum-latest
           unzip -d ~/.frum-latest /tmp/frum-latest.zip
