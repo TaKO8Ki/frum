@@ -1,5 +1,5 @@
 #!/bin/bash
-eval "$(~/.farm-latest/farm init)"
-~/.farm-latest/farm install 2.6.5
-~/.farm-latest/farm local 2.6.5
+eval "$(~/.frum-latest/frum init)"
+~/.frum-latest/frum install 2.6.5
+~/.frum-latest/frum local 2.6.5
 ruby -v

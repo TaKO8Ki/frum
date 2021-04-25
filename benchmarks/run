@@ -2,18 +2,18 @@
 
 set -e
 
-export FARM_DIR
+export frum_DIR
 
 BASE_DIR="$(dirname "$(realpath "$0")")"
 cd "$BASE_DIR" || exit 1
 
-FARM_DIR="$(mktemp -d)"
+frum_DIR="$(mktemp -d)"
 export PATH="$BASE_DIR/../target/release:$PATH"
 
 mkdir results 2>/dev/null || :
 
-if [ ! -f "$BASE_DIR/../target/release/farm" ]; then
-  echo "Can't access the release version of farm"
+if [ ! -f "$BASE_DIR/../target/release/frum" ]; then
+  echo "Can't access the release version of frum"
   exit 1
 fi
 
@@ -23,9 +23,9 @@ if ! command -v hyperfine >/dev/null 2>&1; then
   exit 1
 fi
 
-chmod +x ./farm
+chmod +x ./frum
 chmod +x ./rbenv
-chmod +x ~/.farm-latest/farm
+chmod +x ~/.frum-latest/frum
 
 hyperfine \
   --warmup=2 \
@@ -34,5 +34,5 @@ hyperfine \
   --export-json="./results/basic.json" \
   --export-markdown="./results/basic.md" \
   --show-output \
-  "./farm" \
+  "./frum" \
   "./rbenv"

@@ -50,9 +50,11 @@ jobs:
       - name: Take the output
         run: |
           URL=$(echo '${{ steps.get_latest_release.outputs.data }}' | jq -r '.assets | map(select(.name | endswith("x86_64-unknown-linux-musl.tar.gz"))) | .[0].browser_download_url')
-          curl -L $URL -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' > /tmp/frum-latest.zip
+          echo $URL
+          curl -L $URL -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' > /tmp/frum-latest.tar.gz
           mkdir ~/.frum-latest
-          unzip -d ~/.frum-latest /tmp/frum-latest.zip
+          tar -zxvf /tmp/frum-latest.tar.gz
+          mv frum-latest ~/.frum-latest/
           ls -lah ~/.frum-latest
       - uses: actions/checkout@v2
       - name: Install hyperfine
