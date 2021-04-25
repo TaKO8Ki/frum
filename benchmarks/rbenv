@@ -1,8 +1,7 @@
 #!/bin/bash
 
-rm -rf ~/.rbenv/versions/2.6.5
-
 eval "$(rbenv init -)"
+rbenv uninstall -f 2.6.5
 rbenv install 2.6.5
 rbenv local 2.6.5
 ruby -v
