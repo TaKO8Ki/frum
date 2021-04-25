@@ -43,7 +43,8 @@ jobs:
       - uses: octokit/request-action@v2.x
         id: get_latest_release
         with:
-          route: GET /repos/${{ github.repository_owner }}/${{ github.repository }}/releases/latest
+          route: GET /repos/:repository/releases/latest
+          repository: ${{ github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Take the output
