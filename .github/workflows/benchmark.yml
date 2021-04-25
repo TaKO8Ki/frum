@@ -20,11 +20,11 @@ jobs:
     - name: Compress binary using UPX
       run: |
         sudo apt-get install -y upx
-        upx target/x86_64-unknown-linux-musl/release/farm
+        upx target/x86_64-unknown-linux-musl/release/frum
     - uses: actions/upload-artifact@v2
       with:
-        name: farm-linux
-        path: target/x86_64-unknown-linux-musl/release/farm
+        name: frum-linux
+        path: target/x86_64-unknown-linux-musl/release/frum
 
   benchmark_on_linux:
     name: Benchmark (Linux)
@@ -50,11 +50,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Take the output
         run: |
-          URL=$(echo '${{ steps.get_latest_artifacts.outputs.data }}' | jq -r '.artifacts | map(select(.name == "farm-linux")) | .[0].archive_download_url')
-          curl -L $URL -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' > /tmp/farm-latest.zip
-          mkdir ~/.farm-latest
-          unzip -d ~/.farm-latest /tmp/farm-latest.zip
-          ls -lah ~/.farm-latest
+          URL=$(echo '${{ steps.get_latest_artifacts.outputs.data }}' | jq -r '.artifacts | map(select(.name == "frum-linux")) | .[0].archive_download_url')
+          curl -L $URL -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' > /tmp/frum-latest.zip
+          mkdir ~/.frum-latest
+          unzip -d ~/.frum-latest /tmp/frum-latest.zip
+          ls -lah ~/.frum-latest
       - uses: actions/checkout@v2
       - name: Install hyperfine
         run: |
@@ -66,7 +66,7 @@ jobs:
           git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
       - uses: actions/download-artifact@v2
         with:
-          name: farm-linux
+          name: frum-linux
           path: target/release/
       - name: Run benchmarks
         run: ./benchmarks/run
