@@ -27,6 +27,9 @@ chmod +x ./frum
 chmod +x ./rbenv
 chmod +x ~/.frum-latest/frum
 
+export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/.rbenv/shims:$PATH"
+
 hyperfine \
   --warmup=2 \
   --min-runs=10 \
