@@ -30,8 +30,27 @@ $ ruby -v
 - **Blazing-Fast Ruby Installation** - built with speed in mind
 - **Cross-Platform** - works on macOS, Linux and (Windows)
 
-
 ## Usage
+
+### Shell Setup
+
+You need to run some shell commands before using frum. All you have to do is evaluate the output of `frum init`. Check out the following guides for the shell you use:
+
+#### Bash
+
+add the following to your `.bashrc`:
+
+```bash
+eval "$(frum init)"
+```
+
+#### Zsh
+
+add the following to your `.zshrc`:
+
+```zsh
+eval "$(frum init)"
+```
 
 ### Subcommands
 
