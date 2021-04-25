@@ -1,10 +1,9 @@
 #!/bin/bash
 
-rm -rf ~/.rbenv/versions/2.6.5
-
 export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$HOME/.rbenv/shims:$PATH"
 eval "$(rbenv init -)"
+rbenv uninstall 2.6.5
 rbenv install 2.6.5
 rbenv local 2.6.5
 ruby -v
