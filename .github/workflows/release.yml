@@ -48,6 +48,7 @@ jobs:
     needs: create_release
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Cargo login
         run: cargo login ${CRATES_IO_TOKEN}
         env:
