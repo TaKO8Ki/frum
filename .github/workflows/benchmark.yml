@@ -78,7 +78,6 @@ jobs:
           path: benchmarks/results/basic.md
 
       - uses: octokit/request-action@v2.x
-        id: get_latest_release
         with:
           route: POST /repos/:repository/commits/:commit_sha/comments
           repository: ${{ github.repository }}
