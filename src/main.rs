@@ -55,6 +55,10 @@ fn main() {
                     ),
                     None => None,
                 },
+                configure_opts: match sub_matches.values_of("configure_opts") {
+                    Some(opts) => opts.map(move |opt| opt.to_string()).collect(),
+                    None => Vec::new(),
+                },
             }
             .call(&config);
         }

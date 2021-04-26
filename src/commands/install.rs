@@ -44,6 +44,7 @@ pub enum FrumError {
 
 pub struct Install {
     pub version: Option<InputVersion>,
+    pub configure_opts: Vec<String>,
 }
 
 impl crate::command::Command for Install {
@@ -109,7 +110,11 @@ impl crate::command::Command for Install {
             .ok_or(FrumError::TarIsEmpty)?
             .map_err(FrumError::IoError)?;
         let installed_directory = installed_directory.path();
-        build_package(&installed_directory, &installation_dir)?;
+        build_package(
+            &installed_directory,
+            &installation_dir,
+            &self.configure_opts,
+        )?;
 
         if !config.default_version_dir().exists() {
             debug!("Use {} as the default version", current_version);
@@ -157,12 +162,21 @@ fn archive(version: &Version) -> String {
     format!("ruby-{}.zip", version)
 }
 
-fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FrumError> {
-    debug!("./configure --with-openssl-dir={}", openssl_dir()?);
+fn build_package(
+    current_dir: &Path,
+    installed_dir: &Path,
+    configure_opts: &Vec<String>,
+) -> Result<(), FrumError> {
+    println!(
+        "./configure --with-openssl-dir={} {}",
+        openssl_dir()?,
+        configure_opts.join(" ")
+    );
     let configure = Command::new("sh")
         .arg("configure")
         .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))
         .arg(format!("--with-openssl-dir={}", openssl_dir()?))
+        .args(configure_opts)
         .current_dir(&current_dir)
         .output()
         .map_err(FrumError::IoError)?;
