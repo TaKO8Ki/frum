@@ -31,6 +31,11 @@ chmod +x ~/.frum-latest/frum
 export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$HOME/.rbenv/shims:$PATH"
 
+# command exists?
+~/.frum-latest/frum
+frum
+rbenv
+
 hyperfine \
   --min-runs=20 \
   --time-unit=millisecond \
