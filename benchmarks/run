@@ -32,9 +32,9 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$HOME/.rbenv/shims:$PATH"
 
 # command exists?
-~/.frum-latest/frum -h
-frum -h
-rbenv -h
+~/.frum-latest/frum -V
+frum -V
+rbenv -v
 
 hyperfine \
   --min-runs=20 \
