@@ -24,6 +24,7 @@ if ! command -v hyperfine >/dev/null 2>&1; then
 fi
 
 chmod +x ./frum
+chmod +x ./frum_reason
 chmod +x ./rbenv
 chmod +x ~/.frum-latest/frum
 
@@ -37,5 +38,6 @@ hyperfine \
   --export-markdown="./results/basic.md" \
   --show-output \
   --prepare 'rm -rf ~/.rbenv/versions/2.6.5 ~/.frum/versions/2.6.5' \
+  "./rbenv" \
   "./frum" \
-  "./rbenv"
+  "./frum_reason"
