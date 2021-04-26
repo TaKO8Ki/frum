@@ -38,8 +38,7 @@ frum -V
 rbenv -v
 
 hyperfine \
-  --warmup=1 \
-  --min-runs=20 \
+  --min-runs=15 \
   --time-unit=millisecond \
   --export-json="./results/basic.json" \
   --export-markdown="./results/basic.md" \
