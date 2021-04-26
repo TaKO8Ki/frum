@@ -27,6 +27,7 @@ chmod +x ./frum
 chmod +x ./frum_reason
 chmod +x ./rbenv
 chmod +x ~/.frum-latest/frum
+chmod +x ../target/release/frum
 
 export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$HOME/.rbenv/shims:$PATH"
