@@ -34,7 +34,9 @@ fn main() {
         }
         .call(&config),
         ("local", Some(sub_matches)) => commands::local::Local {
-            version: sub_matches.value_of("version").map(|version| input_version::InputVersion::from_str(version).expect("invalid version")),
+            version: sub_matches.value_of("version").map(|version| {
+                input_version::InputVersion::from_str(version).expect("invalid version")
+            }),
             quiet: sub_matches.is_present("quiet"),
         }
         .call(&config),
@@ -44,7 +46,9 @@ fn main() {
                 return;
             }
             commands::install::Install {
-                version: sub_matches.value_of("version").map(|version| input_version::InputVersion::from_str(version).expect("invalid version")),
+                version: sub_matches.value_of("version").map(|version| {
+                    input_version::InputVersion::from_str(version).expect("invalid version")
+                }),
             }
             .call(&config);
         }
@@ -59,7 +63,9 @@ fn main() {
         }
         ("completions", Some(sub_matches)) => {
             commands::completions::Completions {
-                shell: sub_matches.value_of("shell").map(|shell| clap::Shell::from_str(shell).expect("invalid shell")),
+                shell: sub_matches
+                    .value_of("shell")
+                    .map(|shell| clap::Shell::from_str(shell).expect("invalid shell")),
                 list: sub_matches.is_present("list"),
             }
             .call(&config);
