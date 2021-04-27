@@ -30,6 +30,16 @@ $ ruby -v
 - **Blazing-Fast Ruby Installation** - built with speed in mind
 - **Cross-Platform** - works on macOS, Linux and (Windows)
 
+### Benchmark
+
+| Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
+|:---|---:|---:|---:|---:|
+| `rbenv` | 224003.4 ± 635.3 | 222880.7 | 224699.7 | 1.03 ± 0.00 |
+| `frum` | 221892.7 ± 1268.8 | 220353.6 | 223999.6 | 1.02 ± 0.01 |
+| `frum(pre-release)` | 218178.1 ± 619.9 | 217431.1 | 219347.3 | 1.00 |
+
+For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
+
 ## Usage
 
 ### Shell Setup
