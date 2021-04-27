@@ -39,7 +39,7 @@ rbenv -v
 
 hyperfine \
   --warmup 2 \
-  --min-runs=15 \
+  --min-runs=20 \
   --time-unit=millisecond \
   --export-json="./results/basic.json" \
   --export-markdown="./results/basic.md" \
