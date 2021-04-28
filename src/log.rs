@@ -5,11 +5,26 @@ pub enum LogLevel {
     Info,
 }
 
+impl Default for LogLevel {
+    fn default() -> Self {
+        Self::Info
+    }
+}
+
 impl LogLevel {
+    pub fn is_writable(&self, level: &Self) -> bool {
+        use std::cmp::Ordering;
+        matches!(self.cmp(level), Ordering::Greater | Ordering::Equal)
+    }
+
     pub fn write(&self, level: &Self) -> Box<dyn std::io::Write> {
-        match level {
-            Self::Error => Box::from(std::io::stderr()),
-            _ => Box::from(std::io::stdout()),
+        if self.is_writable(level) {
+            match level {
+                Self::Error => Box::from(std::io::stderr()),
+                _ => Box::from(std::io::stdout()),
+            }
+        } else {
+            Box::from(std::io::sink())
         }
     }
 }

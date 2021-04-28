@@ -20,13 +20,13 @@ pub enum FrumError {
 
 pub struct Local {
     pub version: Option<InputVersion>,
-    pub quiet: bool,
 }
 
 impl crate::command::Command for Local {
     type Error = FrumError;
 
     fn apply(&self, config: &crate::config::FrumConfig) -> Result<(), Self::Error> {
+        debug!("log level {:?}", config.log_level);
         let current_version = match self.version.clone().ok_or_else(|| {
             match get_user_version_for_directory(std::env::current_dir().unwrap()) {
                 Some(version) => Ok(version),
@@ -44,12 +44,7 @@ impl crate::command::Command for Local {
             }
         }) {
             Ok(version) => version,
-            Err(result) => {
-                if self.quiet {
-                    return Ok(());
-                }
-                result?
-            }
+            Err(result) => result?,
         };
         debug!("Use {} as the current version", current_version);
         if !&config
@@ -116,7 +111,6 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
-            quiet: false,
         }
         .apply(&config)
         .expect("failed to install");
@@ -139,7 +133,6 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
-            quiet: false,
         }
         .apply(&config);
         assert!(matches!(result, Err(FrumError::VersionNotFound { .. })));
@@ -157,30 +150,7 @@ mod tests {
             ..FrumConfig::default()
         };
         std::env::set_current_dir(std::env::temp_dir()).unwrap();
-        let result = Local {
-            version: None,
-            quiet: false,
-        }
-        .apply(&config);
+        let result = Local { version: None }.apply(&config);
         assert!(matches!(result, Err(FrumError::CantInferVersion)));
-    }
-
-    #[test]
-    fn test_not_found_version_file_with_quiet() {
-        let config = FrumConfig {
-            base_dir: Some(tempdir().unwrap().path().to_path_buf()),
-            frum_path: Some(std::env::temp_dir().join(format!(
-                "frum_{}_{}",
-                std::process::id(),
-                chrono::Utc::now().timestamp_millis(),
-            ))),
-            ..FrumConfig::default()
-        };
-        let result = Local {
-            version: None,
-            quiet: true,
-        }
-        .apply(&config);
-        assert!(matches!(result, Ok(())));
     }
 }

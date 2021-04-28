@@ -21,7 +21,13 @@ fn main() {
     env_logger::init();
     let matches = cli::build_cli().get_matches();
 
-    let config = config::FrumConfig::default();
+    let config = config::FrumConfig {
+        log_level: match matches.value_of("log-level") {
+            Some(log_level) => log::LogLevel::from_str(log_level).expect("invalid log level"),
+            None => log::LogLevel::default(),
+        },
+        ..config::FrumConfig::default()
+    };
     // println!("{:?}", config);
     match matches.subcommand() {
         ("init", _) => commands::init::Init {}.call(&config),
@@ -37,7 +43,6 @@ fn main() {
             version: sub_matches.value_of("version").map(|version| {
                 input_version::InputVersion::from_str(version).expect("invalid version")
             }),
-            quiet: sub_matches.is_present("quiet"),
         }
         .call(&config),
         ("install", Some(sub_matches)) => {
