@@ -2,7 +2,7 @@
 
 ![frum](./resources/logo.png)
 
-**frum is currently in alpha**
+**frum is currently in beta**
 
 🏃‍♂️ A little bit fast and modern Ruby version manager written in Rust
 
@@ -92,7 +92,7 @@ $ brew install tako8ki/tap/frum
 If you already have a Rust environment set up, you can use the `cargo install` command:
 
 ```
-$ cargo install --version 0.1.0-alpha.1 frum
+$ cargo install --version 0.1.0-beta.0 frum
 ```
 
 ## Contribution
