@@ -62,6 +62,10 @@ add the following to your `.zshrc`:
 eval "$(frum init)"
 ```
 
+### Options
+
+- --log-level: The log level of frum commands [default: info] [possible values: quiet, info, error].
+
 ### Subcommands
 
 - init: Sets environment variables for initializing frum.

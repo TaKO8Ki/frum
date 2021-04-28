@@ -8,7 +8,7 @@ pub fn build_cli() -> App<'static, 'static> {
         .arg(
             Arg::with_name("log-level")
                 .long("log-level")
-                .help("The log level of frum commands")
+                .help("The log level of frum commands [default: info] [possible values: quiet, info, error]")
                 .takes_value(true),
         )
         .subcommand(
