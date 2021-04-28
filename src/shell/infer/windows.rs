@@ -66,7 +66,7 @@ pub fn get_process_map() -> std::io::Result<ProcessMap> {
         .stdout(std::process::Stdio::piped())
         .spawn()?
         .stdout
-        .ok_or(std::io::Error::from(std::io::ErrorKind::UnexpectedEof))?;
+        .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::UnexpectedEof))?;
 
     let mut reader = csv::Reader::from_reader(stdout);
     let hashmap: HashMap<_, _> = reader

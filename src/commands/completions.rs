@@ -77,15 +77,12 @@ impl Command for Completions {
             .or_else(|| infer_shell().map(Into::into))
             .ok_or(FrumError::CantInferShell)?;
 
-        print!(
-            "{}",
-            customize_completions(shell).expect("invalid completions")
-        );
+        print!("{}", customize_completions(shell));
         Ok(())
     }
 }
 
-fn customize_completions(shell: Shell) -> Option<String> {
+fn customize_completions(shell: Shell) -> String {
     use std::io::BufWriter;
     let mut buffer = BufWriter::new(Vec::new());
     build_cli().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut buffer);
@@ -153,7 +150,7 @@ fn customize_completions(shell: Shell) -> Option<String> {
                     .as_str(),
                 );
             }
-            Some(completions)
+            completions
         }
         Shell::Bash => {
             for (index, line) in string_split.clone().enumerate() {
@@ -241,7 +238,7 @@ fn customize_completions(shell: Shell) -> Option<String> {
                     .as_str(),
                 );
             }
-            Some(completions)
+            completions
         }
         _ => {
             for (index, line) in string_split.clone().enumerate() {
@@ -250,7 +247,7 @@ fn customize_completions(shell: Shell) -> Option<String> {
                 }
                 completions.push_str(format!("{}\n", line).as_str())
             }
-            Some(completions)
+            completions
         }
     }
 }
@@ -266,37 +263,29 @@ fn shells_as_string() -> String {
 #[cfg(test)]
 mod test {
     use super::customize_completions;
-    use crate::config::FrumConfig;
     use clap::Shell;
     use difference::assert_diff;
     use std::fs::File;
     use std::io::prelude::*;
     use std::io::BufReader;
-    use tempfile::tempdir;
 
     #[test]
     fn test_zsh_completions() {
-        let mut config = FrumConfig::default();
-        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
-
         let file = File::open("completions/frum.zsh").unwrap();
         let mut buf_reader = BufReader::new(file);
         let mut expected = String::new();
         buf_reader.read_to_string(&mut expected).unwrap();
-        let actual = customize_completions(Shell::Zsh).unwrap();
+        let actual = customize_completions(Shell::Zsh);
         assert_diff!(actual.as_str(), expected.as_str(), "\n", 0);
     }
 
     #[test]
     fn test_bash_completions() {
-        let mut config = FrumConfig::default();
-        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
-
         let file = File::open("completions/frum.bash").unwrap();
         let mut buf_reader = BufReader::new(file);
         let mut expected = String::new();
         buf_reader.read_to_string(&mut expected).unwrap();
-        let actual = customize_completions(Shell::Bash).unwrap();
+        let actual = customize_completions(Shell::Bash);
         assert_diff!(actual.as_str(), expected.as_str(), "\n", 0);
     }
 }

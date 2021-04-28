@@ -28,7 +28,7 @@ impl Shell for Zsh {
         .into()
     }
 
-    fn into_clap_shell(&self) -> clap::Shell {
+    fn as_clap_shell(&self) -> clap::Shell {
         clap::Shell::Zsh
     }
 }
