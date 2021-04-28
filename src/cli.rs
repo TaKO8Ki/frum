@@ -5,6 +5,12 @@ pub fn build_cli() -> App<'static, 'static> {
         .setting(AppSettings::ArgRequiredElseHelp)
         .version("1.0")
         .about("A blazing fast Ruby version manager written in Rust")
+        .arg(
+            Arg::with_name("log-level")
+                .long("log-level")
+                .help("The log level of frum commands")
+                .takes_value(true),
+        )
         .subcommand(
             SubCommand::with_name("init").about("Sets environment variables for initializing frum"),
         )
@@ -34,14 +40,7 @@ pub fn build_cli() -> App<'static, 'static> {
         .subcommand(
             SubCommand::with_name("local")
                 .about("Sets the current Ruby version")
-                .arg(Arg::with_name("version").index(1))
-                .arg(
-                    Arg::with_name("quiet")
-                        .short("q")
-                        .long("quiet")
-                        .takes_value(false)
-                        .help("Supress messages for missing .ruby-version files"),
-                ),
+                .arg(Arg::with_name("version").index(1)),
         )
         .subcommand(
             SubCommand::with_name("global")

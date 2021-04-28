@@ -72,7 +72,6 @@ eval "$(frum init)"
 - versions: Lists installed Ruby versions.
 - global: Sets the global Ruby version.
 - local: Sets the current Ruby version.
-    - -q, --quiet: Supress error messages when `.ruby-version` is missing
 
 ## Installation
 

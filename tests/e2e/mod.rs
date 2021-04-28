@@ -35,5 +35,5 @@ e2e_test!(use_version_specified_in_ruby_version_file, |dir| {
         "error: Can't find version in dotfiles. Please provide a version manually to the command.\n",
         dir.command().arg("local").stderr()
     );
-    dir.command().arg("local").arg("--quiet").output();
+    dir.command().arg("--log-level quiet").arg("local").output();
 });

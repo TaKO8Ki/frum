@@ -18,7 +18,7 @@ impl Shell for Bash {
             r#"
                 __frumcd() {
                     \cd "$@" || return $?
-                    frum local --quiet
+                    frum --log-level quiet local
                 }
 
                 alias cd=__frumcd
