@@ -147,7 +147,7 @@ _frum() {
             return 0
             ;;
         frum__local)
-            opts=" -h -V  --help --version  <version> "
+            opts=" -h -V  --help --version  $(frum completions --list) "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

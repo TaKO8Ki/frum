@@ -11,7 +11,7 @@ const USE_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
 const INSTALL_COMMAND_REGEX: &str =
     r#"opts=" -l -w -h -V  --list --with-openssl-dir --help --version  "#;
 const UNINSTALL_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
-const LOCAL_COMMAND_REGEX: &str = r#"opts=" -q -h -V  --quiet --help --version  "#;
+const LOCAL_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
 
 #[derive(Debug)]
 enum FrumCommand {
