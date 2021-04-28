@@ -15,7 +15,7 @@ _frum() {
 
     local context curcontext="$curcontext" state line
     _arguments "${_arguments_options[@]}" \
-'--log-level=[The log level of frum commands]' \
+'--log-level=[The log level of frum commands \[default: info\] \[possible values: quiet, info, error\]]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
