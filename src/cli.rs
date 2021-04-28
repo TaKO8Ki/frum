@@ -3,8 +3,8 @@ use clap::{App, AppSettings, Arg, SubCommand};
 pub fn build_cli() -> App<'static, 'static> {
     App::new("frum")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .version("1.0")
-        .about("A blazing fast Ruby version manager written in Rust")
+        .version("0.1.0-alpha.1")
+        .about("A little bit fast and modern Ruby version manager written in Rust")
         .arg(
             Arg::with_name("log-level")
                 .long("log-level")
