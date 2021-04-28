@@ -103,7 +103,6 @@ If you’re using Arch Linux, install the `frum-bin` package using your favorite
 $ yay -S frum-bin
 ```
 
-
 ## Contribution
 
 Contributions, issues and pull requests are welcome!
