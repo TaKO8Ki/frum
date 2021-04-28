@@ -14,10 +14,7 @@ impl Default for LogLevel {
 impl LogLevel {
     pub fn is_writable(&self, level: &Self) -> bool {
         use std::cmp::Ordering;
-        match self.cmp(level) {
-            Ordering::Greater | Ordering::Equal => true,
-            _ => false,
-        }
+        matches!(self.cmp(level), Ordering::Greater | Ordering::Equal)
     }
 
     pub fn write(&self, level: &Self) -> Box<dyn std::io::Write> {
