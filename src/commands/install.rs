@@ -290,7 +290,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.7.0").unwrap(),
             ))),
-            configure_opts: vec![]
+            configure_opts: vec![],
         }
         .apply(&config)
         .expect("Can't install 2.7.0");
@@ -299,7 +299,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
-            configure_opts: vec![]
+            configure_opts: vec![],
         }
         .apply(&config)
         .expect("Can't install 2.6.4");
@@ -322,7 +322,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
-            configure_opts: vec![]
+            configure_opts: vec![],
         }
         .apply(&config)
         .expect("Can't install");

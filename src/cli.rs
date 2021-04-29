@@ -20,7 +20,11 @@ pub fn build_cli() -> App<'static, 'static> {
                         .help("Lists Ruby versions available to install"),
                 )
                 .arg(Arg::with_name("version").index(1))
-                .arg(Arg::with_name("configure_opts").multiple(true)),
+                .arg(
+                    Arg::with_name("configure_opts")
+                        .multiple(true)
+                        .help("Options passed to Ruby's ./configure"),
+                ),
         )
         .subcommand(
             SubCommand::with_name("uninstall")
