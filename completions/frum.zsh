@@ -45,7 +45,7 @@ _arguments "${_arguments_options[@]}" \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
 '::version:_values 'version' $(frum install -l)' \
-'::configure_opts:_values 'version' $(frum install -l)' \
+'::configure_opts -- Options passed to Ruby's ./configure:_files' \
 && ret=0
 ;;
 (uninstall)
