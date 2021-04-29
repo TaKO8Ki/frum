@@ -40,13 +40,12 @@ _arguments "${_arguments_options[@]}" \
 _arguments "${_arguments_options[@]}" \
 '-l[Lists Ruby versions available to install]' \
 '--list[Lists Ruby versions available to install]' \
-'-w[Specify a openssl directory]' \
-'--with-openssl-dir[Specify a openssl directory]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
 '::version:_values 'version' $(frum install -l)' \
+'::configure_opts:_values 'version' $(frum install -l)' \
 && ret=0
 ;;
 (uninstall)

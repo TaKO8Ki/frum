@@ -9,9 +9,9 @@ use thiserror::Error;
 
 const USE_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
 const INSTALL_COMMAND_REGEX: &str =
-    r#"opts=" -l -w -h -V  --list --with-openssl-dir --help --version  "#;
+    r#"opts=" -l -h -V  --list --help --version  "#;
 const UNINSTALL_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
-const LOCAL_COMMAND_REGEX: &str = r#"opts=" -q -h -V  --quiet --help --version  "#;
+const LOCAL_COMMAND_REGEX: &str = r#"opts=" -q -h -V  --quiet --help --quiet --version  "#;
 
 #[derive(Debug)]
 enum FrumCommand {
@@ -138,6 +138,9 @@ fn customize_completions(shell: Shell) -> Option<String> {
                             FrumCommand::Install => match line {
                                 r#"'::version:_files' \"# =>
                                     r#"'::version:_values 'version' $(frum install -l)' \"#
+                                        .to_string(),
+                                r#"'::configure_opts:_files' \"# =>
+                                    r#"'::configure_opts:_values 'version' $(frum install -l)' \"#
                                         .to_string(),
                                 _ => line.to_string(),
                             },
