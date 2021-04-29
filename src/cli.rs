@@ -19,12 +19,6 @@ pub fn build_cli() -> App<'static, 'static> {
                         .long("list")
                         .help("Lists Ruby versions available to install"),
                 )
-                .arg(
-                    Arg::with_name("with-openssl-dir")
-                        .short("w")
-                        .long("with-openssl-dir")
-                        .help("Specify a openssl directory"),
-                )
                 .arg(Arg::with_name("version").index(1))
                 .arg(Arg::with_name("configure_opts").multiple(true)),
         )

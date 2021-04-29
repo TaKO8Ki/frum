@@ -167,15 +167,10 @@ fn build_package(
     installed_dir: &Path,
     configure_opts: &Vec<String>,
 ) -> Result<(), FrumError> {
-    println!(
-        "./configure --with-openssl-dir={} {}",
-        openssl_dir()?,
-        configure_opts.join(" ")
-    );
+    debug!("./configure {}", configure_opts.join(" "));
     let configure = Command::new("sh")
         .arg("configure")
         .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))
-        .arg(format!("--with-openssl-dir={}", openssl_dir()?))
         .args(configure_opts)
         .current_dir(&current_dir)
         .output()
@@ -279,22 +274,6 @@ fn number_of_cores() -> Result<u8, FrumError> {
         .expect("can't convert cores to integer"))
 }
 
-fn openssl_dir() -> Result<String, FrumError> {
-    #[cfg(target_os = "macos")]
-    return Ok(String::from_utf8_lossy(
-        &Command::new("brew")
-            .arg("--prefix")
-            .arg("openssl")
-            .output()
-            .map_err(FrumError::IoError)?
-            .stdout,
-    )
-    .trim()
-    .to_string());
-    #[cfg(not(target_os = "macos"))]
-    return Ok("/usr/local".to_string());
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -311,6 +290,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.7.0").unwrap(),
             ))),
+            configure_opts: vec![]
         }
         .apply(&config)
         .expect("Can't install 2.7.0");
@@ -319,6 +299,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
+            configure_opts: vec![]
         }
         .apply(&config)
         .expect("Can't install 2.6.4");
@@ -341,6 +322,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
+            configure_opts: vec![]
         }
         .apply(&config)
         .expect("Can't install");
