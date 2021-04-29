@@ -19,14 +19,14 @@ impl Shell for Fish {
             r#"
                 function _frum_autoload_hook --on-variable PWD --description 'Change Ruby version on directory change'
                     status --is-command-substitution; and return
-                    frum local --quiet
+                    frum --log-level quiet local
                 end
             "#
         )
         .into()
     }
 
-    fn into_clap_shell(&self) -> clap::Shell {
+    fn as_clap_shell(&self) -> clap::Shell {
         clap::Shell::Fish
     }
 }

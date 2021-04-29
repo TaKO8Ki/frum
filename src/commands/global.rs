@@ -42,13 +42,15 @@ mod tests {
 
     #[test]
     fn test_global_specified_version() {
-        let mut config = FrumConfig::default();
-        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
-        config.frum_path = Some(std::env::temp_dir().join(format!(
-            "frum_{}_{}",
-            std::process::id(),
-            chrono::Utc::now().timestamp_millis(),
-        )));
+        let config = FrumConfig {
+            base_dir: Some(tempdir().unwrap().path().to_path_buf()),
+            frum_path: Some(std::env::temp_dir().join(format!(
+                "frum_{}_{}",
+                std::process::id(),
+                chrono::Utc::now().timestamp_millis(),
+            ))),
+            ..Default::default()
+        };
         let dir_path = config.versions_dir().join("2.6.4").join("bin");
         std::fs::create_dir_all(&dir_path).unwrap();
         File::create(dir_path.join("ruby")).unwrap();

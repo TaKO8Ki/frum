@@ -13,7 +13,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::thread;
 use std::time::Duration;
 
-static TEST_DIR: &'static str = "frum-tests";
+static TEST_DIR: &str = "frum-tests";
 static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
 
 /// Setup an empty work directory and return a command pointing to the frum
@@ -32,7 +32,7 @@ pub fn setup(test_name: &str) -> (Dir, TestCommand) {
 /// always be in the same order.
 pub fn sort_lines(lines: &str) -> String {
     let mut lines: Vec<&str> = lines.trim().lines().collect();
-    lines.sort();
+    lines.sort_unstable();
     format!("{}\n", lines.join("\n"))
 }
 
@@ -78,7 +78,7 @@ impl Dir {
         nice_err(&dir, repeat(|| fs::create_dir_all(&dir)));
         let (frum_path, path) = set_frum_path_env(&root, &dir);
         Dir {
-            root: root,
+            root,
             dir,
             frum_path,
             ruby_bin_path: path,
@@ -137,7 +137,7 @@ impl Dir {
             .env("FRUM_DIR", self.dir.to_str().unwrap());
         TestCommand {
             dir: self.clone(),
-            cmd: cmd,
+            cmd,
         }
     }
 

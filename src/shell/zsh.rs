@@ -18,7 +18,7 @@ impl Shell for Zsh {
             r#"
                 autoload -U add-zsh-hook
                 _frum_autoload_hook () {
-                    frum local --quiet
+                    frum --log-level quiet local
                 }
 
                 add-zsh-hook chpwd _frum_autoload_hook \
@@ -28,7 +28,7 @@ impl Shell for Zsh {
         .into()
     }
 
-    fn into_clap_shell(&self) -> clap::Shell {
+    fn as_clap_shell(&self) -> clap::Shell {
         clap::Shell::Zsh
     }
 }

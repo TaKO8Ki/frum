@@ -2,7 +2,7 @@
 
 ![frum](./resources/logo.png)
 
-**frum is currently in alpha**
+**frum is currently in beta**
 
 🏃‍♂️ A little bit fast and modern Ruby version manager written in Rust
 
@@ -30,8 +30,41 @@ $ ruby -v
 - **Blazing-Fast Ruby Installation** - built with speed in mind
 - **Cross-Platform** - works on macOS, Linux and (Windows)
 
+### Benchmark
+
+| Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
+|:---|---:|---:|---:|---:|
+| `rbenv` | 224003.4 ± 635.3 | 222880.7 | 224699.7 | 1.03 ± 0.00 |
+| `frum` | 221892.7 ± 1268.8 | 220353.6 | 223999.6 | 1.02 ± 0.01 |
+| `frum(pre-release)` | 218178.1 ± 619.9 | 217431.1 | 219347.3 | 1.00 |
+
+For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
 
 ## Usage
+
+### Shell Setup
+
+You need to run some shell commands before using frum. All you have to do is evaluate the output of `frum init`. Check out the following guides for the shell you use:
+
+#### Bash
+
+add the following to your `.bashrc`:
+
+```bash
+eval "$(frum init)"
+```
+
+#### Zsh
+
+add the following to your `.zshrc`:
+
+```zsh
+eval "$(frum init)"
+```
+
+### Options
+
+- --log-level: The log level of frum commands [default: info] [possible values: quiet, info, error].
 
 ### Subcommands
 
@@ -42,9 +75,8 @@ $ ruby -v
 - versions: Lists installed Ruby versions.
 - global: Sets the global Ruby version.
 - local: Sets the current Ruby version.
-    - -q, --quiet: Supress error messages when `.ruby-version` is missing
 
-## Installation
+### Ruby configuration options
 
 Options to configure Ruby can be passed to the `frum install` command.
 
@@ -53,12 +85,22 @@ frum install --with-openssl-dir=<ssl_dir> # Specify the OpenSSL directory
 frum install --with-jemalloc # Use jemalloc as allocator
 ```
 
+## Installation
+
+### Homebrew
+
+If you’re using Homebrew on macOS, install the `frum` formula.
+
+```
+$ brew install tako8ki/tap/frum
+```
+
 ### Cargo
 
 If you already have a Rust environment set up, you can use the `cargo install` command:
 
 ```
-$ cargo install --version 0.1.0-alpha.1 frum
+$ cargo install --version 0.1.0-beta.0 frum
 ```
 
 ## Contribution

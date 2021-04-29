@@ -96,7 +96,7 @@ impl crate::command::Command for Install {
             });
         }
 
-        outln!(config#Info, "{} Extracting {}", "==>".green(), format!("{}", archive(&version)).green());
+        outln!(config#Info, "{} Extracting {}", "==>".green(), archive(&version).green());
         let temp_installations_dir = installations_dir.join(".downloads");
         std::fs::create_dir_all(&temp_installations_dir).map_err(FrumError::IoError)?;
         let temp_dir = tempfile::TempDir::new_in(&temp_installations_dir)
@@ -284,8 +284,11 @@ mod tests {
 
     #[test]
     fn test_install_second_version() {
-        let mut config = FrumConfig::default();
-        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
+        let config = FrumConfig {
+            base_dir: Some(tempdir().unwrap().path().to_path_buf()),
+            ..Default::default()
+        };
+
         Install {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.7.0").unwrap(),
@@ -315,8 +318,10 @@ mod tests {
 
     #[test]
     fn test_install_default_version() {
-        let mut config = FrumConfig::default();
-        config.base_dir = Some(tempdir().unwrap().path().to_path_buf());
+        let config = FrumConfig {
+            base_dir: Some(tempdir().unwrap().path().to_path_buf()),
+            ..Default::default()
+        };
 
         Install {
             version: Some(InputVersion::Full(Version::Semver(

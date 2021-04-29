@@ -24,7 +24,7 @@ impl Shell for PowerShell {
             function Set-LocationWithFrum {
                 param($path)
                 Set-Location $path
-                If (Test-Path .ruby-version) { & frum local --quiet }
+                If (Test-Path .ruby-version) { & frum --log-level quiet local }
             }
             Set-Alias cd_with_frum Set-LocationWithFrum -Force
             Remove-Item alias:\cd
@@ -34,7 +34,7 @@ impl Shell for PowerShell {
         .into()
     }
 
-    fn into_clap_shell(&self) -> clap::Shell {
+    fn as_clap_shell(&self) -> clap::Shell {
         clap::Shell::PowerShell
     }
 }

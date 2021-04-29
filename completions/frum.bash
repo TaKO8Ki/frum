@@ -44,13 +44,17 @@ _frum() {
 
     case "${cmd}" in
         frum)
-            opts=" -h -V  --help --version   init install uninstall versions local global completions help"
+            opts=" -h -V  --help --version --log-level   init install uninstall versions local global completions help"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
                 
+                --log-level)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -143,7 +147,7 @@ _frum() {
             return 0
             ;;
         frum__local)
-            opts=" -q -h -V  --quiet --help --version  $(frum completions --list) "
+            opts=" -h -V  --help --version  $(frum completions --list) "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

@@ -18,7 +18,7 @@ impl Shell for Bash {
             r#"
                 __frumcd() {
                     \cd "$@" || return $?
-                    frum local --quiet
+                    frum --log-level quiet local
                 }
 
                 alias cd=__frumcd
@@ -27,7 +27,7 @@ impl Shell for Bash {
         .into()
     }
 
-    fn into_clap_shell(&self) -> clap::Shell {
+    fn as_clap_shell(&self) -> clap::Shell {
         clap::Shell::Bash
     }
 }
