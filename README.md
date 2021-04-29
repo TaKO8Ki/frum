@@ -38,7 +38,6 @@ $ ruby -v
 - init: Sets environment variables for initializing frum.
 - install: Installs the specified Ruby version.
     - -l, --list: Lists the Ruby versions available to install.
-    - -w, --with-openssl-dir: Specify the openssl directory.
 - uninstall: Uninstall a specific Ruby version.
 - versions: Lists installed Ruby versions.
 - global: Sets the global Ruby version.
@@ -46,6 +45,13 @@ $ ruby -v
     - -q, --quiet: Supress error messages when `.ruby-version` is missing
 
 ## Installation
+
+Options to configure Ruby can be passed to the `frum install` command.
+
+```sh
+frum install --with-openssl-dir=<ssl_dir> # Specify the OpenSSL directory
+frum install --with-jemalloc # Use jemalloc as allocator
+```
 
 ### Cargo
 
