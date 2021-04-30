@@ -182,7 +182,7 @@ fn openssl_dir() -> Result<String, FrumError> {
 fn build_package(
     current_dir: &Path,
     installed_dir: &Path,
-    configure_opts: &Vec<String>,
+    configure_opts: &[String],
 ) -> Result<(), FrumError> {
     debug!("./configure {}", configure_opts.join(" "));
     let mut command = Command::new("sh");
