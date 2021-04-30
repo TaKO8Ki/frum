@@ -28,7 +28,6 @@ fn main() {
         },
         ..config::FrumConfig::default()
     };
-    // println!("{:?}", config);
     match matches.subcommand() {
         ("init", _) => commands::init::Init {}.call(&config),
         ("versions", _) => commands::versions::Versions {}.call(&config),
