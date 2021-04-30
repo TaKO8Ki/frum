@@ -162,16 +162,44 @@ fn archive(version: &Version) -> String {
     format!("ruby-{}.zip", version)
 }
 
+#[allow(clippy::unnecessary_wraps)]
+fn openssl_dir() -> Result<String, FrumError> {
+    #[cfg(target_os = "macos")]
+    return Ok(String::from_utf8_lossy(
+        &Command::new("brew")
+            .arg("--prefix")
+            .arg("openssl")
+            .output()
+            .map_err(FrumError::IoError)?
+            .stdout,
+    )
+    .trim()
+    .to_string());
+    #[cfg(not(target_os = "macos"))]
+    return Ok("/usr/local".to_string());
+}
+
 fn build_package(
     current_dir: &Path,
     installed_dir: &Path,
     configure_opts: &Vec<String>,
 ) -> Result<(), FrumError> {
     debug!("./configure {}", configure_opts.join(" "));
-    let configure = Command::new("sh")
+    let mut command = Command::new("sh");
+    command
         .arg("configure")
         .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))
-        .args(configure_opts)
+        .args(configure_opts);
+
+    // Provide a default value for --with-openssl-dir
+    if !configure_opts
+        .iter()
+        .any(|opt| opt.starts_with("--with-openssl-dir"))
+    {
+        command.arg(format!("--with-openssl-dir={}", openssl_dir()?));
+    }
+
+    let configure = command
         .current_dir(&current_dir)
         .output()
         .map_err(FrumError::IoError)?;
