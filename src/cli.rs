@@ -29,7 +29,7 @@ pub fn build_cli() -> App<'static, 'static> {
                 .arg(
                     Arg::with_name("configure_opts")
                         .multiple(true)
-                        .help("Options passed to Ruby's ./configure"),
+                        .help("Options passed to ./configure"),
                 ),
         )
         .subcommand(
