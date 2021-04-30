@@ -55,7 +55,7 @@ fn main() {
                     input_version::InputVersion::from_str(version).expect("invalid version")
                 }),
                 configure_opts: match sub_matches.values_of("configure_opts") {
-                    Some(opts) => opts.map(move |opt| opt.to_string()).collect(),
+                    Some(opts) => opts.map(|opt| opt.to_string()).collect(),
                     None => Vec::new(),
                 },
             }
