@@ -44,3 +44,17 @@ e2e_test!(use_version_specified_in_ruby_version_file, |dir| {
             .stderr()
     );
 });
+
+e2e_test!(use_configure_opts, |dir| {
+    dir.command()
+        .arg("install")
+        .arg("2.7.1")
+        .arg("--disable-werror")
+        .arg("--without-gmp")
+        .output();
+    dir.command().arg("local").arg("2.7.1").output();
+    let configure_opts =
+        dir.execute_ruby("-r rbconfig -e 'p RbConfig::CONFIG[\"configure_args\"]'");
+    eq_re!("--disable-werror", &configure_opts);
+    eq_re!("--without-gmp", &configure_opts);
+});
