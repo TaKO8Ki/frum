@@ -143,7 +143,6 @@ impl Dir {
 
     pub fn execute_ruby(&self, args: &[&str]) -> String {
         let o = Command::new("ruby")
-            .current_dir(&self.dir)
             .args(args)
             .env("PATH", self.ruby_bin_path.to_str().unwrap())
             .output()
