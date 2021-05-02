@@ -95,6 +95,14 @@ If you already have a Rust environment set up, you can use the `cargo install` c
 $ cargo install --version 0.1.0-beta.0 frum
 ```
 
+### Arch Linux
+
+If you’re using Arch Linux, install the `frum-bin` package using your favorite AUR helper.
+
+```
+$ yay -S frum-bin
+```
+
 ## Contribution
 
 Contributions, issues and pull requests are welcome!
