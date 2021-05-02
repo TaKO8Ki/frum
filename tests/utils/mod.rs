@@ -141,9 +141,10 @@ impl Dir {
         }
     }
 
-    pub fn execute_ruby(&self, args: &str) -> String {
+    pub fn execute_ruby(&self, args: &[&str]) -> String {
         let o = Command::new("ruby")
-            .args(args.split(" "))
+            .current_dir(&self.dir)
+            .args(args)
             .env("PATH", self.ruby_bin_path.to_str().unwrap())
             .output()
             .unwrap();
@@ -157,7 +158,7 @@ impl Dir {
     }
 
     pub fn ruby_version(&self) -> String {
-        self.execute_ruby("-v")
+        self.execute_ruby(&["-v"])
     }
 
     /// Returns the path to the frum executable.

@@ -53,8 +53,10 @@ e2e_test!(use_configure_opts, |dir| {
         .arg("--without-gmp")
         .output();
     dir.command().arg("local").arg("2.7.1").output();
-    let configure_opts =
-        dir.execute_ruby("-r rbconfig -e 'p RbConfig::CONFIG[\"configure_args\"]'");
-    eq_re!("--disable-werror", &configure_opts);
-    eq_re!("--without-gmp", &configure_opts);
+    let configure_opts = dir.execute_ruby(&[
+        "-r rbconfig",
+        r#"-e 'STDOUT.puts RbConfig::CONFIG["configure_args"]'"#,
+    ]);
+    assert!(configure_opts.contains("disable-werror"));
+    assert!(configure_opts.contains("without-gmp"));
 });
