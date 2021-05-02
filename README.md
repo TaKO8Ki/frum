@@ -87,20 +87,20 @@ If you’re using Homebrew on macOS, install the `frum` formula.
 $ brew install tako8ki/tap/frum
 ```
 
-### Cargo
-
-If you already have a Rust environment set up, you can use the `cargo install` command:
-
-```
-$ cargo install --version 0.1.0-beta.0 frum
-```
-
 ### Arch Linux
 
 If you’re using Arch Linux, install the `frum-bin` package using your favorite AUR helper.
 
 ```
 $ yay -S frum-bin
+```
+
+### Cargo
+
+If you already have a Rust environment set up, you can use the `cargo install` command:
+
+```
+$ cargo install --version 0.1.0-beta.0 frum
 ```
 
 ## Contribution
