@@ -1,29 +1,40 @@
 use crate::{e2e_test, eq, eq_re};
 
+e2e_test!(init, |dir| {
+    dir.command().arg("init").output();
+    let stdout = dir.command().arg("init").stdout();
+    eq_re!("PATH", stdout);
+    eq_re!("FRUM_MULTISHELL_PATH", stdout);
+    eq_re!("FRUM_DIR", stdout);
+    eq_re!("FRUM_LOGLEVEL", stdout);
+    eq_re!("FRUM_RUBY_BUILD_MIRROR", stdout);
+    eq_re!("frum --log-level quiet local", stdout);
+});
+
 e2e_test!(use_installed_version, |dir| {
-    dir.command().arg("install").arg("2.7.1").output();
-    dir.command().arg("local").arg("2.7.1").output();
-    eq_re!("^ruby 2.7.1", dir.ruby_version());
-    dir.command().arg("global").arg("2.7.1").output();
-    eq_re!("^ruby 2.7.1", dir.ruby_version());
+    dir.command().arg("install").arg("2.7.0").output();
+    dir.command().arg("local").arg("2.7.0").output();
+    eq_re!("^ruby 2.7.0", dir.ruby_version());
+    dir.command().arg("global").arg("2.7.0").output();
+    eq_re!("^ruby 2.7.0", dir.ruby_version());
 });
 
 e2e_test!(use_not_installed_version, |dir| {
     eq!(
-        "error: Requested version 2.0.0 is not currently installed\n",
-        dir.command().arg("local").arg("2.0.0").stderr()
+        "error: Requested version 2.7.0 is not currently installed\n",
+        dir.command().arg("local").arg("2.7.0").stderr()
     );
 });
 
 e2e_test!(uninstall_installed_version, |dir| {
-    dir.command().arg("install").arg("2.7.1").output();
-    assert!(dir.path().join("versions").join("2.7.1").exists());
-    dir.command().arg("uninstall").arg("2.7.1").output();
-    assert!(!dir.path().join("versions").join("2.7.1").exists());
+    dir.command().arg("install").arg("2.7.0").output();
+    assert!(dir.path().join("versions").join("2.7.0").exists());
+    dir.command().arg("uninstall").arg("2.7.0").output();
+    assert!(!dir.path().join("versions").join("2.7.0").exists());
 });
 
 e2e_test!(uninstall_not_installed_version, |dir| {
-    dir.command().arg("install").arg("2.7.1").output();
+    dir.command().arg("install").arg("2.7.0").output();
     eq!(
         "error: Can't find version: 2.6.5\n",
         dir.command().arg("uninstall").arg("2.6.5").stderr()
@@ -43,4 +54,32 @@ e2e_test!(use_version_specified_in_ruby_version_file, |dir| {
             .arg("local")
             .stderr()
     );
+});
+
+e2e_test!(install_ruby_via_specific_mirror, |dir| {
+    dir.command()
+        .arg("--ruby-build-mirror")
+        .arg("http://ring.airnet.ne.jp/archives/lang/ruby")
+        .arg("install")
+        .arg("2.7.0")
+        .output();
+    dir.command().arg("local").arg("2.7.0").output();
+    eq_re!("^ruby 2.7.0", dir.ruby_version());
+});
+
+e2e_test!(install_ruby_in_specific_base_dir, |dir| {
+    let base_dir = dir.path().join("foo");
+    dir.command()
+        .arg("--frum-dir")
+        .arg(&base_dir)
+        .arg("install")
+        .arg("2.7.0")
+        .output();
+    dir.command()
+        .arg("--frum-dir")
+        .arg(&base_dir)
+        .arg("local")
+        .arg("2.7.0")
+        .output();
+    assert!(base_dir.join("versions").exists());
 });

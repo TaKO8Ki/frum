@@ -21,12 +21,16 @@ fn main() {
     env_logger::init();
     let matches = cli::build_cli().get_matches();
 
-    let config = config::FrumConfig {
-        log_level: match matches.value_of("log-level") {
-            Some(log_level) => log::LogLevel::from_str(log_level).expect("invalid log level"),
-            None => log::LogLevel::default(),
-        },
-        ..config::FrumConfig::default()
+    let mut config = config::FrumConfig::default();
+    if let Some(log_level) = matches.value_of("log-level") {
+        config.log_level = log::LogLevel::from_str(log_level).expect("invalid log level")
+    }
+    if let Some(ruby_build_mirror) = matches.value_of("ruby-build-mirror") {
+        config.ruby_build_mirror =
+            reqwest::Url::parse(ruby_build_mirror).expect("invalid ruby build mirror")
+    };
+    if let Some(base_dir) = matches.value_of("base-dir") {
+        config.base_dir = Some(std::path::PathBuf::from(base_dir))
     };
     match matches.subcommand() {
         ("init", _) => commands::init::Init {}.call(&config),

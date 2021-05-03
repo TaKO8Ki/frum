@@ -123,5 +123,7 @@ jobs:
         with:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+      - name: Cargo build
+        run: cargo build
       - name: Run tests
         run: cargo test -- e2e
