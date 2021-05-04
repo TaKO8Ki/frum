@@ -11,6 +11,18 @@ pub fn build_cli() -> App<'static, 'static> {
                 .help("The log level of frum commands [default: info] [possible values: quiet, info, error]")
                 .takes_value(true),
         )
+        .arg(
+            Arg::with_name("ruby-build-mirror")
+                .long("ruby-build-mirror")
+                .help("[default: https://cache.ruby-lang.org/pub/ruby]")
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("base-dir")
+                .long("frum-dir")
+                .help("The root directory of frum installations")
+                .takes_value(true),
+        )
         .subcommand(
             SubCommand::with_name("init").about("Sets environment variables for initializing frum"),
         )

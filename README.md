@@ -40,43 +40,6 @@ $ ruby -v
 
 For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
 
-## Usage
-
-### Shell Setup
-
-You need to run some shell commands before using frum. All you have to do is evaluate the output of `frum init`. Check out the following guides for the shell you use:
-
-#### Bash
-
-add the following to your `.bashrc`:
-
-```bash
-eval "$(frum init)"
-```
-
-#### Zsh
-
-add the following to your `.zshrc`:
-
-```zsh
-eval "$(frum init)"
-```
-
-### Options
-
-- --log-level: The log level of frum commands [default: info] [possible values: quiet, info, error].
-
-### Subcommands
-
-- init: Sets environment variables for initializing frum.
-- install: Installs the specified Ruby version.
-    - -l, --list: Lists the Ruby versions available to install.
-    - -w, --with-openssl-dir: Specify the openssl directory.
-- uninstall: Uninstall a specific Ruby version.
-- versions: Lists installed Ruby versions.
-- global: Sets the global Ruby version.
-- local: Sets the current Ruby version.
-
 ## Installation
 
 ### Homebrew
@@ -102,6 +65,51 @@ If you already have a Rust environment set up, you can use the `cargo install` c
 ```
 $ cargo install --version 0.1.0-beta.0 frum
 ```
+
+## Usage
+
+### Shell Setup
+
+You need to run some shell commands before using frum. All you have to do is evaluate the output of `frum init`. Check out the following guides for the shell you use:
+
+#### Bash
+
+add the following to your `.bashrc`:
+
+```bash
+eval "$(frum init)"
+```
+
+#### Zsh
+
+add the following to your `.zshrc`:
+
+```zsh
+eval "$(frum init)"
+```
+
+#### Fish shell
+
+create `~/.config/fish/conf.d/frum.fish` add this line to it:
+
+```fish
+frum init | source
+```
+
+### Options
+
+- --log-level: The log level of frum commands [default: info] [possible values: quiet, info, error].
+
+### Subcommands
+
+- init: Sets environment variables for initializing frum.
+- install: Installs the specified Ruby version.
+    - -l, --list: Lists the Ruby versions available to install.
+    - -w, --with-openssl-dir: Specify the openssl directory.
+- uninstall: Uninstall a specific Ruby version.
+- versions: Lists installed Ruby versions.
+- global: Sets the global Ruby version.
+- local: Sets the current Ruby version.
 
 ## Contribution
 
