@@ -67,6 +67,12 @@ If you already have a Rust environment set up, you can use the `cargo install` c
 $ cargo install --version 0.1.0-beta.0 frum
 ```
 
+### Using a release binary (Linux/macOS)
+
+- Download the [latest release binary](https://github.com/TaKO8Ki/frum/releases) for your system
+- Set the PATH environment variable
+- Configure your shell profile
+
 ## Usage
 
 ### Shell Setup
