@@ -24,6 +24,7 @@ $ ruby -v
 - Cross-platform support (macOS, Linux)
 - Works with `.ruby-version` files
 - Auto-Completion
+- Pure Rust implementation not using `ruby-build`
 
 ## Goals
 
