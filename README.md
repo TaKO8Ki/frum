@@ -70,7 +70,7 @@ $ cargo install --version 0.1.0-beta.0 frum
 ### Using a release binary (Linux/macOS)
 
 - Download the [latest release binary](https://github.com/TaKO8Ki/frum/releases) for your system
-- Set the PATH environment variable
+- Set the `PATH` environment variable
 - Configure your shell profile
 
 ## Usage
