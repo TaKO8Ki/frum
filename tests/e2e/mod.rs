@@ -56,7 +56,6 @@ e2e_test!(use_version_specified_in_ruby_version_file, |dir| {
     );
 });
 
-
 e2e_test!(install_ruby_via_specific_mirror, |dir| {
     dir.command()
         .arg("--ruby-build-mirror")
