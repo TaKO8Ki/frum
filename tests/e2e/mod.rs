@@ -84,3 +84,16 @@ e2e_test!(install_ruby_in_specific_base_dir, |dir| {
         .output();
     assert!(base_dir.join("versions").exists());
 });
+
+e2e_test!(use_configure_opts, |dir| {
+    dir.command()
+        .arg("install")
+        .arg("2.7.1")
+        .arg("--disable-werror")
+        .arg("--without-gmp")
+        .output();
+    dir.command().arg("local").arg("2.7.1").output();
+    let configure_opts = dir.ruby_configure_options();
+    eq_re!("--disable-werror", configure_opts);
+    eq_re!("--with-openssl-dir", configure_opts);
+});

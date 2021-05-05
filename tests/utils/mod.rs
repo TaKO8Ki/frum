@@ -141,9 +141,9 @@ impl Dir {
         }
     }
 
-    pub fn execute_ruby(&self, args: &[&str]) -> String {
+    pub fn ruby_version(&self) -> String {
         let o = Command::new("ruby")
-            .args(args)
+            .arg("-v")
             .env("PATH", self.ruby_bin_path.to_str().unwrap())
             .output()
             .unwrap();
@@ -156,8 +156,27 @@ impl Dir {
         }
     }
 
-    pub fn ruby_version(&self) -> String {
-        self.execute_ruby(&["-v"])
+    pub fn ruby_configure_options(&self) -> String {
+        use std::fs::File;
+        use std::io::prelude::*;
+        use std::io::BufReader;
+        let file_path = self.dir.join("configure-options.txt");
+        let mut file = std::fs::File::create(&file_path).unwrap();
+        let o = Command::new("ruby")
+            .current_dir(&self.dir)
+            .arg("-r")
+            .arg("rbconfig")
+            .arg("-e")
+            .arg(r#"$stdout = File.open("configure-options.txt", "w"); puts RbConfig::CONFIG["configure_args"]"#)
+            .env("PATH", self.ruby_bin_path.to_str().unwrap())
+            .output()
+            .unwrap();
+
+        let file = File::open(&file_path).unwrap();
+        let mut buf_reader = BufReader::new(file);
+        let mut contents = String::new();
+        buf_reader.read_to_string(&mut contents).unwrap();
+        contents
     }
 
     /// Returns the path to the frum executable.
@@ -322,7 +341,7 @@ impl TestCommand {
             expected_code,
             code,
             "\n\n===== {:?} =====\n\
-             expected exit code did not match\
+            expected exit code did not match\
              \n\ncwd: {}\
              \n\nexpected: {}\
              \n\nfound: {}\

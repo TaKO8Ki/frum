@@ -126,6 +126,29 @@ frum install --with-openssl-dir=<ssl_dir> # Specify the OpenSSL directory
 frum install --with-jemalloc # Use jemalloc as allocator
 ```
 
+<<<<<<< Updated upstream
+=======
+You can also specify many other options that will be listed when running `./configure -h`.
+
+## Installation
+
+### Homebrew
+
+If you’re using Homebrew on macOS, install the `frum` formula.
+
+```
+$ brew install tako8ki/tap/frum
+```
+
+### Cargo
+
+If you already have a Rust environment set up, you can use the `cargo install` command:
+
+```
+$ cargo install --version 0.1.0-beta.0 frum
+```
+
+>>>>>>> Stashed changes
 ## Contribution
 
 Contributions, issues and pull requests are welcome!
