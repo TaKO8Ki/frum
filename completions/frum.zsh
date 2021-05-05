@@ -16,6 +16,8 @@ _frum() {
     local context curcontext="$curcontext" state line
     _arguments "${_arguments_options[@]}" \
 '--log-level=[The log level of frum commands \[default: info\] \[possible values: quiet, info, error\]]' \
+'--ruby-build-mirror=[\[default: https://cache.ruby-lang.org/pub/ruby\]]' \
+'--frum-dir=[The root directory of frum installations]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \

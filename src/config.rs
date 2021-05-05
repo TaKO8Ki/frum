@@ -14,7 +14,7 @@ impl Default for FrumConfig {
         Self {
             base_dir: std::env::var("FRUM_DIR").map(std::path::PathBuf::from).ok(),
             ruby_build_mirror: reqwest::Url::parse("https://cache.ruby-lang.org/pub/ruby").unwrap(),
-            log_level: LogLevel::Info,
+            log_level: LogLevel::default(),
             frum_path: std::env::var("FRUM_MULTISHELL_PATH")
                 .map(std::path::PathBuf::from)
                 .ok(),

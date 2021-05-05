@@ -44,7 +44,7 @@ _frum() {
 
     case "${cmd}" in
         frum)
-            opts=" -h -V  --help --version --log-level   init install uninstall versions local global completions help"
+            opts=" -h -V  --help --version --log-level --ruby-build-mirror --frum-dir   init install uninstall versions local global completions help"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -52,6 +52,14 @@ _frum() {
             case "${prev}" in
                 
                 --log-level)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                --ruby-build-mirror)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                --frum-dir)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;

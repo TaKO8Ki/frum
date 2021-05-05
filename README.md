@@ -21,6 +21,7 @@ $ ruby -v
 
 ## Features
 
+- Pure Rust implementation not using `ruby-build`
 - Cross-platform support (macOS, Linux)
 - Works with `.ruby-version` files
 - Auto-Completion
@@ -39,6 +40,38 @@ $ ruby -v
 | `frum(pre-release)` | 218178.1 ± 619.9 | 217431.1 | 219347.3 | 1.00 |
 
 For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
+
+## Installation
+
+### Homebrew
+
+If you’re using Homebrew on macOS, install the `frum` formula.
+
+```
+$ brew install tako8ki/tap/frum
+```
+
+### Arch Linux
+
+If you’re using Arch Linux, install the `frum-bin` package using your favorite AUR helper.
+
+```
+$ yay -S frum-bin
+```
+
+### Cargo
+
+If you already have a Rust environment set up, you can use the `cargo install` command:
+
+```
+$ cargo install --version 0.1.0-beta.0 frum
+```
+
+### Using a release binary (Linux/macOS)
+
+- Download the [latest release binary](https://github.com/TaKO8Ki/frum/releases) for your system
+- Set the `PATH` environment variable
+- Configure your shell profile
 
 ## Usage
 
@@ -62,6 +95,14 @@ add the following to your `.zshrc`:
 eval "$(frum init)"
 ```
 
+#### Fish shell
+
+create `~/.config/fish/conf.d/frum.fish` add this line to it:
+
+```fish
+frum init | source
+```
+
 ### Options
 
 - --log-level: The log level of frum commands [default: info] [possible values: quiet, info, error].
@@ -83,24 +124,6 @@ Options to configure Ruby can be passed to the `frum install` command.
 ```sh
 frum install --with-openssl-dir=<ssl_dir> # Specify the OpenSSL directory
 frum install --with-jemalloc # Use jemalloc as allocator
-```
-
-## Installation
-
-### Homebrew
-
-If you’re using Homebrew on macOS, install the `frum` formula.
-
-```
-$ brew install tako8ki/tap/frum
-```
-
-### Cargo
-
-If you already have a Rust environment set up, you can use the `cargo install` command:
-
-```
-$ cargo install --version 0.1.0-beta.0 frum
 ```
 
 ## Contribution
