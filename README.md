@@ -146,7 +146,6 @@ If you already have a Rust environment set up, you can use the `cargo install` c
 $ cargo install --version 0.1.0-beta.0 frum
 ```
 
->>>>>>> Stashed changes
 ## Contribution
 
 Contributions, issues and pull requests are welcome!
