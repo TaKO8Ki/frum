@@ -112,11 +112,21 @@ frum init | source
 - init: Sets environment variables for initializing frum.
 - install: Installs the specified Ruby version.
     - -l, --list: Lists the Ruby versions available to install.
-    - -w, --with-openssl-dir: Specify the openssl directory.
 - uninstall: Uninstall a specific Ruby version.
 - versions: Lists installed Ruby versions.
 - global: Sets the global Ruby version.
 - local: Sets the current Ruby version.
+
+### Ruby configuration options
+
+Options to configure Ruby can be passed to the `frum install` command.
+
+```sh
+frum install --with-openssl-dir=<ssl_dir> # Specify the OpenSSL directory
+frum install --with-jemalloc # Use jemalloc as allocator
+```
+
+You can also specify many other options that will be listed when running `./configure -h`.
 
 ## Contribution
 

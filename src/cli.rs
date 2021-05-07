@@ -28,6 +28,8 @@ pub fn build_cli() -> App<'static, 'static> {
         )
         .subcommand(
             SubCommand::with_name("install")
+                .setting(AppSettings::TrailingVarArg)
+                .setting(AppSettings::AllowLeadingHyphen)
                 .about("Installs a specific Ruby version")
                 .arg(
                     Arg::with_name("list")
@@ -35,13 +37,12 @@ pub fn build_cli() -> App<'static, 'static> {
                         .long("list")
                         .help("Lists Ruby versions available to install"),
                 )
+                .arg(Arg::with_name("version").index(1))
                 .arg(
-                    Arg::with_name("with-openssl-dir")
-                        .short("w")
-                        .long("with-openssl-dir")
-                        .help("Specify a openssl directory"),
-                )
-                .arg(Arg::with_name("version").index(1)),
+                    Arg::with_name("configure_opts")
+                        .multiple(true)
+                        .help("Options passed to ./configure"),
+                ),
         )
         .subcommand(
             SubCommand::with_name("uninstall")

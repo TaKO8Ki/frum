@@ -140,7 +140,7 @@ _frum() {
             return 0
             ;;
         frum__install)
-            opts=" -l -w -h -V  --list --with-openssl-dir --help --version  $(frum install -l) "
+            opts=" -l -h -V  --list --help --version  $(frum install -l) "
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

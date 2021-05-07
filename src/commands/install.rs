@@ -44,6 +44,7 @@ pub enum FrumError {
 
 pub struct Install {
     pub version: Option<InputVersion>,
+    pub configure_opts: Vec<String>,
 }
 
 impl crate::command::Command for Install {
@@ -109,7 +110,11 @@ impl crate::command::Command for Install {
             .ok_or(FrumError::TarIsEmpty)?
             .map_err(FrumError::IoError)?;
         let installed_directory = installed_directory.path();
-        build_package(&installed_directory, &installation_dir)?;
+        build_package(
+            &installed_directory,
+            &installation_dir,
+            &self.configure_opts,
+        )?;
 
         if !config.default_version_dir().exists() {
             debug!("Use {} as the default version", current_version);
@@ -157,12 +162,44 @@ fn archive(version: &Version) -> String {
     format!("ruby-{}.zip", version)
 }
 
-fn build_package(current_dir: &Path, installed_dir: &Path) -> Result<(), FrumError> {
-    debug!("./configure --with-openssl-dir={}", openssl_dir()?);
-    let configure = Command::new("sh")
+#[allow(clippy::unnecessary_wraps)]
+fn openssl_dir() -> Result<String, FrumError> {
+    #[cfg(target_os = "macos")]
+    return Ok(String::from_utf8_lossy(
+        &Command::new("brew")
+            .arg("--prefix")
+            .arg("openssl")
+            .output()
+            .map_err(FrumError::IoError)?
+            .stdout,
+    )
+    .trim()
+    .to_string());
+    #[cfg(not(target_os = "macos"))]
+    return Ok("/usr/local".to_string());
+}
+
+fn build_package(
+    current_dir: &Path,
+    installed_dir: &Path,
+    configure_opts: &[String],
+) -> Result<(), FrumError> {
+    debug!("./configure {}", configure_opts.join(" "));
+    let mut command = Command::new("sh");
+    command
         .arg("configure")
         .arg(format!("--prefix={}", installed_dir.to_str().unwrap()))
-        .arg(format!("--with-openssl-dir={}", openssl_dir()?))
+        .args(configure_opts);
+
+    // Provide a default value for --with-openssl-dir
+    if !configure_opts
+        .iter()
+        .any(|opt| opt.starts_with("--with-openssl-dir"))
+    {
+        command.arg(format!("--with-openssl-dir={}", openssl_dir()?));
+    }
+
+    let configure = command
         .current_dir(&current_dir)
         .output()
         .map_err(FrumError::IoError)?;
@@ -265,23 +302,6 @@ fn number_of_cores() -> Result<u8, FrumError> {
         .expect("can't convert cores to integer"))
 }
 
-#[allow(clippy::unnecessary_wraps)]
-fn openssl_dir() -> Result<String, FrumError> {
-    #[cfg(target_os = "macos")]
-    return Ok(String::from_utf8_lossy(
-        &Command::new("brew")
-            .arg("--prefix")
-            .arg("openssl")
-            .output()
-            .map_err(FrumError::IoError)?
-            .stdout,
-    )
-    .trim()
-    .to_string());
-    #[cfg(not(target_os = "macos"))]
-    return Ok("/usr/local".to_string());
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -301,6 +321,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.7.0").unwrap(),
             ))),
+            configure_opts: vec![],
         }
         .apply(&config)
         .expect("Can't install 2.7.0");
@@ -309,6 +330,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
+            configure_opts: vec![],
         }
         .apply(&config)
         .expect("Can't install 2.6.4");
@@ -333,6 +355,7 @@ mod tests {
             version: Some(InputVersion::Full(Version::Semver(
                 semver::Version::parse("2.6.4").unwrap(),
             ))),
+            configure_opts: vec![],
         }
         .apply(&config)
         .expect("Can't install");

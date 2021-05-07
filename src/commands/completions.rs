@@ -8,8 +8,7 @@ use clap::Shell;
 use thiserror::Error;
 
 const USE_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
-const INSTALL_COMMAND_REGEX: &str =
-    r#"opts=" -l -w -h -V  --list --with-openssl-dir --help --version  "#;
+const INSTALL_COMMAND_REGEX: &str = r#"opts=" -l -h -V  --list --help --version  "#;
 const UNINSTALL_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
 const LOCAL_COMMAND_REGEX: &str = r#"opts=" -h -V  --help --version  "#;
 
