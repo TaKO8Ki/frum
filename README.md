@@ -105,17 +105,19 @@ frum init | source
 
 ### Options
 
-- --log-level: The log level of frum commands [default: info] [possible values: quiet, info, error].
+- **--log-level**: The log level of frum commands [default: info] [possible values: quiet, info, error].
+- **--ruby-build-mirror**: [default: https://cache.ruby-lang.org/pub/ruby].
+- **--frum-dir**: The root directory of frum installations [default: $HOME/.frum].
 
 ### Subcommands
 
-- init: Sets environment variables for initializing frum.
-- install: Installs the specified Ruby version.
-    - -l, --list: Lists the Ruby versions available to install.
-- uninstall: Uninstall a specific Ruby version.
-- versions: Lists installed Ruby versions.
-- global: Sets the global Ruby version.
-- local: Sets the current Ruby version.
+- **init**: Sets environment variables for initializing frum.
+- **install**: Installs the specified Ruby version.
+    - **-l**, **--list**: Lists the Ruby versions available to install.
+- **uninstall**: Uninstall a specific Ruby version.
+- **versions**: Lists installed Ruby versions.
+- **global**: Sets the global Ruby version.
+- **local**: Sets the current Ruby version.
 
 ### Ruby configuration options
 

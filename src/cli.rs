@@ -20,7 +20,7 @@ pub fn build_cli() -> App<'static, 'static> {
         .arg(
             Arg::with_name("base-dir")
                 .long("frum-dir")
-                .help("The root directory of frum installations")
+                .help("The root directory of frum installations [default: $HOME/.frum]")
                 .takes_value(true),
         )
         .subcommand(
