@@ -17,7 +17,7 @@ _frum() {
     _arguments "${_arguments_options[@]}" \
 '--log-level=[The log level of frum commands \[default: info\] \[possible values: quiet, info, error\]]' \
 '--ruby-build-mirror=[\[default: https://cache.ruby-lang.org/pub/ruby\]]' \
-'--frum-dir=[The root directory of frum installations]' \
+'--frum-dir=[The root directory of frum installations \[default: $HOME/.frum\]]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
@@ -48,7 +48,6 @@ _arguments "${_arguments_options[@]}" \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
 '::version:_values 'version' $(frum install -l)' \
-'::configure_opts -- Options passed to ./configure:_files' \
 && ret=0
 ;;
 (uninstall)
