@@ -56,7 +56,7 @@ _arguments "${_arguments_options[@]}" \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-':version:_values 'version' $(frum install -l)' \
+':version:_values 'version' $(frum completions --list)' \
 && ret=0
 ;;
 (versions)
