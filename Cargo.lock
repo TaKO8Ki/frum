@@ -358,6 +358,7 @@ dependencies = [
  "env_logger",
  "indoc",
  "log",
+ "num_cpus",
  "regex",
  "reqwest",
  "semver",

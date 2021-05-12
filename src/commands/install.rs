@@ -10,7 +10,6 @@ use colored::Colorize;
 use log::debug;
 use reqwest::Url;
 use std::io::prelude::*;
-use std::io::BufReader;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -211,10 +210,10 @@ fn build_package(
             ),
         });
     };
-    debug!("make -j {}", number_of_cores().unwrap_or(2).to_string());
+    debug!("make -j {}", num_cpus::get().to_string());
     let make = Command::new("make")
         .arg("-j")
-        .arg(number_of_cores().unwrap_or(2).to_string())
+        .arg(num_cpus::get().to_string())
         .current_dir(&current_dir)
         .output()
         .map_err(FrumError::IoError)?;
@@ -241,65 +240,6 @@ fn build_package(
         });
     };
     Ok(())
-}
-
-fn number_of_cores() -> Result<u8, FrumError> {
-    let mut reader = BufReader::new(
-        Command::new("uname")
-            .arg("-s")
-            .stdout(std::process::Stdio::piped())
-            .spawn()
-            .map_err(FrumError::IoError)?
-            .stdout
-            .unwrap(),
-    );
-    let mut uname = String::new();
-    reader.read_line(&mut uname).map_err(FrumError::IoError)?;
-
-    let output = match uname.as_str().trim() {
-        "Darwin" => {
-            Command::new("sysctl")
-                .arg("-n")
-                .arg("hw.ncpu")
-                .output()
-                .map_err(FrumError::IoError)?
-                .stdout
-        }
-        "SunOS" => {
-            Command::new("getconf")
-                .arg("NPROCESSORS_ONLN")
-                .output()
-                .map_err(FrumError::IoError)?
-                .stdout
-        }
-        _ => {
-            let output = Command::new("getconf")
-                .arg("_NPROCESSORS_ONLN")
-                .output()
-                .map_err(FrumError::IoError)?
-                .stdout;
-            if String::from_utf8(output.clone())?
-                .trim()
-                .parse::<u8>()
-                .is_ok()
-            {
-                output
-            } else {
-                Command::new("grep")
-                    .arg("-c")
-                    .arg("^processor")
-                    .arg("/proc/cpuinfo")
-                    .output()
-                    .map_err(FrumError::IoError)?
-                    .stdout
-            }
-        }
-    };
-
-    Ok(String::from_utf8(output)?
-        .trim()
-        .parse()
-        .expect("can't convert cores to integer"))
 }
 
 #[cfg(test)]
@@ -368,10 +308,5 @@ mod tests {
             .join("ruby")
             .exists());
         assert!(config.default_version_dir().exists());
-    }
-
-    #[test]
-    fn test_number_of_cores() {
-        number_of_cores().unwrap();
     }
 }
