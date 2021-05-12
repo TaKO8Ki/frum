@@ -132,6 +132,8 @@ fn customize_completions(shell: Shell) -> String {
                                 _ => line.to_string(),
                             },
                             FrumCommand::Install => match line {
+                                r#"'::configure_opts -- Options passed to ./configure:_files' \"# =>
+                                    continue,
                                 r#"'::version:_files' \"# =>
                                     r#"'::version:_values 'version' $(frum install -l)' \"#
                                         .to_string(),
@@ -139,7 +141,7 @@ fn customize_completions(shell: Shell) -> String {
                             },
                             FrumCommand::Uninstall => match line {
                                 r#"':version:_files' \"# =>
-                                    r#"':version:_values 'version' $(frum install -l)' \"#
+                                    r#"':version:_values 'version' $(frum completions --list)' \"#
                                         .to_string(),
                                 _ => line.to_string(),
                             },
@@ -219,7 +221,7 @@ fn customize_completions(shell: Shell) -> String {
                             FrumCommand::Uninstall =>
                                 if uninstall_command_regex.is_match(line) {
                                     format!(
-                                        r#"{}{}$(frum install -l) ""#,
+                                        r#"{}{}$(frum completions --list) ""#,
                                         uninstall_command_regex
                                             .captures(line)
                                             .unwrap()
@@ -239,15 +241,7 @@ fn customize_completions(shell: Shell) -> String {
             }
             completions
         }
-        _ => {
-            for (index, line) in string_split.clone().enumerate() {
-                if index == string_split.clone().count() - 1 {
-                    break;
-                }
-                completions.push_str(format!("{}\n", line).as_str())
-            }
-            completions
-        }
+        _ => string,
     }
 }
 
