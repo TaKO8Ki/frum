@@ -56,17 +56,6 @@ e2e_test!(use_version_specified_in_ruby_version_file, |dir| {
     );
 });
 
-e2e_test!(install_ruby_via_specific_mirror, |dir| {
-    dir.command()
-        .arg("--ruby-build-mirror")
-        .arg("http://ring.airnet.ne.jp/archives/lang/ruby")
-        .arg("install")
-        .arg("2.7.0")
-        .output();
-    dir.command().arg("local").arg("2.7.0").output();
-    eq_re!("^ruby 2.7.0", dir.ruby_version());
-});
-
 e2e_test!(install_ruby_in_specific_base_dir, |dir| {
     let base_dir = dir.path().join("foo");
     dir.command()
