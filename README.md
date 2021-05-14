@@ -124,8 +124,8 @@ frum init | source
 Options to configure Ruby can be passed to the `frum install` command.
 
 ```sh
-frum install --with-openssl-dir=<ssl_dir> # Specify the OpenSSL directory
-frum install --with-jemalloc # Use jemalloc as allocator
+$ frum install --with-openssl-dir=<ssl_dir> # Specify the OpenSSL directory
+$ frum install --with-jemalloc # Use jemalloc as allocator
 ```
 
 You can also specify many other options that will be listed when running `./configure -h`.
