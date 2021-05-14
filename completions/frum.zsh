@@ -67,13 +67,19 @@ _arguments "${_arguments_options[@]}" \
 '--version[Prints version information]' \
 && ret=0
 ;;
+
 (local)
+if [ "$(frum completions --list)" != '' ]; then
+    local_args='::version:_values 'version' $(frum completions --list)'
+else
+    local_args='--version[Prints version information]'
+fi
 _arguments "${_arguments_options[@]}" \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-'::version:_values 'version' $(frum completions --list)' \
+"${local_args}" \
 && ret=0
 ;;
 (global)

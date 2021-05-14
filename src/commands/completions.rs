@@ -120,9 +120,15 @@ fn customize_completions(shell: Shell) -> String {
                         "{}\n",
                         match subcommand {
                             FrumCommand::Local => match line {
-                                r#"'::version:_files' \"# =>
-                                    r#"'::version:_values 'version' $(frum completions --list)' \"#
-                                        .to_string(),
+                                "(local)" => r#"
+(local)
+if [ "$(frum completions --list)" != '' ]; then
+    local_args='::version:_values 'version' $(frum completions --list)'
+else
+    local_args='--version[Prints version information]'
+fi"#
+                                .to_string(),
+                                r#"'::version:_files' \"# => r#""${local_args}" \"#.to_string(),
                                 _ => line.to_string(),
                             },
                             FrumCommand::Global => match line {
