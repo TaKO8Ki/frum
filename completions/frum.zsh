@@ -67,7 +67,6 @@ _arguments "${_arguments_options[@]}" \
 '--version[Prints version information]' \
 && ret=0
 ;;
-
 (local)
 if [ "$(frum completions --list)" != '' ]; then
     local_args='::version:_values 'version' $(frum completions --list)'
