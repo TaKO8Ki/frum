@@ -1,6 +1,6 @@
 [package]
 name = "frum"
-version = "0.1.0-beta.0"
+version = "0.1.0"
 authors = ["Takayuki Maeda <takoyaki0316@gmail.com>"]
 edition = "2018"
 license = "MIT"
