@@ -6,16 +6,9 @@
 
 [![github workflow status](https://img.shields.io/github/workflow/status/TaKO8Ki/frum/CI/main)](https://github.com/TaKO8Ki/frum/actions) [![crates](https://img.shields.io/crates/v/frum.svg?logo=rust)](https://crates.io/crates/frum)
 
-[Usage](#Usage)
+![gif](./resources/frum.gif)
 
 </div>
-
-```sh
-$ eval "$(frum init)"
-$ frum install 2.6.5
-$ frum local 2.6.5
-$ ruby -v
-```
 
 ## Features
 
