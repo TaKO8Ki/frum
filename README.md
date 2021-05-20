@@ -2,22 +2,13 @@
 
 ![frum](./resources/logo.png)
 
-**frum is currently in beta**
-
 🏃‍♂️ A little bit fast and modern Ruby version manager written in Rust
 
 [![github workflow status](https://img.shields.io/github/workflow/status/TaKO8Ki/frum/CI/main)](https://github.com/TaKO8Ki/frum/actions) [![crates](https://img.shields.io/crates/v/frum.svg?logo=rust)](https://crates.io/crates/frum)
 
-[Usage](#Usage)
+![usage](./resources/frum.gif)
 
 </div>
-
-```sh
-$ eval "$(frum init)"
-$ frum install 2.6.5
-$ frum local 2.6.5
-$ ruby -v
-```
 
 ## Features
 
@@ -64,7 +55,7 @@ $ yay -S frum-bin
 If you already have a Rust environment set up, you can use the `cargo install` command:
 
 ```
-$ cargo install --version 0.1.0-beta.0 frum
+$ cargo install frum
 ```
 
 ### Using a release binary (Linux/macOS)
