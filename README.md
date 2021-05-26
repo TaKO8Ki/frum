@@ -41,6 +41,7 @@ If you’re using Homebrew on macOS, install the `frum` formula.
 ```
 $ brew install tako8ki/tap/frum
 ```
+Daniel Kehoe has written a detailed guide to [Install Ruby with Frum](https://mac.install.guide/ruby/14.html) on macOS using Homebrew.
 
 ### Arch Linux
 
