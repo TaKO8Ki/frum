@@ -39,7 +39,7 @@ For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
 If you’re using Homebrew on macOS, install the `frum` formula.
 
 ```
-$ brew install tako8ki/tap/frum
+$ brew install frum
 ```
 Daniel Kehoe has written a detailed guide to [Install Ruby with Frum](https://mac.install.guide/ruby/14.html) on macOS using Homebrew.
 
