@@ -36,7 +36,7 @@ For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
 
 ### Homebrew
 
-If you’re using Homebrew on macOS, install the `frum` formula.
+If you’re using Homebrew on macOS, install the [`frum`](https://formulae.brew.sh/formula/frum) formula.
 
 ```
 $ brew install frum
