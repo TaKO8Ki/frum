@@ -98,7 +98,7 @@ frum init | source
 
 - **--log-level**: The log level of frum commands [default: info] [possible values: quiet, info, error].
 - **--ruby-build-mirror**: [default: https://cache.ruby-lang.org/pub/ruby].
-- **--frum-dir**: The root directory of frum installations [default: $HOME/.frum]. You can set `frum-dir` as the `$FRUM_DIR` environment variable 
+- **--frum-dir**: The root directory of frum installations [default: $HOME/.frum]. You can set `frum-dir` as the `$FRUM_DIR` environment variable. I recommend that you use the environment variable if you want to use your customized frum-dir globally.
 
 ### Subcommands
 
