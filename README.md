@@ -36,12 +36,11 @@ For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
 
 ### Homebrew
 
-If you’re using Homebrew on macOS, install the [`frum`](https://formulae.brew.sh/formula/frum) formula.
+If you’re using Homebrew on macOS, install the [`frum`](https://formulae.brew.sh/formula/frum) formula. For more information, please see [Install Ruby with Frum](https://mac.install.guide/ruby/14.html) written by Daniel Kehoe.
 
 ```
 $ brew install frum
 ```
-Daniel Kehoe has written a detailed guide to [Install Ruby with Frum](https://mac.install.guide/ruby/14.html) on macOS using Homebrew.
 
 ### Arch Linux
 
@@ -99,7 +98,7 @@ frum init | source
 
 - **--log-level**: The log level of frum commands [default: info] [possible values: quiet, info, error].
 - **--ruby-build-mirror**: [default: https://cache.ruby-lang.org/pub/ruby].
-- **--frum-dir**: The root directory of frum installations [default: $HOME/.frum].
+- **--frum-dir**: The root directory of frum installations [default: $HOME/.frum]. You can set `frum-dir` as the `$FRUM_DIR` environment variable. I recommend that you use the environment variable if you want to use your customized `frum-dir` globally.
 
 ### Subcommands
 
