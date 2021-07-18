@@ -36,7 +36,7 @@ For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
 
 ### Homebrew
 
-If you’re using Homebrew on macOS, install the `frum` formula. For more information, please see [Install Ruby with Frum](https://mac.install.guide/ruby/14.html) written by Daniel Kehoe.
+If you’re using Homebrew on macOS, install the [`frum`](https://formulae.brew.sh/formula/frum) formula. For more information, please see [Install Ruby with Frum](https://mac.install.guide/ruby/14.html) written by Daniel Kehoe.
 
 ```
 $ brew install frum
