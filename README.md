@@ -34,9 +34,9 @@ For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
 
 ## Installation
 
-### Homebrew
+### Homebrew (Linux/macOS)
 
-If you’re using Homebrew on macOS, install the [`frum`](https://formulae.brew.sh/formula/frum) formula. For more information, please see [Install Ruby with Frum](https://mac.install.guide/ruby/14.html) written by Daniel Kehoe.
+If you’re using Homebrew or Linuxbrew, install the [`frum`](https://formulae.brew.sh/formula/frum) formula. For more information, please see [Install Ruby with Frum](https://mac.install.guide/ruby/14.html) written by Daniel Kehoe.
 
 ```
 $ brew install frum
@@ -50,7 +50,7 @@ If you’re using Arch Linux, install the [`frum-bin`](https://aur.archlinux.org
 $ yay -S frum-bin
 ```
 
-### Cargo
+### Cargo (Linux/macOS)
 
 If you already have a Rust environment set up, you can use the `cargo install` command:
 
