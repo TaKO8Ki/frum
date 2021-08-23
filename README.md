@@ -2,7 +2,7 @@
 
 ![frum](./resources/logo.png)
 
-🏃‍♂️ A little bit fast and modern Ruby version manager written in Rust
+A little bit fast and modern Ruby version manager written in Rust
 
 [![github workflow status](https://img.shields.io/github/workflow/status/TaKO8Ki/frum/CI/main)](https://github.com/TaKO8Ki/frum/actions) [![crates](https://img.shields.io/crates/v/frum.svg?logo=rust)](https://crates.io/crates/frum)
 
@@ -30,13 +30,13 @@
 |:---|---:|---:|---:|---:|
 | `eval "$(rbenv init -)"` | 49.5 ± 2.1 | 46.2 | 57.2 | 6.14 ± 0.50 |
 | `eval "$(frum init)"` | 8.1 ± 0.7 | 7.0 | 11.8 | 1.00 ± 0.11 |
-| `eval "$(frum init)"`(pre-release) | 8.1 ± 0.6 | 7.2 | 11.7 | 1.00 |
+| `eval "$(frum init)"` (pre-release) | 8.1 ± 0.6 | 7.2 | 11.7 | 1.00 |
 
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
 |:---|---:|---:|---:|---:|
 | `rbenv` | 239628.1 ± 2030.2 | 237681.6 | 245162.6 | 1.04 ± 0.01 |
 | `frum` | 232944.6 ± 1224.0 | 230565.4 | 234863.5 | 1.01 ± 0.01 |
-| `frum(pre-release)` | 230366.5 ± 882.7 | 228454.2 | 232340.5 | 1.00 |
+| `frum` (pre-release) | 230366.5 ± 882.7 | 228454.2 | 232340.5 | 1.00 |
 
 For more information, please see [#16](https://github.com/TaKO8Ki/frum/pull/16).
 
