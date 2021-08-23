@@ -4,7 +4,7 @@
 
 A little bit fast and modern Ruby version manager written in Rust
 
-[![github workflow status](https://img.shields.io/github/workflow/status/TaKO8Ki/frum/CI/main)](https://github.com/TaKO8Ki/frum/actions) [![crates](https://img.shields.io/crates/v/frum.svg?logo=rust)](https://crates.io/crates/frum)
+[![github workflow status](https://img.shields.io/github/workflow/status/TaKO8Ki/frum/CI/main)](https://github.com/TaKO8Ki/frum/actions) [![crates](https://img.shields.io/crates/v/frum.svg?logo=rust)](https://crates.io/crates/frum) [![brew](https://img.shields.io/homebrew/v/frum?color=blue)](https://formulae.brew.sh/formula/frum) [![aur](https://img.shields.io/aur/version/frum-bin?color=yellow)](https://aur.archlinux.org/packages/frum-bin)
 
 ![usage](./resources/frum.gif)
 
