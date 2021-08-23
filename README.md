@@ -24,7 +24,7 @@
 
 ### Benchmark
 
-`eval "$(frum init)"` is about 6 times faster than `eval "$(rbenv init -)"`.
+`eval "$(frum init)"` runs about 6 times faster than `eval "$(rbenv init -)"`.
 
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
 |:---|---:|---:|---:|---:|
