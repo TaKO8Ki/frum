@@ -30,7 +30,7 @@
 |:---|---:|---:|---:|---:|
 | `eval "$(rbenv init -)"` | 49.5 ± 2.1 | 46.2 | 57.2 | 6.14 ± 0.50 |
 | `eval "$(frum init)"` | 8.1 ± 0.7 | 7.0 | 11.8 | 1.00 ± 0.11 |
-| `eval "$(~/.frum-latest/frum init)"` | 8.1 ± 0.6 | 7.2 | 11.7 | 1.00 |
+| `eval "$(frum init)"`(pre-release) | 8.1 ± 0.6 | 7.2 | 11.7 | 1.00 |
 
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
 |:---|---:|---:|---:|---:|
