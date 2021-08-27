@@ -97,6 +97,8 @@ jobs:
       - name: Run benchmarks
         run: ./benchmarks/run_init
 
+      - run: lscpu
+
       - name: Read basic.md for the generated report
         id: basic_result
         uses: juliangruber/read-file-action@v1
@@ -158,6 +160,8 @@ jobs:
           path: target/release/
       - name: Run benchmarks
         run: ./benchmarks/run
+
+      - run: lscpu
 
       - name: Read basic.md for the generated report
         id: basic_result
