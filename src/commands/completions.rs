@@ -82,11 +82,9 @@ impl Command for Completions {
 }
 
 fn customize_completions(shell: Shell) -> String {
-    use std::io::BufWriter;
-    let mut buffer = BufWriter::new(Vec::new());
+    let mut buffer = Vec::new();
     build_cli().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut buffer);
-    let bytes = buffer.into_inner().unwrap();
-    let string = String::from_utf8(bytes).unwrap();
+    let string = String::from_utf8(buffer).unwrap();
     let string_split = string.split('\n');
     let mut completions = String::new();
     let mut subcommand = FrumCommand::None;
