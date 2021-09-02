@@ -13,9 +13,8 @@ pub trait Command {
     }
 
     fn call(&self, config: &FrumConfig) {
-        match self.apply(&config) {
-            Ok(()) => (),
-            Err(err) => Self::handle_error(err, &config),
+        if let Err(err) = self.apply(&config) {
+            Self::handle_error(err, &config)
         }
     }
 }
