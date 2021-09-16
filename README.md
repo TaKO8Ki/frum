@@ -52,7 +52,7 @@ $ brew install frum
 
 ### Arch Linux
 
-If you’re using Arch Linux, install the [`frum-bin`](https://aur.archlinux.org/packages/frum-bin) package using your favorite AUR helper.
+If you’re using Arch Linux, install the [`frum-bin`](https://aur.archlinux.org/packages/frum-bin) or [`frum`](https://aur.archlinux.org/packages/frum) package using your favorite AUR helper.
 
 ```
 $ yay -S frum-bin
