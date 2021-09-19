@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -15,8 +16,9 @@ impl crate::command::Command for InstallList {
 
     fn apply(&self, config: &crate::config::FrumConfig) -> Result<(), FrumError> {
         let versions = crate::remote_ruby_index::list(&config.ruby_build_mirror)?;
+        let versions = versions.into_iter().map(|v| v.version).sorted().dedup();
         for version in versions {
-            crate::outln!(config#Info, "{}", version.version);
+            crate::outln!(config#Info, "{}", version);
         }
         Ok(())
     }
