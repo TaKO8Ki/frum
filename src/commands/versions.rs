@@ -5,6 +5,7 @@ use colored::Colorize;
 use log::debug;
 use thiserror::Error;
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Error, Debug)]
 pub enum FrumError {
     #[error(transparent)]
