@@ -36,7 +36,7 @@ impl crate::command::Command for Global {
                 version: self.version.clone(),
             });
         }
-        create_alias(&config, "default", &version).map_err(FrumError::IoError)?;
+        create_alias(config, "default", &version).map_err(FrumError::IoError)?;
         Ok(())
     }
 }

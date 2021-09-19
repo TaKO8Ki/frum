@@ -117,7 +117,7 @@ impl crate::command::Command for Install {
 
         if !config.default_version_dir().exists() {
             debug!("Use {} as the default version", current_version);
-            create_alias(&config, "default", &version).map_err(FrumError::IoError)?;
+            create_alias(config, "default", &version).map_err(FrumError::IoError)?;
         }
         Ok(())
     }

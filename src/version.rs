@@ -28,7 +28,7 @@ impl Version {
         if lowercased == "system" {
             Ok(Self::System)
         } else if start_with_number(trimed_lowercased) {
-            Ok(Self::Semver(semver::Version::parse(&trimed_lowercased)?))
+            Ok(Self::Semver(semver::Version::parse(trimed_lowercased)?))
         } else {
             unreachable!()
         }

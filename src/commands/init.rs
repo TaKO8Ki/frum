@@ -20,7 +20,7 @@ impl crate::command::Command for Init {
 
     fn apply(&self, config: &crate::config::FrumConfig) -> Result<(), Self::Error> {
         let shell: Box<dyn Shell> = infer_shell().ok_or(FrumError::CantInferShell)?;
-        let frum_path = create_symlink(&config);
+        let frum_path = create_symlink(config);
         let binary_path = if cfg!(windows) {
             frum_path.clone()
         } else {
@@ -43,7 +43,7 @@ impl crate::command::Command for Init {
             "{}",
             shell.set_env_var("FRUM_RUBY_BUILD_MIRROR", config.ruby_build_mirror.as_str())
         );
-        println!("{}", shell.use_on_cd(&config));
+        println!("{}", shell.use_on_cd(config));
         Ok(())
     }
 }
