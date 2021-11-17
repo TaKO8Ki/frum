@@ -79,6 +79,7 @@ impl crate::command::Command for Uninstall {
 }
 
 fn symlink_exists(to: PathBuf, version: &Version) -> Result<bool, FrumError> {
+    debug!("symlink exists?");
     Ok(std::fs::read_link(to)?.components().last()
         == Some(Component::Normal(OsStr::new(&version.to_string()))))
 }

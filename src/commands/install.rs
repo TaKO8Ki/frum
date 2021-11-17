@@ -167,7 +167,7 @@ fn openssl_dir() -> Result<String, FrumError> {
     return Ok(String::from_utf8_lossy(
         &Command::new("brew")
             .arg("--prefix")
-            .arg("openssl")
+            .arg("openssl@1.1")
             .output()
             .map_err(FrumError::IoError)?
             .stdout,
