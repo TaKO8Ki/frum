@@ -5,6 +5,7 @@ use colored::Colorize;
 use log::debug;
 use thiserror::Error;
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Error, Debug)]
 pub enum FrumError {
     #[error(transparent)]
@@ -40,7 +41,7 @@ impl crate::command::Command for Versions {
                 .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::NotFound))
                 .map_err(FrumError::IoError)?;
             let version = Version::parse(filename).map_err(FrumError::SemverError)?;
-            let current_version = current_version(&config).ok().flatten();
+            let current_version = current_version(config).ok().flatten();
             debug!("current version: {}", current_version.clone().unwrap());
             if let Some(current_version) = current_version {
                 if current_version == version {

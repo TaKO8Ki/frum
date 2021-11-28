@@ -1,6 +1,7 @@
 use std::error::Error as StdError;
 use std::path::Path;
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug)]
 pub enum Error {
     IoError(std::io::Error),
