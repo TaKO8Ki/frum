@@ -27,10 +27,10 @@ e2e_test!(use_not_installed_version, |dir| {
 });
 
 e2e_test!(uninstall_installed_version, |dir| {
-    dir.command().arg("install").arg("2.7.0").output();
-    assert!(dir.path().join("versions").join("2.7.0").exists());
-    dir.command().arg("uninstall").arg("2.7.0").output();
-    assert!(!dir.path().join("versions").join("2.7.0").exists());
+    dir.command().arg("install").arg("3.0.1").output();
+    assert!(dir.path().join("versions").join("3.0.1").exists());
+    dir.command().arg("uninstall").arg("3.0.1").output();
+    assert!(!dir.path().join("versions").join("3.0.1").exists());
 });
 
 e2e_test!(uninstall_not_installed_version, |dir| {
