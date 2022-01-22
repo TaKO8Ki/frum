@@ -26,7 +26,7 @@ pub fn infer_shell() -> Option<Box<dyn Shell>> {
             .expect("Can't read file name of process tree");
 
         match binary {
-            "sh" | "bash" => return Some(Box::from(Bash)),
+            "sh" | "bash" | "mksh" => return Some(Box::from(Bash)),
             "zsh" => return Some(Box::from(Zsh)),
             "fish" => return Some(Box::from(Fish)),
             "pwsh" => return Some(Box::from(PowerShell)),
