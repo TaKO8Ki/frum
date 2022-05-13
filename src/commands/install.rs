@@ -174,7 +174,18 @@ fn openssl_dir() -> Result<String, FrumError> {
     )
     .trim()
     .to_string());
-    #[cfg(not(target_os = "macos"))]
+    #[cfg(target_os = "linux")]
+    return Ok(String::from_utf8_lossy(
+        &Command::new("pkg-config")
+            .arg("--variable=prefix")
+            .arg("openssl")
+            .output()
+            .map_err(FrumError::IoError)?
+            .stdout,
+    )
+    .trim()
+    .to_string());
+    #[cfg(all(not(target_os = "macos"), not(target_os = "linux")))]
     return Ok("/usr/local".to_string());
 }
 
